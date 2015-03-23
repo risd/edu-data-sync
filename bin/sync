@@ -1,0 +1,7 @@
+#!/app/bin/node
+
+var Sync = require('../');
+var s = Sync({});
+s.hustle();
+
+process.exit();
