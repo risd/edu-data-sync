@@ -1,8 +1,16 @@
 {
   "name": "edu-data-sync",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Sync risd.edu datastore with external data sources.",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/risd/edu-data-sync.git"
+  },
+  "engines": {
+  	"node": "0.10.x",
+  	"npm": "1.4.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
