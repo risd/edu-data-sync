@@ -8,12 +8,13 @@
     "url": "git://github.com/risd/edu-data-sync.git"
   },
   "engines": {
-  	"node": "0.10.x",
-  	"npm": "1.4.x"
+    "node": "0.10.x",
+    "npm": "2.7.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ruben Rodriguez <mail@rubenrodriguez.me> (http://rubenrodriguez.me/)",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }
