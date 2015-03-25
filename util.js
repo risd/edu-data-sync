@@ -5,9 +5,6 @@ module.exports.counterReport = counterReport;
 module.exports.loggify = loggify;
 module.exports.pull = pull;
 
-var fs = require('fs');
-
-module.exports.config = config;
 
 function counter (count) {
     if (!arguments.length) count = 0;
@@ -64,14 +61,4 @@ function pull () {
                 function end () {
                     this.push(null);
                 });
-}
-
-function config () {
-    console.log('Reading Config.');
-    var fileName = process.cwd() + '/.env';
-    var fbConf = JSON.parse(
-                   fs.readFileSync(fileName)
-                     .toString()
-                   );
-    return fbConf;
 }

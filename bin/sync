@@ -1,7 +1,49 @@
 #!/usr/bin/env node
 
-var Sync = require('../');
-var s = Sync({});
-s.hustle();
+var through = require('through2');
+var util = require('../util.js');
 
-process.exit();
+var Env = require('../env.js');
+var Firebaseref = require('../firebaseref.js');
+
+Env();
+
+Firebaseref()
+	.pipe(TopLevel())
+	.pipe(Exit());
+
+function TopLevel () {
+	return through.obj(fbref);
+	
+	function fbref (fb, enc, next) {
+		var self = this;
+		fb.once('value', data, error);
+
+		function data (snapshot) {
+			var v = snapshot.val();
+			console.log(Object.keys(v));
+
+			done();
+		}
+
+		function error (err) {
+			console.log(err);
+
+			done();
+		}
+
+		function done () {
+			self.push({});
+			self.push(null);
+		}
+	}
+}
+
+function Exit () {
+	return through.obj(exit);
+
+	function exit (row, enc, next) {
+		this.push(null);
+		process.exit();
+	}
+}

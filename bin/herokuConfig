@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+var spawn = require('child_process').spawn;
+
+var util = require('../util.js');
+
+var args = ['config:set'];
+var confArgs = [];
+
+confArgs = confArgs.concat(util.RISDMediaConfigToEnv());
+confArgs = confArgs.concat(util.FirebaseConfigToEnv());
+
+args = args.concat(confArgs);
+args = args.concat(['--app', 'edu-data-sync']);
+
+spawn('heroku', args).stdout.pipe(process.stdout);

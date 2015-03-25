@@ -20,6 +20,7 @@
     "firebase": "^2.2.3",
     "from2-array": "0.0.3",
     "moment": "^2.9.0",
+    "request": "^2.54.0",
     "through2": "^0.6.3"
   }
 }

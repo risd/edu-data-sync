@@ -3,23 +3,29 @@ var through = require('through2');
 
 module.exports = FirebaseRef;
 
-
-/*
-
-Needs to reference .env, instead of rmConf & fbConf
-
-
+/**
+ * FirebaseRef
+ * 
+ * Returns object stream that pushes a
+ * firebase object that has been configured
+ * for the current WebHook site.
+ *
+ * WebHook configuration is depends on
+ * these environment variables to be set.
+ *
+ * process.env.WH_EMAIL
+ * process.env.WH_PASSWORD
+ * process.env.WH_FIREBASE
+ * process.env.FB_SITENAME
+ * process.env.FB_SECRET
+ * 
  */
 
-function FirebaseRef (opts) {
-    if (!opts) reject();
-    if (!opts.rmConf) reject();
-    if (!opts.fbConf) reject();
-
+function FirebaseRef () {
     return from.obj([{}])
-               .pipe(FirebaseToken(opts.rmConf))
+               .pipe(FirebaseToken())
                .pipe(FirebaseAuth())
-               .pipe(FirebaseBucketForSite(opts.fbConf))
+               .pipe(FirebaseBucketForSite())
                .pipe(PushRef());
 }
 
@@ -36,9 +42,9 @@ function FirebaseToken (config) {
         request(
             authUrl, {
                 qs: {
-                    email: config.email,
-                    password: config.password,
-                    firebase: config.firebase
+                    email: process.env.WH_EMAIL,
+                    password: process.env.WH_PASSWORD,
+                    firebase: process.env.WH_FIREBASE
                 }
             },
             function (err, res, body) {
@@ -57,7 +63,6 @@ function FirebaseAuth () {
     return through.obj(auth);
 
     function auth (row, enc, next) {
-        
         var self = this;
         var firebase = new Firebase(
                             'https://' +
@@ -91,9 +96,9 @@ function FirebaseBucketForSite (config) {
                 row.firebaseRoot
                    .child(
                         'buckets/' +
-                        config.siteName +
+                        process.env.FB_SITENAME +
                         '/' +
-                        config.secretKey +
+                        process.env.FB_SECRET +
                         '/dev');
         this.push(row);
         next();
@@ -107,12 +112,4 @@ function PushRef () {
         this.push(row.firebase);
         next();
     }
-
-    // function end () {
-    //     this.push(null);
-    // }
-}
-
-function reject () {
-     throw new Error('Requires configuration options');
 }
