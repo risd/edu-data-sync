@@ -6,13 +6,87 @@ var util = require('../util.js');
 var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
 
+var Events = require('../sources/events/model.js');
+var sourcePrototypes = [Events];
+
+
 Env();
 
 Firebaseref()
-	.pipe(TopLevel())
+	.pipe(ApplySyncProtocol(sourcePrototypes))
+	.pipe(GetSourcesData())
+	.pipe(CompareWebhookToSource())
 	.pipe(Exit());
 
-function TopLevel () {
+function ApplySyncProtocol (sourcePrototypes) {
+	var SyncProtocol = require('../syncProtocol.js');
+
+	return through.obj(fbref);
+
+	function fbref (fb, enc, next) {
+		var sources = sourcePrototypes.map(configure);
+		this.push(sources);
+		this.push(null);
+
+		function configure (source) {
+			SyncProtocol(source, fb);
+			return source();
+		}
+	}
+}
+
+function GetSourcesData () {
+	return through.obj(getSourceData);
+
+	function getSourceData (sources, enc, next) {
+		var stream = this;
+		var getters = sources
+			.map(function (source) {
+				return source.listSource()
+					.pipe(source.sourceStreamToFirebaseSource());
+			});
+
+		var getterCount = getters.length;
+		getters.forEach(function (getter) {
+			getter.on('data', function () {});
+			getter.on('end', function checkDone () {
+				getterCount -= 1;
+				if (getterCount === 0) {
+					stream.push(sources);
+					stream.push(null);
+				}
+			});
+		});
+	}
+}
+
+function CompareWebhookToSource () {
+	return through.obj(compare);
+
+	function compare (sources, enc, next) {
+		var stream = this;
+
+		var comparers = sources
+			.map(function (source) {
+				return source.listFirebaseWebhook()
+					.pipe(source.compareWebhookToSource());
+			});
+
+		var comparerCount = comparers.length;
+		comparers.forEach(function (comparer) {
+			comparer.on('data', function (d) {});
+			comparer.on('end', function checkDone () {
+				comparerCount -= 1;
+				if (comparerCount === 0) {
+					stream.push(sources);
+					stream.push(null);
+				}
+			});
+		});
+	}
+}
+
+function FirebaseTopLevel () {
 	return through.obj(fbref);
 	
 	function fbref (fb, enc, next) {

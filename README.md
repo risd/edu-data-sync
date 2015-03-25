@@ -2,7 +2,7 @@
 
 Application that runs on Heroku, using heroku scheduler.
 
-Piggy back's a the webhook firebase instance. Where `data` and `contentTypes` are typically the top level buckets for data, this application adds a third. `sync`. In here, API data is stashed, and diffed against current objects in the live `data` tree of the firebase.
+Piggy back's a the webhook firebase instance. Where `data`, `contentType` & `presence` are typically the top level nodes for data, this application adds a third. `eduSync`. In here, API data is stashed, and diffed against current objects in the live `data` tree of the firebase.
 
 
 ### Locally
@@ -17,3 +17,14 @@ Before Heroku can run this, variables need to be configured. You can do that by 
 `heroku config:set WH_EMAIL=`
 `heroku config:set WH_PASSWORD=`
 `heroku config:set WH_FIREBASE=`
+
+`heroku run sync --app edu-data-sync`
+
+
+`get | compare | execute`
+
+```
+eduSync > people  | data > people  | set/remove
+eduSync > courses | data > courses | set/remove
+eduSync > events  | data > events  | set/remove
+```
