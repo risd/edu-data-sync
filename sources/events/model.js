@@ -256,28 +256,28 @@ Events.prototype.mapSourceToFirebase = function () {
 Events.prototype.sourceValueToFirebaseValue = function (row) {
     var d = {
         name: row.title + ' ' + row.id,
-        title: row.title.trim(),
+        localist_title: row.title.trim(),
         localist_uid: row.id,
         localist_venuid_uid: row.venue_id,
-        featured: row.featured,
-        // date_range_first: 
-        // date_range_last: 
-        time_start: row.event_instances[0]
+        localist_featured: row.featured,
+        // localist_date_range_first: 
+        // localist_date_range_last: 
+        localist_time_start: row.event_instances[0]
                        .event_instance
                        .start,
-        time_end: row.event_instances[0]
+        localist_time_end: row.event_instances[0]
                      .event_instance
                      .end,
         localist_url: row.localist_url,
-        photo_url: row.photo_url,
-        venue_url: row.venue_url,
-        ticket_url: row.ticket_url,
-        room_number: row.room_number,
-        address: row.address,
-        location_name: row.location_name,
-        description_text: row.description_text,
-        ticket_cost: row.ticket_cost,
-        filters__department: (function (filters) {
+        localist_photo_url: row.photo_url,
+        localist_venue_url: row.venue_url,
+        localist_ticket_url: row.ticket_url,
+        localist_room_number: row.room_number,
+        localist_address: row.address,
+        localist_location_name: row.location_name,
+        localist_description_text: row.description_text,
+        localist_ticket_cost: row.ticket_cost,
+        localist_filters__department: (function (filters) {
             if ('departments' in filters) {
                 return filters.departments.map(function (d) {
                     return { name: d.name };
@@ -287,7 +287,7 @@ Events.prototype.sourceValueToFirebaseValue = function (row) {
             }
             
         })(row.filters),
-        filters__event_types: (function (filters) {
+        localist_filters__event_types: (function (filters) {
             if ('event_types' in filters) {
                 return filters.event_types.map(function (d) {
                     return { name: d.name };

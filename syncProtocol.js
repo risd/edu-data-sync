@@ -3,6 +3,7 @@
    across any api/implementation */
 
 var through = require('through2');
+var combine = require('stream-combiner2');
 
 module.exports = SyncProtocol;
 
@@ -30,7 +31,7 @@ function SyncProtocol (model, firebaseref) {
         throw new Error('err');
     }
 
-    var type = model.prototype.webHookContentType;
+    var type = model.prototype.webhookContentType;
     var webhookPath = 'data/' + type;
     var sourcePath = 'eduSync/' + type;
 
@@ -54,14 +55,12 @@ function listFirebaseWebhook () {
             function (snapshot) {
                 var values = snapshot.val();
                 if (values) {
-                    console.log('list firebase webhook\n\n');
-                    console.log(values);
                     Object
                         .keys(values)
                         .forEach(function (key) {
                             eventStream.push({
-                                event: values[key],
-                                fbKey: key
+                                webhook: values[key],
+                                whKey: key
                             });
                         });
                 }
@@ -79,26 +78,26 @@ function listFirebaseWebhook () {
 
 function compareWebhookToSource () {
     var self = this;
-    return through.obj(addSync)
-        .pipe(through.obj(compare));
+    return combine(
+            through.obj(addSync),
+            through.obj(compare));
 
     function addSync (row, enc, next) {
         var stream = this;
 
-        var key = self.webhookKey(row);
-        var toCompare = {
-            key: key,
-            webhook: row
-        };
+        var srcKey = self.webhookKey(row.webhook);
+        row.srcKey = srcKey;
+
+        console.log(srcKey);
 
         self._firebase
             .source
-            .child(key)
+            .child(srcKey)
             .once(
                 'value',
                 function (snapshot) {
-                    toCompare.source = snapshot.val();
-                    stream.push(toCompare);
+                    row.source = snapshot.val();
+                    stream.push(row);
                     next();
                 },
                 function (error) {
@@ -107,12 +106,14 @@ function compareWebhookToSource () {
                 });
     }
 
-    function compare (toCompare, enc, next) {
-        if (toCompare.source) {
-            console.log(3);
-        } else {
+    function compare (row, enc, next) {
+        if (row.source) {
             console.log(2);
+        } else {
+            console.log(1);
         }
+        this.push(row);
+        next();
     }
 }
 
@@ -160,8 +161,6 @@ function sourceStreamToFirebaseSource () {
     return through.obj(toFirebase);
 
     function toFirebase (row, enc, next) {
-        console.log(row);
-
         var stream = this;
 
         var key = self.sourceKey(row);

@@ -21,6 +21,7 @@
     "from2-array": "0.0.3",
     "moment": "^2.9.0",
     "request": "^2.54.0",
+    "stream-combiner2": "^1.0.2",
     "through2": "^0.6.3"
   }
 }
