@@ -3,8 +3,8 @@ var fs = require('fs');
 module.exports = Env;
 
 function Env () {
-	RISDMediaConfigToEnv();
-	FirebaseConfigToEnv();
+    RISDMediaConfigToEnv();
+    FirebaseConfigToEnv();
 }
 
 
@@ -13,7 +13,7 @@ function RISDMediaConfigToEnv () {
     var fileName = __dirname + '/.risdmedia.conf';
     var rmConf;
     try {
-    	var file = fs.readFileSync(fileName);
+        var file = fs.readFileSync(fileName);
         rmConf = JSON.parse(file.toString());
     } catch (err) {
         var e = [
@@ -72,7 +72,7 @@ function FirebaseConfigToEnv () {
 
     var fbConf;
     try {
-    	var file = fs.readFileSync(fileName);
+        var file = fs.readFileSync(fileName);
         fbConf = JSON.parse(file.toString());
     } catch (err) {
         var e = [

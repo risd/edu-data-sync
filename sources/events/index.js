@@ -26,9 +26,6 @@ module.exports = Events;
 function Events () {
     if (!(this instanceof Events)) return new Events();
     var self = this;
-    // this.namespace = 'events';
-    // this.firebase_webhook_path = 'data/events';
-    // this.firebase_api_path = 'eduSync/events';
 
     this.url = {
         base: 'https://events.risd.edu/api/2/'
