@@ -1,307 +1,245 @@
-// powered by localist
+/*
+
+Event from localist. Each event is accounted
+for multiple times, but only written once.
+
+If you want to account for individual event
+instances. You can look at the event instance
+id for the event.
+
+value
+    .event
+    .event_instances[0]
+    .event_instance
+    .id
+
+*/
 
 var request = require('request');
 var moment = require('moment');
 var through = require('through2');
 
-var local = require('../localStore.js')
-                   ({
-                       dbPath: process.cwd() +
-                               '/data/.db',
-                       fresh: true
-                   });
+var whUtil = require('../whUtil.js')();
 
+module.exports = Events;
 
-var fs = require('fs');
-var fbConf = require('../util.js').FirebaseConfig();
-var rmConf = require('../util.js').RISDMediaConfig();
-var cloud = require('../cloudStore.js')
-                   ({
-                        rmConf: rmConf.wh,
-                        fbConf: fbConf
-                   });
+function Events () {
+    if (!(this instanceof Events)) return new Events();
+    var self = this;
+    // this.namespace = 'events';
+    // this.firebase_webhook_path = 'data/events';
+    // this.firebase_api_path = 'eduSync/events';
 
-var util = require('../util.js');
-
-
-var Events = require('./model.js')();
-var firebaseConfig = Events.firebaseRefStream();
-var leveldbConfig = Events.leveldbRefStream();
-
-var storeConfig = StoreConfigure([
-                        firebaseConfig,
-                        leveldbConfig
-                    ]);
-
-cloud.pipe(firebaseConfig);
-local.pipe(leveldbConfig);
-
-// Events is a stream that pushes the full configured
-// Events prototype. Pipe it into any other actions
-// You want that depend on having had configured
-// events for localist levedb and firebase.
-
-storeConfig.on('data', function (events) {
-    console.log('Events Configured.');
-
-    externalToLevel(events)
-        .pipe(util.loggify())
-        .pipe(compareLocalAndUpdateFirebase(events))
-        .pipe(util.loggify());
-});
-
-
-function compareLocalAndUpdateFirebase (events) {
-    return through.obj(compare);
-
-    function compare (row, enc, next) {
-
-        console.log('Compare data locally.');
-
-        var self = this;
-        events.listLocalistKV()
-            .pipe(events.mapLocalistToFirebase())
-            .pipe(events.updateFirebase())
-            .pipe(waitEnd(function endcb () {
-                var m = [
-                    'Done doing local diff and update'
-                ];
-                self.push({ msg: m.join('') });
-                self.push(null);
-            }));
-    }
-
-    function waitEnd (cb) {
-        return through.obj(wait, end);
-
-        function wait (row, enc, next) {
-            next();
+    this.url = {
+        base: 'https://events.risd.edu/api/2/'
+    };
+    this.url._events = this.url.base + 'events';
+    this.url.events = function (opts) {
+        var u = [self.url._events];
+        if ('page' in opts) {
+            u = u.concat([
+                '/?',
+                'page=',
+                opts.page.current,
+                '&',
+                'pp=100'
+            ]);
+            if ('days' in opts) {
+                u = u.concat([
+                    '&',
+                    'days=',
+                    opts.days
+                ]);
+            }
         }
-        function end () {
-            this.push(null);
-            cb();
+        else if ('days' in opts) {
+            u = u.concat([
+                '/?',
+                'days=',
+                opts.days,
+                '&',
+                'pp=100'
+            ]);
         }
-    }
+
+        return u.join('');
+    };
 }
 
-function externalToLevel (events) {
-    console.log('Bring External Data into LevelDB');
-    var t = through.obj();
+Events.prototype.webhookContentType = 'events';
+Events.prototype.webhookKeyName = 'localist_uid';
+Events.prototype.keyFromWebhook = function (row) {
+    return row.localist_uid;
+};
+Events.prototype.keyFromSource = function (row) {
+    return row.event.id;
+};
 
-    var l = localistToLevel(events);
-    var f = firebaseToLevel(events);
+Events.prototype.listSource = function () {
+    var self = this;
 
-    var expected = ['localist', 'firebase'];
-    var onend = Done(expected, function () {
-        var m = [
-            'Done importing into LevelDB for ',
-            'local diffing'
-        ];
-        t.push({ msg: m.join('') });
-        t.push(null);
+    // stream of Event objects from localist
+    var eventStream = through.obj();
+    // stream that controls paginated requests
+    // to localist
+    var pagingStream = through.obj();
+
+    // Push paging query options into
+    // the paging stream to have the
+    // pushed into the eventStream
+    // This is the business.
+    pagingStream.pipe(RecursivePage());
+
+    // End the business.
+    pagingStream.on('end', function () {
+        // End the return stream that is
+        // writing events.
+        console.log('Events.listSource::end');
+        eventStream.push(null);
     });
 
-    l.pipe(util.pull());
-    f.pipe(util.pull());
+    var frmtString = 'YYYY-MM-DD';
 
-    l.on('end', onend);
-    f.on('end', onend);
+    var initialPageQueryOpts = {
+        days: 365
+    };
 
-    return t;
+    pagingStream.push(initialPageQueryOpts);
 
 
-    function localistToLevel (events) {
-        console.log('Localist > LevelDB');
-        var t = through.obj();
-        var batchWrite = batchor(events._db);
-        batchWrite.pipe(util.pull());
+    return eventStream;
 
-        batchWrite.on('end', function () {
-            var m = [
-                'Localist > LeveDB :: end'
-            ];
-            t.push({ msg: m.join('') });
-            t.push(null);
-        });
+    function RecursivePage () {
+        return through.obj(pg);
 
-        events.getAllFromLocalist()
-            .pipe(events.levelPrepPutFromLocalist())
-            .pipe(throttleGroup(20))
-            .pipe(batchWrite);
+        function pg (pageQueryOpts, enc, next) {
+            var req = getEvents(pageQueryOpts);
 
-        return t;
+            req.on('data', function (data) {
+                if ('events' in data) {
+                    data.events.forEach(function (e) {
+                        eventStream.push(e);
+                    });
+                }
+                if ('page' in data) {
+                    pageQueryOpts.page = data.page;
+                }
+            });
+
+            req.on('end', function () {
+                if (pageQueryOpts.page.current <
+                    pageQueryOpts.page.total) {
+
+                    pageQueryOpts.page.current += 1;
+                    pagingStream.push(pageQueryOpts);
+
+                } else {
+                    pagingStream.push(null);
+                }
+                next();
+            });
+        }
+
+        function getEvents (opts) {
+            var t = through.obj();
+            var u = self.url.events(opts);
+            console.log('Localist events fetch: ' + u);
+
+            var data = [];
+            request.get(u)
+                .pipe(through.obj(function (row, enc, next) {
+                    data.push(row.toString());
+                    next();
+                }, function end () {
+                    try {
+                        var events = JSON.parse(data.join(''));
+                        t.push(events);
+                    } catch (err) {
+                        console.log(err);
+                        var e = [
+                            'Error getting localist events. ',
+                            'Need to have all of the events, ',
+                            'before Firebase differences can ',
+                            'be accounted for.\n',
+                            'Try again shortly.'
+                        ];
+                        throw new Error(e.join(''));
+                    }
+                    t.push(null);
+                }));
+
+            return t;
+        }
     }
+};
 
-    function firebaseToLevel (events) {
-        console.log('Firebase > LevelDB');
-        var t = through.obj();
-        var batchWrite = batchor(events._db);
-        batchWrite.pipe(util.pull());
+Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
+    src = src.event;
 
-        batchWrite.on('end', function () {
-            var m = [
-                'Firebase > LeveDB :: end'
-            ];
-            t.push({ msg: m.join('') });
-            t.push(null);
-        });
+    wh.name = src.title + ' ' + src.id;
+    wh.localist_title = src.title.trim();
+    wh.localist_uid = src.id;
+    wh.localist_venue_uid = src.venue_id || '';
+    wh.localist_featured = src.featured || false;
+    // localist_date_range_first
+    // localist_date_range_last
+    wh.localist_time_start =
+        src.event_instances[0]
+           .event_instance
+           .start || '';
+    wh.localist_time_end =
+        src.event_instances[0]
+           .event_instance
+           .end || '';
+    wh.localist_url = src.url || '';
+    wh.localist_photo_url = src.photo_url || '';
+    wh.localist_venue_url = src.venue_url || '';
+    wh.localist_ticket_url = src.ticket_url || '';
+    wh.localist_room_number = src.room_number || '';
+    wh.localist_address = src.address || '';
+    wh.localist_location_name = src.location_name || '';
+    wh.localist_description_text = src.description_text || '';
+    wh.localist_ticket_cost = src.ticket_cost || '';
+    wh.localist_filters__department = (function (filters) {
+            if ('departments' in filters) {
+                return filters.departments.map(function (d) {
+                    return { name: d.name };
+                });
+            } else {
+                return [];
+            }
+            
+        })(src.filters || {});
+    wh.localist_filters__event_types = (function (filters) {
+            if ('event_types' in filters) {
+                return filters.event_types.map(function (d) {
+                    return { name: d.name };
+                });
+            } else {
+                return [];
+            }
+        })(src.filters || {});
+    wh.is_draft = false;
 
-        events.getAllFromFirebase()
-            .pipe(events.levelPrepPutFromFirebase())
-            .pipe(throttleGroup(20))
-            .pipe(batchWrite);
+    return (eventDateSort(
+                whUtil.whRequiredDates(
+                    wh)));
 
-        return t;
-    }
+    function eventDateSort (d) {
+        var fields = [
+            'localist_time_start',
+            'localist_time_end'
+        ];
 
-    function Done(expected, cb) {
-        return function () {
-            expected.pop();
-            if (expected.length === 0) {
-                if (cb) {
-                    cb();
+        fields.forEach(function (field) {
+            if (field in d && (d[field])) {
+                if (d[field].length > 0) {
+                    var dt = new Date(d[field]);
+                    d['_sort_' + field] = dt.getTime();
                 }
             }
-        };
-    }
-}
-
-
-
-function throttleGroup (count) {
-    var q = [];
-
-    return through.obj(write, end);
-
-    function write (row, enc, next) {
-        if (q.length < count) {
-            q.push(row);
-        } else {
-            this.push(q.splice(0));
-            q.push(row);
-        }
-        next();
-    }
-
-    function end () {
-        // console.log('throttleGroup::end');
-        this.push(q.slice(0));
-        this.push(null);
-    }
-}
-
-
-function batchor (db) {
-    var errors = [];
-    return through.obj(write, end);
-
-    function write (row, enc, next) {
-        var self = this;
-
-        db.batch(row, function (err) {
-            if (err) errors.push(err);
-            next();
-        });
-    }
-
-    function end () {
-        // console.log('batchor::end');
-        this.push(null);
-    }
-}
-
-// function FirebaseConfig (fs) {
-//     console.log('Reading Firebase Config.');
-//     var fileName = process.cwd() + '/.firebase.conf';
-//     var fbConf = JSON.parse(
-//                    fs.readFileSync(fileName)
-//                      .toString()
-//                    );
-//     return fbConf;
-// }
-
-// function RISDMediaConfig (fs) {
-//     console.log('Reading RISD Media Config.');
-//     var fileName = process.cwd() + '/.risdmedia.conf';
-//     var rmConf;
-//     try {
-//         rmConf = JSON.parse(
-//                         fs.readFileSync(fileName)
-//                           .toString()
-//                         );
-//     } catch (err) {
-//         var e = [
-//             'Running deploy requries ',
-//             'a `.risdmedia.conf` file to ',
-//             'reside at the root of your ',
-//             'project directory. This should ',
-//             'be a valid json file.'
-//         ];
-//         throw new Error(e.join(''));
-//     }
-
-//     // Validate the configuration.
-//     // These are required.
-//     var missing = [];
-//     if (!('wh' in rmConf)) {
-//         missing.push('wh');
-//     } else {
-//         if (!('email' in rmConf.wh)) {
-//             missing.push('wh.email');
-//         }
-//         if (!('password' in rmConf.wh)) {
-//             missing.push('wh.password');
-//         }
-//         if (!('firebase' in rmConf.wh)) {
-//             missing.push('wh.firebase');
-//         }
-//     }
-//     if (!('aws' in rmConf)) {
-//         missing.push('aws');
-//     } else {
-//         if (!('key' in rmConf.aws)) {
-//             missing.push('aws.key');
-//         }
-//         if (!('secret' in rmConf.aws)) {
-//             missing.push('aws.secret');
-//         }
-//     }
-//     if (!('project' in rmConf)) {
-//         missing.push('project');
-//     }
-
-//     if (missing.length > 0) {
-//         var e = [
-//             'Running deploy requries the ',
-//             'following values to be in your ',
-//             '`.risdmedia.conf` file.\n',
-//             missing.join(', ')
-//         ];
-//         throw new Error(e.join(''));
-//     }
-
-//     return rmConf;
-// }
-
-function StoreConfigure (toWatch) {
-    var watching = toWatch.map(function (d, i) { return i; });
-    var t = through.obj();
-    var configured;
-
-    toWatch.forEach(function (w, i) {
-        w.on('data', function (d) {
-            configured = d;
         });
 
-        w.on('end', function () {
-            watching.pop();
-
-            if (watching.length === 0) {
-                t.push(configured);
-                t.push(null);
-            }
-        });
-    });
-
-    return t;
-}
+        return d;
+    }
+};

@@ -6,7 +6,7 @@ var util = require('../util.js');
 var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
 
-var Events = require('../sources/events/model.js');
+var Events = require('../sources/events/index.js');
 var sourcePrototypes = [Events];
 
 
