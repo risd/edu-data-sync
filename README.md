@@ -2,7 +2,7 @@
 
 Application that runs on Heroku, using Heroku scheduler.
 
-Piggy back's a the webhook firebase instance. Where `data`, `contentType` & `presence` are typically the top level nodes for data, this application adds a third. `eduSync`. In here, API data is stashed, and diffed against current objects in the live `data` tree of the firebase.
+Piggy back's a the webhook firebase instance. Where `data`, `contentType` & `presence` are typically the top level nodes for data, this application adds a third. `eduSync`. In here, API data is stashed, and diffed against current objects in the live `data` tree of the Firebase.
 
 
 ### Locally
