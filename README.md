@@ -9,11 +9,15 @@ Piggy back's a the webhook firebase instance. Where `data`, `contentType` & `pre
 
 Relies on having run `wh init` to get the `.firebase.conf` file, as well as a `.risdmedia.conf` file that houses credentials for accessing the firebase via a WebHook account.
 
+To run locally.
+
+`./bin/sync`
+
 
 ### Heroku
 
-Before Heroku can run this, variables need to be configured. You can do that by running `./bin/herokuConfig`.
+Relies on having configuration variables set on Heroku. This can be done by running `./bin/herokuConfig`.
 
-To run the sync on Heroku
+To run on Heroku.
 
 `heroku run sync --app edu-data-sync`
