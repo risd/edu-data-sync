@@ -85,8 +85,6 @@ function FirebaseAuth () {
     }
 }
 
-
-
 function FirebaseBucketForSite (config) {
     var fs = require('fs');
     return through.obj(conf);

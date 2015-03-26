@@ -67,10 +67,11 @@ function Events () {
 }
 
 Events.prototype.webhookContentType = 'events';
-Events.prototype.webhookKey = function (row) {
+Events.prototype.webhookKeyName = 'localist_uid';
+Events.prototype.keyFromWebhook = function (row) {
     return row.localist_uid;
 };
-Events.prototype.sourceKey = function (row) {
+Events.prototype.keyFromSource = function (row) {
     return row.event.id;
 };
 
@@ -93,7 +94,7 @@ Events.prototype.listSource = function () {
     pagingStream.on('end', function () {
         // End the return stream that is
         // writing events.
-        console.log('Events.getAllFromLocalist::end');
+        console.log('Events.listSource::end');
         eventStream.push(null);
     });
 
@@ -172,112 +173,34 @@ Events.prototype.listSource = function () {
     }
 };
 
-Events.prototype.firebaseIDFromSourceID = function (llUID) {
-    if (!llUID) throw new Error('Requires Localist Unique ID.');
-    var key   = [this.namespace, 'firebase', llUID];
-    var start = key.concat([null]);
-    var end   = key.concat([undefined]);
+Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
+    src = src.event;
 
-    return this._db.createReadStream({
-            start: start,
-            end: end,
-            keys: true,
-            values: false,
-            limit: -1
-        })
-        .pipe(through.obj(firebaseKey));
-
-    function firebaseKey (fbKey, enc, next) {
-        if (fbKey.length !== 4) {
-            var e = [
-                'LevelDB for Firebase entries ',
-                'should be at 4 in length. ',
-                '["events", "firebase", llUID, fbUID]'
-            ];
-            throw new Error(e.join(''));
-        }
-        this.push(fbKey[3]);
-        next();
-    }
-};
-
-Events.prototype.listSourceKV = function (opts) {
-    if (!opts) opts = {};
-    return this._db.createReadStream({
-        start: [this.namespace, 'localist', null ],
-        end: [this.namespace, 'localist', undefined ],
-        keys: opts.keys || true,
-        values: opts.values || true,
-        limit: -1
-    });
-};
-
-Events.prototype.mapSourceToFirebase = function () {
-    var events = this;
-    /* Get a stream of localist keys and values.
-       find the matching firebase key for
-       that same localist id.
-       */
-    return through.obj(compare);
-
-    function compare (localist, enc, next) {
-        var llKey = localist.key;
-        var llValue = localist.value;
-
-        if (llKey.length !== 3) {
-            var e = [
-                'Expected stream of localist keys in ',
-                'leveldb. The length should be 3, ',
-                'given the following pattern. ',
-                '["events", "localist", llUID]'
-            ];
-            throw new Error(e.join(''));
-        }
-
-        var row = {
-            llUID: llKey[2],
-            fbUID: false,
-            llValue: llValue
-        };
-
-        var self = this;
-        var d = events.firebaseIDFromSourceID(row.llUID);
-
-        d.on('data', function (fbUID) {
-            row.fbUID = fbUID;
-        });
-        d.on('end', function () {
-            self.push(row);
-            next();
-        });
-    }
-};
-
-Events.prototype.sourceValueToFirebaseValue = function (row) {
-    var d = {
-        name: row.title + ' ' + row.id,
-        localist_title: row.title.trim(),
-        localist_uid: row.id,
-        localist_venuid_uid: row.venue_id,
-        localist_featured: row.featured,
-        // localist_date_range_first: 
-        // localist_date_range_last: 
-        localist_time_start: row.event_instances[0]
-                       .event_instance
-                       .start,
-        localist_time_end: row.event_instances[0]
-                     .event_instance
-                     .end,
-        localist_url: row.localist_url,
-        localist_photo_url: row.photo_url,
-        localist_venue_url: row.venue_url,
-        localist_ticket_url: row.ticket_url,
-        localist_room_number: row.room_number,
-        localist_address: row.address,
-        localist_location_name: row.location_name,
-        localist_description_text: row.description_text,
-        localist_ticket_cost: row.ticket_cost,
-        localist_filters__department: (function (filters) {
+    wh.name = src.title + ' ' + src.id;
+    wh.localist_title = src.title.trim();
+    wh.localist_uid = src.id;
+    wh.localist_venue_uid = src.venue_id || '';
+    wh.localist_featured = src.featured || false;
+    // localist_date_range_first
+    // localist_date_range_last
+    wh.localist_time_start =
+        src.event_instances[0]
+           .event_instance
+           .start || '';
+    wh.localist_time_end =
+        src.event_instances[0]
+           .event_instance
+           .end || '';
+    wh.localist_url = src.url || '';
+    wh.localist_photo_url = src.photo_url || '';
+    wh.localist_venue_url = src.venue_url || '';
+    wh.localist_ticket_url = src.ticket_url || '';
+    wh.localist_room_number = src.room_number || '';
+    wh.localist_address = src.address || '';
+    wh.localist_location_name = src.location_name || '';
+    wh.localist_description_text = src.description_text || '';
+    wh.localist_ticket_cost = src.ticket_cost || '';
+    wh.localist_filters__department = (function (filters) {
             if ('departments' in filters) {
                 return filters.departments.map(function (d) {
                     return { name: d.name };
@@ -286,8 +209,8 @@ Events.prototype.sourceValueToFirebaseValue = function (row) {
                 return [];
             }
             
-        })(row.filters),
-        localist_filters__event_types: (function (filters) {
+        })(src.filters || {});
+    wh.localist_filters__event_types = (function (filters) {
             if ('event_types' in filters) {
                 return filters.event_types.map(function (d) {
                     return { name: d.name };
@@ -295,18 +218,17 @@ Events.prototype.sourceValueToFirebaseValue = function (row) {
             } else {
                 return [];
             }
-        })(row.filters),
-        is_draft: false
-    };
+        })(src.filters || {});
+    wh.is_draft = false;
 
     return (eventDateSort(
                 whUtil.whRequiredDates(
-                    d)));
+                    wh)));
 
     function eventDateSort (d) {
         var fields = [
-            'time_end',
-            'time_start'
+            'localist_time_start',
+            'localist_time_end'
         ];
 
         fields.forEach(function (field) {
@@ -320,34 +242,4 @@ Events.prototype.sourceValueToFirebaseValue = function (row) {
 
         return d;
     }
-};
-
-Events.prototype.levelPrepPutFromSource = function () {
-    var self = this;
-    return through.obj(function (row, enc, next) {
-        var key = [ self.namespace, 'localist', row.event.id ];
-        this.push({
-            key: key,
-            value: row.event,
-            type: 'put'
-        });
-        next();
-    },
-    function end () {
-        console.log('Events.levelPrepPutFromLocalist::end');
-        this.push(null);
-    });
-};
-
-Events.prototype.levelPrepPutFromFirebase = function () {
-    var self = this;
-    return through.obj(function (row, enc, next) {
-        var key = [ self.namespace, 'firebase', row.event.localist_uid, row.fbKey ];
-        this.push({
-            key: key,
-            value: row.event,
-            type: 'put'
-        });
-        next();
-    });
 };

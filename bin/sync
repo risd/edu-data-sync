@@ -13,17 +13,42 @@ var sourcePrototypes = [Events];
 Env();
 
 Firebaseref()
-	.pipe(ApplySyncProtocol(sourcePrototypes))
+	.pipe(AddEduSyncNodeToFirebase())
+	.pipe(ApplySyncProtocolToSources(sourcePrototypes))
 	.pipe(GetSourcesData())
-	.pipe(CompareWebhookToSource())
+	.pipe(AddSourceToWebHook())
 	.pipe(Exit());
 
-function ApplySyncProtocol (sourcePrototypes) {
+
+function AddEduSyncNodeToFirebase () {
+	return through.obj(addEduSync);
+
+	function addEduSync (fb, enc, next) {
+		console.log('Add eduSync to Firebase.');
+
+		var stream = this;
+
+		fb.child('eduSync')
+		  .set({}, onComplete);
+
+		function onComplete (error) {
+			if (error) {
+				throw new Error(error);
+			}
+			stream.push(fb);
+			stream.push(null);
+		}
+	}
+}
+
+function ApplySyncProtocolToSources (sourcePrototypes) {
 	var SyncProtocol = require('../syncProtocol.js');
 
 	return through.obj(fbref);
 
 	function fbref (fb, enc, next) {
+		console.log('Applying sync protocol to sources.');
+
 		var sources = sourcePrototypes.map(configure);
 		this.push(sources);
 		this.push(null);
@@ -39,6 +64,10 @@ function GetSourcesData () {
 	return through.obj(getSourceData);
 
 	function getSourceData (sources, enc, next) {
+		var m =
+			'Get all data from sources & put into firebase.';
+		console.log(m);
+
 		var stream = this;
 		var getters = sources
 			.map(function (source) {
@@ -60,24 +89,25 @@ function GetSourcesData () {
 	}
 }
 
-function CompareWebhookToSource () {
-	return through.obj(compare);
+function AddSourceToWebHook () {
+	return through.obj(addSource);
 
-	function compare (sources, enc, next) {
+	function addSource (sources, enc, next) {
+		console.log('Add source data to webhook data.');
+
 		var stream = this;
-
-		var comparers = sources
+		var adders = sources
 			.map(function (source) {
-				return source.listFirebaseWebhook()
-					.pipe(source.compareWebhookToSource());
+				return source.listFirebaseSource()
+					.pipe(source.addSourceToWebhook());
 			});
 
-		var comparerCount = comparers.length;
-		comparers.forEach(function (comparer) {
-			comparer.on('data', function (d) {});
-			comparer.on('end', function checkDone () {
-				comparerCount -= 1;
-				if (comparerCount === 0) {
+		var addersCount = adders.length;
+		adders.forEach(function (adder) {
+			adder.on('data', function () {});
+			adder.on('end', function checkDone () {
+				addersCount -= 1;
+				if (addersCount === 0) {
 					stream.push(sources);
 					stream.push(null);
 				}
@@ -85,6 +115,11 @@ function CompareWebhookToSource () {
 		});
 	}
 }
+
+// This should be done conditionally?
+// Removing the items that are no longer
+// represented in the api?
+function RemoveFromWebhookBasedOnSource () {}
 
 function FirebaseTopLevel () {
 	return through.obj(fbref);
@@ -117,6 +152,7 @@ function Exit () {
 	return through.obj(exit);
 
 	function exit (row, enc, next) {
+		console.log('Done!');
 		this.push(null);
 		process.exit();
 	}

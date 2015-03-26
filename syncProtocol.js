@@ -9,33 +9,37 @@ module.exports = SyncProtocol;
 
 function SyncProtocol (model, firebaseref) {
     model.prototype.listFirebaseWebhook = listFirebaseWebhook;
-    model.prototype.compareWebhookToSource = compareWebhookToSource;
-    model.prototype.updateFirebase = updateFirebase;
-
+    model.prototype.listFirebaseSource = listFirebaseSource;
+    model.prototype.addSourceToWebhook = addSourceToWebhook;
     model.prototype.sourceStreamToFirebaseSource = sourceStreamToFirebaseSource;
 
-    var m = ['model does not conform to Sync protocol.'];
+    var m = ['Model does not conform to Sync protocol.'];
 
     if (typeof model.prototype.webhookContentType !== 'string') {
         m.push('Requires webhookContentType string.');
-        throw new Error(m.join(''));
+    }
+    if (typeof model.prototype.webhookKeyName !== 'string') {
+        m.push('Requires webhookKeyName string.');
+    }
+    if (typeof model.prototype.keyFromSource !== 'function') {
+        m.push('Requires keyFromSource method.');
+    }
+    if (typeof model.prototype.keyFromWebhook !== 'function') {
+        m.push('Requires keyFromWebhook method.');
+    }
+    if (typeof model.prototype.updateWebhookValueWithSourceValue !== 'function') {
+        m.push('Requires updateWebhookValueWithSourceValue method.');
     }
     if (typeof model.prototype.listSource !== 'function') {
         m.push('Requires getAllFromSource method.');
     }
-    if (typeof model.prototype.sourceKey !== 'function') {
-        m.push('Requires sourceKey method.');
-    }
     if (m.length !== 1) {
-        // throw new Error(m.join('\n'));
-        throw new Error('err');
+        throw new Error(m.join('\n'));
     }
 
     var type = model.prototype.webhookContentType;
     var webhookPath = 'data/' + type;
     var sourcePath = 'eduSync/' + type;
-
-    firebaseref.child('eduSync').set({});
 
     model.prototype._firebase = {
         webhook: firebaseref.child(webhookPath),
@@ -50,109 +54,140 @@ function listFirebaseWebhook () {
 
     self._firebase
         .webhook
-        .once(
-            'value',
-            function (snapshot) {
-                var values = snapshot.val();
-                if (values) {
-                    Object
-                        .keys(values)
-                        .forEach(function (key) {
-                            eventStream.push({
-                                webhook: values[key],
-                                whKey: key
-                            });
-                        });
-                }
-                eventStream.push(null);
-            },
-            function (error) {
-                console.log(
-                    '!model type!fix to reflect model!' +
-                    '.getAllFromFirebase::error');
-                console.log(error);
-            });
+        .once('value', onData, onError);
 
     return eventStream;
-}
 
-function compareWebhookToSource () {
-    var self = this;
-    return combine(
-            through.obj(addSync),
-            through.obj(compare));
-
-    function addSync (row, enc, next) {
-        var stream = this;
-
-        var srcKey = self.webhookKey(row.webhook);
-        row.srcKey = srcKey;
-
-        console.log(srcKey);
-
-        self._firebase
-            .source
-            .child(srcKey)
-            .once(
-                'value',
-                function (snapshot) {
-                    row.source = snapshot.val();
-                    stream.push(row);
-                    next();
-                },
-                function (error) {
-                    console.log('compareWebhookToSync');
-                    console.log(error);
+    function onData (snapshot) {
+        var values = snapshot.val();
+        if (values) {
+            Object
+                .keys(values)
+                .forEach(function (key) {
+                    eventStream.push({
+                        webhook: values[key],
+                        whKey: key
+                    });
                 });
+        }
+        eventStream.push(null);
     }
 
-    function compare (row, enc, next) {
-        if (row.source) {
-            console.log(2);
-        } else {
-            console.log(1);
-        }
-        this.push(row);
-        next();
+    function onError (error) {
+        console.log('listFirebaseWebhook');
+        console.log(error);
     }
 }
 
-function updateFirebase () {
+function listFirebaseSource () {
     var self = this;
 
-    return through.obj(update);
+    var eventStream = through.obj();
 
-    function update (row, enc, next) {
+    self._firebase
+        .source
+        .once('value', onData, onError);
 
-        var fbValue =
-            self.sourceValueToFirebaseValue(
-                    row.llValue);
+    return eventStream;
 
-        var fbRef;
-        if (row.fbUID === false) {
-            // write to firebase
-            console.log('Set on firebase');
-            fbRef = self._firebase.push();
+    function onData (snapshot) {
+        var values = snapshot.val();
+        if (values) {
+            Object
+                .keys(values)
+                .forEach(function (key) {
+                    eventStream.push({
+                        source: values[key],
+                        srcKey: self.keyFromSource(values[key])
+                    });
+                });
+        }
+        eventStream.push(null);
+    }
+
+    function onError (error) {
+        console.log('listFirebaseSource');
+        console.log(error);   
+    }
+}
+
+function addSourceToWebhook () {
+    var self = this;
+    var whData = false;
+
+    return combine(
+        through.obj(findWhKey),
+        through.obj(updateWebhook));
+
+    function findWhKey (row, enc, next) {
+        var stream = this;
+
+        if (whData === false) {
+            self._firebase
+                .webhook
+                .once('value', onData, onError);
         } else {
-            // update firebase
-            console.log('Update on firebase');
-            fbRef = self._firebase.child(row.fbUID);
+            findKeyInWhData();
         }
 
-        var stream = this;
-        fbRef.set(fbValue, function cmplt (error) {
-            if (error) {
-                var e = [
-                    'Error writing to value to firebase. ',
-                    'Put this value back into some kind ',
-                    'of loop that will ensure this goes ',
-                    'through?'
-                ];
-                throw new Error(e.join(''));
-            }
+        function findKeyInWhData () {
+            row.webhook = {};
+            row.whKey = undefined;
+            Object
+                .keys(whData)
+                .forEach(function (key) {
+                    if (whData[key][self.webhookKeyName] === row.srcKey) {
+                        row.webhook = whData[key];
+                        row.whKey = key;
+                    }
+                });
             stream.push(row);
             next();
-        });
+        }
+
+        function onData (snapshot) {
+            whData = snapshot.val();
+            if (whData === null) {
+                whData = {};
+            }
+            findKeyInWhData();
+        }
+
+        function onError (error) {
+            console.log('addSourceToWebhook');
+            console.log(error);
+        }
+    }
+
+    function updateWebhook (row, enc, next) {
+        var stream = this;
+
+        var ref;
+        if (row.whKey) {
+            ref = self._firebase
+                      .webhook
+                      .child(row.whKey);
+        } else {
+            ref = self._firebase
+                      .webhook
+                      .push();
+        }
+
+        var value =
+            self.updateWebhookValueWithSourceValue(
+                row.webhook,
+                row.source);
+
+        ref.set(value, onComplete);
+
+        function onComplete (error) {
+            if (error) {
+                throw new Error(error);
+            }
+            row.updatedWebhook = value;
+            stream.push(row);
+            next();
+        }
     }
 }
 
@@ -163,7 +198,7 @@ function sourceStreamToFirebaseSource () {
     function toFirebase (row, enc, next) {
         var stream = this;
 
-        var key = self.sourceKey(row);
+        var key = self.keyFromSource(row);
         self._firebase
             .source
             .child(key)
