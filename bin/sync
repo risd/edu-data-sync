@@ -7,7 +7,8 @@ var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
 
 var Events = require('../sources/events/index.js');
-var sourcePrototypes = [Events];
+var Employees = require('../sources/employees/index.js');
+var sourcePrototypes = [Events, Employees];
 
 
 Env();
