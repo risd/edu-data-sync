@@ -49,15 +49,12 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     	first: src.FIRSTNAME,
     	last: src.LASTNAME
     };
-    if (src.EMAIL.length > 0) {
-    	wh.colleague_email = src.EMAIL;
-    }
-    if (src.PHONE.length > 0) {
-    	wh.colleague_phone_number = src.PHONE;
-    }
-    if (src.TITLE.length > 0) {
-    	wh.colleague_title = src.TITLE;
-    }
+    wh.colleague_email = src.EMAIL;
+    wh.colleague_phone_number = src.PHONE;
+    wh.colleague_title = src.TITLE;
+    wh.colleague_department = src.DEPARTMENT;
+    wh.colleague_institutions_attended =
+    	src.INSTITUTIONSATTENDED;
 
     wh.colleague_status = true;
 

@@ -14,107 +14,107 @@ var sourcePrototypes = [Events, Employees];
 Env();
 
 Firebaseref()
-	.pipe(AddEduSyncNodeToFirebase())
-	.pipe(ApplySyncProtocolToSources(sourcePrototypes))
-	.pipe(GetSourcesData())
-	.pipe(AddSourceToWebHook())
-	.pipe(Exit());
+    .pipe(AddEduSyncNodeToFirebase())
+    .pipe(ApplySyncProtocolToSources(sourcePrototypes))
+    .pipe(GetSourcesData())
+    .pipe(AddSourceToWebHook())
+    .pipe(Exit());
 
 
 function AddEduSyncNodeToFirebase () {
-	return through.obj(addEduSync);
+    return through.obj(addEduSync);
 
-	function addEduSync (fb, enc, next) {
-		console.log('Add eduSync to Firebase.');
+    function addEduSync (fb, enc, next) {
+        console.log('Add eduSync to Firebase.');
 
-		var stream = this;
+        var stream = this;
 
-		fb.child('eduSync')
-		  .set({}, onComplete);
+        fb.child('eduSync')
+          .set({}, onComplete);
 
-		function onComplete (error) {
-			if (error) {
-				throw new Error(error);
-			}
-			stream.push(fb);
-			stream.push(null);
-		}
-	}
+        function onComplete (error) {
+            if (error) {
+                throw new Error(error);
+            }
+            stream.push(fb);
+            stream.push(null);
+        }
+    }
 }
 
 function ApplySyncProtocolToSources (sourcePrototypes) {
-	var SyncProtocol = require('../syncProtocol.js');
+    var SyncProtocol = require('../syncProtocol.js');
 
-	return through.obj(fbref);
+    return through.obj(fbref);
 
-	function fbref (fb, enc, next) {
-		console.log('Applying sync protocol to sources.');
+    function fbref (fb, enc, next) {
+        console.log('Applying sync protocol to sources.');
 
-		var sources = sourcePrototypes.map(configure);
-		this.push(sources);
-		this.push(null);
+        var sources = sourcePrototypes.map(configure);
+        this.push(sources);
+        this.push(null);
 
-		function configure (source) {
-			SyncProtocol(source, fb);
-			return source();
-		}
-	}
+        function configure (source) {
+            SyncProtocol(source, fb);
+            return source();
+        }
+    }
 }
 
 function GetSourcesData () {
-	return through.obj(getSourceData);
+    return through.obj(getSourceData);
 
-	function getSourceData (sources, enc, next) {
-		var m =
-			'Get all data from sources & put into firebase.';
-		console.log(m);
+    function getSourceData (sources, enc, next) {
+        var m =
+            'Get all data from sources & put into firebase.';
+        console.log(m);
 
-		var stream = this;
-		var getters = sources
-			.map(function (source) {
-				return source.listSource()
-					.pipe(source.sourceStreamToFirebaseSource());
-			});
+        var stream = this;
+        var getters = sources
+            .map(function (source) {
+                return source.listSource()
+                    .pipe(source.sourceStreamToFirebaseSource());
+            });
 
-		var getterCount = getters.length;
-		getters.forEach(function (getter) {
-			getter.on('data', function () {});
-			getter.on('end', function checkDone () {
-				getterCount -= 1;
-				if (getterCount === 0) {
-					stream.push(sources);
-					stream.push(null);
-				}
-			});
-		});
-	}
+        var getterCount = getters.length;
+        getters.forEach(function (getter) {
+            getter.on('data', function () {});
+            getter.on('end', function checkDone () {
+                getterCount -= 1;
+                if (getterCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
 }
 
 function AddSourceToWebHook () {
-	return through.obj(addSource);
+    return through.obj(addSource);
 
-	function addSource (sources, enc, next) {
-		console.log('Add source data to webhook data.');
+    function addSource (sources, enc, next) {
+        console.log('Add source data to webhook data.');
 
-		var stream = this;
-		var adders = sources
-			.map(function (source) {
-				return source.listFirebaseSource()
-					.pipe(source.addSourceToWebhook());
-			});
+        var stream = this;
+        var adders = sources
+            .map(function (source) {
+                return source.listFirebaseSource()
+                    .pipe(source.addSourceToWebhook());
+            });
 
-		var addersCount = adders.length;
-		adders.forEach(function (adder) {
-			adder.on('data', function () {});
-			adder.on('end', function checkDone () {
-				addersCount -= 1;
-				if (addersCount === 0) {
-					stream.push(sources);
-					stream.push(null);
-				}
-			});
-		});
-	}
+        var addersCount = adders.length;
+        adders.forEach(function (adder) {
+            adder.on('data', function () {});
+            adder.on('end', function checkDone () {
+                addersCount -= 1;
+                if (addersCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
 }
 
 // This should be done conditionally?
@@ -122,39 +122,54 @@ function AddSourceToWebHook () {
 // represented in the api?
 function RemoveFromWebhookBasedOnSource () {}
 
+
+function DeleteEmployees () {
+    return through.obj (del);
+
+    function del (fb, enc, next) {
+        var stream = this;
+        fb.child('data/employees')
+          .set({},
+               function () {
+                   stream.push({});
+                   stream.push(null);
+               });
+    }
+}
+
 function FirebaseTopLevel () {
-	return through.obj(fbref);
-	
-	function fbref (fb, enc, next) {
-		var self = this;
-		fb.once('value', data, error);
+    return through.obj(fbref);
+    
+    function fbref (fb, enc, next) {
+        var self = this;
+        fb.once('value', data, error);
 
-		function data (snapshot) {
-			var v = snapshot.val();
-			console.log(Object.keys(v));
+        function data (snapshot) {
+            var v = snapshot.val();
+            console.log(Object.keys(v));
 
-			done();
-		}
+            done();
+        }
 
-		function error (err) {
-			console.log(err);
+        function error (err) {
+            console.log(err);
 
-			done();
-		}
+            done();
+        }
 
-		function done () {
-			self.push({});
-			self.push(null);
-		}
-	}
+        function done () {
+            self.push({});
+            self.push(null);
+        }
+    }
 }
 
 function Exit () {
-	return through.obj(exit);
+    return through.obj(exit);
 
-	function exit (row, enc, next) {
-		console.log('Done!');
-		this.push(null);
-		process.exit();
-	}
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
 }
