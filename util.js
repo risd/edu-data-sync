@@ -3,6 +3,7 @@ var through = require('through2');
 module.exports.counter = counter;
 module.exports.counterReport = counterReport;
 module.exports.loggify = loggify;
+module.exports.stringify = stringify;
 module.exports.pull = pull;
 module.exports.departmentMap = departmentMap;
 
@@ -33,6 +34,15 @@ function loggify () {
     }
 
     function end () { this.push(null); }
+}
+
+function stringify () {
+    return through.obj(write);
+
+    function write (row, enc, next) {
+        this.push(JSON.stringify(row) + '\n');
+        next();
+    }
 }
 
 /* pushes a string to be logged. */

@@ -11,7 +11,10 @@ function SyncProtocol (model, firebaseref) {
     model.prototype.listFirebaseWebhook = listFirebaseWebhook;
     model.prototype.listFirebaseSource = listFirebaseSource;
     model.prototype.addSourceToWebhook = addSourceToWebhook;
-    model.prototype.sourceStreamToFirebaseSource = sourceStreamToFirebaseSource;
+
+    if (typeof model.prototype.sourceStreamToFirebaseSource === 'undefined') {
+        model.prototype.sourceStreamToFirebaseSource = sourceStreamToFirebaseSource;
+    }
 
     var m = ['Model does not conform to Sync protocol.'];
 

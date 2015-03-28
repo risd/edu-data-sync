@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+var through = require('through2');
+var util = require('../util.js');
+
+var Env = require('../env.js');
+
+var Courses = require('../sources/courses/index.js')();
+
+Courses.listSource().pipe(util.stringify()).pipe(process.stdout);
