@@ -158,7 +158,7 @@ Courses.prototype.relationshipsToResolve = function (currentWHData) {
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
-        data: []
+        itemsToRelate: []
     }];
 
     if (!('colleague_departments' in currentWHData)) {
@@ -181,7 +181,7 @@ Courses.prototype.relationshipsToResolve = function (currentWHData) {
                 };
             });
 
-    toResolve[0].data = departments;
+    toResolve[0].itemsToRelate = departments;
 
     return toResolve;
 };
