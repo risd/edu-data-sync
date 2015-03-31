@@ -232,6 +232,7 @@ function resolveRelationships () {
     // method being on the prototype to 
     // capture the data for the relationships
     function resolve (row, enc, next) {
+        console.log("Resolving relationship.");
         stream = this;
         var toResolve = self.relationshipsToResolve(row.webhook);
 
@@ -331,6 +332,7 @@ function resolveRelationships () {
             });
 
         function Save () {
+            console.log("Resolving relationship:Save");
             var saversCount = 2;
             var savers = [SaveData(), SaveReverse()];
             savers.forEach(function (saver) {
@@ -365,6 +367,11 @@ function resolveRelationships () {
 
                 var toSaveKeys = Object.keys(reverseRelationshipToSave);
                 var toSaveCount = toSaveKeys.length;
+
+                if (toSaveCount === 0) {
+                    t.push({});
+                    t.push(null);
+                }
                 
                 toSaveKeys
                     .forEach(function (toSaveKey) {
