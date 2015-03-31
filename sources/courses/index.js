@@ -3,6 +3,7 @@ var through = require('through2');
 var xmlStream = require('xml-stream');
 
 var whUtil = require('../whUtil.js')();
+var util = require('../util.js');
 
 module.exports = Courses;
 
@@ -147,4 +148,27 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_course_faculty_id = src.COURSEFACULTY || '';
 
     return (whUtil.whRequiredDates(wh));
+};
+
+
+
+Courses.prototype.relationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var departments =
+        currentWHData.colleague_departments
+            .map(function (d) {
+                return {
+                    departments:
+                        util.webhookDepartmentForColleagueDepartment(
+                            d.department)
+                };
+            });
+
+    return [{
+        relationshipKey: 'related_departments',
+        relateToContentType: 'departments',
+        relateToContentTypeDataUsingKey: 'name',
+        data: departments
+    }];
 };

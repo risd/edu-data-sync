@@ -1,11 +1,12 @@
 var through = require('through2');
 
-module.exports.counter = counter;
-module.exports.counterReport = counterReport;
-module.exports.loggify = loggify;
-module.exports.stringify = stringify;
-module.exports.pull = pull;
-module.exports.departmentMap = departmentMap;
+// module.exports.counter = counter;
+// module.exports.counterReport = counterReport;
+// module.exports.loggify = loggify;
+// module.exports.stringify = stringify;
+// module.exports.pull = pull;
+module.exports.webhookDepartmentForColleagueDepartment =
+    webhookDepartmentForColleagueDepartment;
 
 
 function counter (count) {
@@ -74,75 +75,96 @@ function pull () {
                 });
 }
 
-function departmentMap () {
-    return [{
-            "datatel": "Textiles",
+function webhookDepartmentForColleagueDepartment (colleagueDepartment) {
+    var departments = [{
+            "colleague": "Textiles",
             "webhook": "Textiles"
         }, {
-            "datatel": "Painting Dept",
+            "colleague": "Painting Dept",
             "webhook": "Painting"
         }, {
-            "datatel": "Glass Dept",
+            "colleague": "Glass Dept",
             "webhook": "Glass"
         }, {
-            "datatel": "Sculpture Dept",
+            "colleague": "Sculpture Dept",
             "webhook": "Sculpture"
         }, {
-            "datatel": "Printmaking Dept",
+            "colleague": "Printmaking Dept",
             "webhook": "Printmaking"
         }, {
-            "datatel": "Photography Dept",
+            "colleague": "Photography Dept",
             "webhook": "Photography"
         }, {
-            "datatel": "LA Hist Art &amp; Vis",
+            "colleague": "LA Hist Art &amp; Vis",
             "webhook": "History of Art + Visual Culture"
         }, {
-            "datatel": "LA English",
+            "colleague": "LA English",
             "webhook": "Literary Arts + Studies"
         }, {
-            "datatel": "LA His/Phil/Soc",
+            "colleague": "LA His/Phil/Soc",
             "webhook": "History, Philosophy + The Social Sciences"
         }, {
-            "datatel": "Digital Media Dept",
+            "colleague": "Digital Media Dept",
             "webhook": "Digital + Media"
         }, {
-            "datatel": "Teach Learn Art+",
+            "colleague": "Teach Learn Art+",
             "webhook": "Teaching + Learning in Art + Design"
         }, {
-            "datatel": "Landscape Arch",
+            "colleague": "Landscape Arch",
             "webhook": "Landscape Architecture"
         }, {
-            "datatel": "Jewelry &amp; Metalsmith",
+            "colleague": "Jewelry &amp; Metalsmith",
             "webhook": "Jewelry + Metalsmithing"
         }, {
-            "datatel": "Interior Arch",
+            "colleague": "Interior Arch",
             "webhook": "Interior Architecture"
         }, {
-            "datatel": "Industrial Design",
+            "colleague": "Industrial Design",
             "webhook": "Industrial Design"
         }, {
-            "datatel": "Illustration",
+            "colleague": "Illustration",
             "webhook": "Illustration"
         }, {
-            "datatel": "Furniture Design",
+            "colleague": "Furniture Design",
             "webhook": "Furniture Design"
         }, {
-            "datatel": "Foundation Studies",
+            "colleague": "Foundation Studies",
             "webhook": "Foundation Studies"
         }, {
-            "datatel": "Film/Anim/Video",
+            "colleague": "Film/Anim/Video",
             "webhook": "Film / Animation / Video"
         }, {
-            "datatel": "Ceramics Dept",
+            "colleague": "Ceramics Dept",
             "webhook": "Ceramics"
         }, {
-            "datatel": "Architecture",
+            "colleague": "Architecture",
             "webhook": "Architecture"
         }, {
-            "datatel": "Graphic Design",
+            "colleague": "Graphic Design",
             "webhook": "Graphic Design"
         }, {
-            "datatel": "Apparel Design",
+            "colleague": "Apparel Design",
             "webhook": "Apparel Design"
         }];
+
+    var f = departments
+        .filter(function (d) {
+            return d.colleague === colleagueDepartment;
+        })
+        .map(function (d) {
+            return d.webhook;
+        });
+
+    if (f.length !== 1) {
+        var m = [
+            'Could not find webhook name for ',
+            'colleague department: ',
+            colleagueDepartment
+        ];
+        throw new Error(m.join(''));
+    }
+    
+    var webhookDepartment = f[0].webhook;
+
+    return webhookDepartment;
 }

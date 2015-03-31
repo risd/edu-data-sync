@@ -20,6 +20,7 @@ Firebaseref()
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
     .pipe(GetSourcesData())
     .pipe(AddSourceToWebHook())
+    // .pipe(ResolveRelationships())
     .pipe(Exit());
 
 
@@ -119,6 +120,45 @@ function AddSourceToWebHook () {
     }
 }
 
+function ResolveRelationships () {
+    return through.obj(relationships);
+
+    function relationships (sources, enc, next) {
+        console.log('Resolve Relationships.');
+
+        var stream = this;
+
+        var resolvers = sources
+            .map(function (source) {
+                return source.listFirebaseWebhook()
+                    .pipe(source.resolveRelationships());
+            });
+
+        var resolversCount = resolvers.length;
+        resolvers.forEach(function (resolver) {
+            resolver.on('data', function () {});
+            resolver.on('end', function () {
+                resolversCount -= 1;
+                if (resolversCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function Exit () {
+    return through.obj(exit);
+
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
+}
+
+
 // This should be done conditionally?
 // Removing the items that are no longer
 // represented in the api?
@@ -163,15 +203,5 @@ function FirebaseTopLevel () {
             self.push({});
             self.push(null);
         }
-    }
-}
-
-function Exit () {
-    return through.obj(exit);
-
-    function exit (row, enc, next) {
-        console.log('Done!');
-        this.push(null);
-        process.exit();
     }
 }
