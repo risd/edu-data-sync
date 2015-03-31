@@ -154,6 +154,17 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 Courses.prototype.relationshipsToResolve = function (currentWHData) {
     var self = this;
 
+    var toResolve = [{
+        relationshipKey: 'related_departments',
+        relateToContentType: 'departments',
+        relateToContentTypeDataUsingKey: 'name',
+        data: []
+    }];
+
+    if (!('colleague_departments' in currentWHData)) {
+        return toResolve;
+    }
+
     var departments =
         currentWHData.colleague_departments
             .filter(function (d) {
@@ -170,10 +181,7 @@ Courses.prototype.relationshipsToResolve = function (currentWHData) {
                 };
             });
 
-    return [{
-        relationshipKey: 'related_departments',
-        relateToContentType: 'departments',
-        relateToContentTypeDataUsingKey: 'name',
-        data: departments
-    }];
+    toResolve[0].data = departments;
+
+    return toResolve;
 };

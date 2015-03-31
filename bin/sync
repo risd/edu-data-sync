@@ -17,8 +17,8 @@ Env();
 Firebaseref()
     .pipe(AddEduSyncNodeToFirebase())
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
-    .pipe(GetSourcesData())
-    .pipe(AddSourceToWebHook())
+    // .pipe(GetSourcesData())
+    // .pipe(AddSourceToWebHook())
     .pipe(ResolveRelationships())
     .pipe(Exit());
 

@@ -28,7 +28,7 @@ module.exports = function () {
         }, {
             "colleague": "LA Hist Art &amp; Vis",
             "webhook": "History of Art + Visual Culture",
-            "courseCatalogue": "HISTORY OF ART&amp;VISUAL CULTURE"
+            "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE"
         }, {
             "colleague": "LA English",
             "webhook": "Literary Arts + Studies",
@@ -40,7 +40,7 @@ module.exports = function () {
         }, {
             "colleague": "Digital Media Dept",
             "webhook": "Digital + Media",
-            "courseCatalogue": "DIGITAL &amp; MEDIA"
+            "courseCatalogue": "DIGITAL & MEDIA"
         }, {
             "colleague": "Teach Learn Art+",
             "webhook": "Teaching + Learning in Art + Design",
@@ -52,7 +52,7 @@ module.exports = function () {
         }, {
             "colleague": "Jewelry &amp; Metalsmith",
             "webhook": "Jewelry + Metalsmithing",
-            "courseCatalogue": "JEWELRY &amp; METAL"
+            "courseCatalogue": "JEWELRY & METAL"
         }, {
             "colleague": "Interior Arch",
             "webhook": "Interior Architecture",

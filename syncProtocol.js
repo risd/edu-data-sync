@@ -249,6 +249,7 @@ function resolveRelationships () {
         
         var relationshipsToResolveCount = toResolve.length;
         var reverseRelationshipToSave = {};
+        var relationshipsMade = 0;
         
         toResolve
             .forEach(function (resolve) {
@@ -263,76 +264,84 @@ function resolveRelationships () {
                 function onRelatedDataCaptureComplete (snapshot) {
                     var relatedContentTypeData = snapshot.val();
 
-                    if (relatedContentTypeData) {
-                        Object.keys(relatedContentTypeData)
-                            .forEach(function (currentRelatedKey) {
-                                var currentRelatedContentTypeData =
-                                    relatedContentTypeData
-                                            [currentRelatedKey];
-                                var checkRelated =
-                                        currentRelatedContentTypeData
-                                            [resolve.relateToContentTypeDataUsingKey];
-
-                                resolve.data.forEach(function (toMatch) {
-                                    if (toMatch[resolve.relateToContentType] === checkRelated) {
-                                        var relationship = [resolve.relateToContentType, currentRelatedKey].join(' ');
-                                        var reverseKey = [self.webhookContentType, resolve.relationshipKey].join('_');
-                                        var reverse = [self.webhookContentType, row.whKey].join(' ');
-
-                                        // Check for relationship array
-                                        if (!(resolve.relationshipKey in row.webhook)) {
-                                            // Add it if its not there
-                                            row.webhook[resolve.relationshipKey] = [];
-                                        }
-                                        // Check for relationship in array
-                                        if (row.webhook[resolve.relationshipKey]
-                                                .indexOf(relationship) === -1) {
-
-                                            // Add it if its not there
-                                            row.webhook[resolve.relationshipKey]
-                                                .push(relationship);
-                                        }
-
-                                        // Check for reverse relationship array
-                                        if (!(reverseKey in currentRelatedContentTypeData)) {
-                                            // Add it if its not there
-                                            currentRelatedContentTypeData
-                                                [reverseKey] = [];
-                                        }
-                                        // Check for reverse relationship in array
-                                        if (currentRelatedContentTypeData
-                                                [reverseKey]
-                                                .indexOf(reverse) === -1) {
-                                            // Add it if its not there
-                                            currentRelatedContentTypeData
-                                                [reverseKey]
-                                                .push(reverse);
-
-                                            // Add this object to 
-                                            reverseRelationshipToSave
-                                                [currentRelatedKey] = currentRelatedContentTypeData;
-                                        }
-                                    }
-                                });
-                            });
+                    if (resolve.data.length === 0) {
+                        console.log('No relationships to make.');
                     } else {
-                        var m = [
-                            'Did not find data to relate.',
-                            '\tmodel.prototype.resolveRelationships'
-                        ];
-                        throw new Error(m.join('\n'));
-                    }
+                        if (relatedContentTypeData) {
+                            Object.keys(relatedContentTypeData)
+                                .forEach(function (currentRelatedKey) {
+                                    var currentRelatedContentTypeData =
+                                        relatedContentTypeData
+                                                [currentRelatedKey];
+                                    var checkRelated =
+                                            currentRelatedContentTypeData
+                                                [resolve.relateToContentTypeDataUsingKey];
+                                    console.log('checkRelated');
+                                    console.log(checkRelated);
+                                    resolve.data.forEach(function (toMatch) {
+                                        console.log(toMatch[resolve.relateToContentType]);
+                                        if (toMatch[resolve.relateToContentType] === checkRelated) {
+                                            console.log('match!');
+                                            var relationship = [resolve.relateToContentType, currentRelatedKey].join(' ');
+                                            var reverseKey = [self.webhookContentType, resolve.relationshipKey].join('_');
+                                            var reverse = [self.webhookContentType, row.whKey].join(' ');
 
-                    relationshipsToResolveCount -= 1;
-                    if (relationshipsToResolveCount === 0) {
-                        Save();
+                                            // Check for relationship array
+                                            if (!(resolve.relationshipKey in row.webhook)) {
+                                                // Add it if its not there
+                                                row.webhook[resolve.relationshipKey] = [];
+                                            }
+                                            // Check for relationship in array
+                                            if (row.webhook[resolve.relationshipKey]
+                                                    .indexOf(relationship) === -1) {
+
+                                                // Add it if its not there
+                                                row.webhook[resolve.relationshipKey]
+                                                    .push(relationship);
+                                            }
+
+                                            // Check for reverse relationship array
+                                            if (!(reverseKey in currentRelatedContentTypeData)) {
+                                                // Add it if its not there
+                                                currentRelatedContentTypeData
+                                                    [reverseKey] = [];
+                                            }
+                                            // Check for reverse relationship in array
+                                            if (currentRelatedContentTypeData
+                                                    [reverseKey]
+                                                    .indexOf(reverse) === -1) {
+                                                // Add it if its not there
+                                                currentRelatedContentTypeData
+                                                    [reverseKey]
+                                                    .push(reverse);
+
+                                                // Add this object to 
+                                                reverseRelationshipToSave
+                                                    [currentRelatedKey] = currentRelatedContentTypeData;
+                                            }
+                                        }
+                                    });
+                                });
+                        } else {
+                            var m = [
+                                'Did not find data to relate.',
+                                '\tmodel.prototype.resolveRelationships'
+                            ];
+                            throw new Error(m.join('\n'));
+                        }
+
+                        throw new Error('wuh');
+
+                        relationshipsToResolveCount -= 1;
+                        if (relationshipsToResolveCount === 0) {
+                            Save();
+                        }
                     }
                     
                 }
             });
 
         function Save () {
-            console.log("Resolving relationship:Save");
             var saversCount = 2;
             var savers = [SaveData(), SaveReverse()];
             savers.forEach(function (saver) {
