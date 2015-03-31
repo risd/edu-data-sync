@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var through = require('through2');
-var util = require('../util.js');
 
 var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
@@ -10,7 +9,7 @@ var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
 
-var sourcePrototypes = [Events, Employees, Courses];
+var sourcePrototypes = [Courses];
 
 
 Env();
@@ -20,7 +19,7 @@ Firebaseref()
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
     .pipe(GetSourcesData())
     .pipe(AddSourceToWebHook())
-    // .pipe(ResolveRelationships())
+    .pipe(ResolveRelationships())
     .pipe(Exit());
 
 

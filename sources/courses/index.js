@@ -3,7 +3,6 @@ var through = require('through2');
 var xmlStream = require('xml-stream');
 
 var whUtil = require('../whUtil.js')();
-var util = require('../util.js');
 
 module.exports = Courses;
 
@@ -45,7 +44,7 @@ Courses.prototype.listSource = function () {
         source.collect('COURSE');
         source.on('endElement: DEPARTMENT', function (row) {
             row.COURSE.forEach(function (d) {
-                d.departments = [row.NAME];
+                d.departments = [row.NAME.trim()];
                 eventStream.push(d);
             });
         });
@@ -157,11 +156,17 @@ Courses.prototype.relationshipsToResolve = function (currentWHData) {
 
     var departments =
         currentWHData.colleague_departments
+            .filter(function (d) {
+                return whUtil
+                        .webhookDepartmentForCourseCatalogue(
+                            d.department);
+            })
             .map(function (d) {
                 return {
                     departments:
-                        util.webhookDepartmentForColleagueDepartment(
-                            d.department)
+                        whUtil
+                            .webhookDepartmentForCourseCatalogue(
+                                d.department)
                 };
             });
 
