@@ -45,12 +45,14 @@ function SyncProtocol (model, firebaseref) {
     }
 
     var type = model.prototype.webhookContentType;
+    var webhookDataRoot = 'data';
     var webhookPath = 'data/' + type;
     var sourcePath = 'eduSync/' + type;
 
     model.prototype._firebase = {
         webhook: firebaseref.child(webhookPath),
-        source:  firebaseref.child(sourcePath)
+        source:  firebaseref.child(sourcePath),
+        webhookDataRoot: firebaseref.child(webhookDataRoot)
     };
 }
 
@@ -253,7 +255,7 @@ function resolveRelationships () {
                 row.webhook[resolve.relationshipKey] = [];
 
                 self._firebase
-                    .webhook
+                    .webhookDataRoot
                     .child(resolve.relateToContentType)
                     .once('value', onRelatedDataCaptureComplete);
 
@@ -368,7 +370,7 @@ function resolveRelationships () {
                     .forEach(function (toSaveKey) {
                         var toSave = reverseRelationshipToSave[toSaveKey];
                         self._firebase
-                            .webhook
+                            .webhookDataRoot
                             .child(resolve.relateToContentType)
                             .child(toSaveKey)
                             .set(toSave, onSaved);
