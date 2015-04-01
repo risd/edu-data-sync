@@ -302,7 +302,10 @@ function rrPopulateRelated () {
 
     function populate (row, enc, next) {
         // console.log('rrPopulateRelated');
+        row.reverseToSave = false;
+
         if (row.relatedDataCollection) {
+            row.reverseToSave = {};
             Object
                 .keys(row.relatedDataCollection)
                 .forEach(function (relatedKey) {
@@ -325,7 +328,52 @@ function rrPopulateRelated () {
                             if (related === relate) {
                                 console.log('\n\nMatch!\n\n');
                                 // sort out updating objects
-                                row.updated = true;
+
+                                if (!(row.toResolve
+                                         .relationshipKey in
+                                      row.webhook)) {
+
+                                    row.webhook
+                                        [row.toResolve
+                                            .relationshipKey] = [];
+                                }
+
+                                var relationshipValue = [
+                                        row.toResolve.relateToContentType,
+                                        relatedKey
+                                    ].join(' ');
+
+                                if (row.webhook
+                                        [row.toResolve
+                                            .relationshipKey]
+                                            .indexOf(relationshipValue) === -1) {
+
+                                    row.updated = true;
+                                    row.webhook
+                                        [row.toResolve
+                                            .relationshipKey]
+                                                .push(relationshipValue);
+                                }
+
+                                var reverseKey = [
+                                        self.webhookContentType,
+                                        row.toResolve.relationshipKey
+                                    ].join('_');
+
+                                if (!(reverseKey in relatedValue)) {
+                                    relatedValue[reverseKey] = [];
+                                }
+
+                                var reverseValue = [
+                                        self.webhookContentType,
+                                        row.whKey
+                                    ].join(' ');
+
+                                if (relatedValue[reverseKey]
+                                        .indexOf(reverseValue) === -1) {
+                                    relatedValue[reverseKey].push(reverseValue);
+                                    row.reverseToSave[relatedKey] = relatedValue;
+                                }
                             }
                         });
                 });
@@ -345,14 +393,50 @@ function rrSaveReverse () {
     return through.obj(save);
 
     function save (row, enc, next) {
-        if (row.updated) {
-            // console.log('Save.');
+        var stream = this;
+
+        if (row.reverseToSave) {
+            console.log('Save reverse.');
+            var saverKeys = Object.keys(row.reverseToSave);
+            var saversCount = saverKeys.length;
+            var savers =
+                saverKeys
+                    .map(function (reverseKey) {
+                        return saver(reverseKey,
+                                     row.reverseToSave[reverseKey]);
+                    });
+
+            savers.forEach(function (s) {
+                s.on('data', function () {});
+                s.on('end', function () {
+                    saversCount -= 1;
+                    if (saversCount === 0) {
+                        stream.push(row);
+                        next();
+                    }
+                });
+            });
+
         } else {
-            // console.log('Do not save.');
+            console.log('Do not save reverse.');
+            this.push(row);
+            next();
         }
 
-        this.push(row);
-        next();
+        function saver (key, value) {
+            var t = through.obj();
+
+            self._firebase
+                .webhookDataRoot
+                .child(row.toResolve.relateToContentType)
+                .child(key)
+                .set(value, function () {
+                    t.push({});
+                    t.push(null);
+                });
+
+            return t;
+        }
     }
 }
 
@@ -387,43 +471,50 @@ function rrSaveCurrent () {
                 // console.log('Check for updated');
 
                 var makeSave = false;
-                current.toMerge.forEach(function (d) {
-                    if (d.updated) {
+                current.toMerge.forEach(function (drow) {
+                    if (drow.updated) {
                         makeSave = true;
                     }
                 });
 
-                // TODO
-                // this will need to inspect all
-                // in toMerge, and see which key
-                // they were looking to resolve,
-                // and update each other.
                 var merged = {
                     key: current.whKey,
-                    data: current.toMerge.slice(0)
+                    value: mergeData(current)
                 };
-
-                // TODO
-                // on merge/save complete, push
-                // the merged object
-
-                // reset to merge
-                current.toMerge = [row];
-                current.whKey = row.whKey;
-
+                
                 if (makeSave) {
-                    // console.log('Make merge & save');
+                    self._firebase
+                        .webhook
+                        .child(merged.key)
+                        .set(merged.value, function () {
+                            current.toMerge = [row];
+                            current.whKey = row.whKey;
 
-                    stream.push(merged);
-                    next();
+                            stream.push(merged);
+                            next();
+                        });
                 } else {
-                    // console.log('Do not save.');
+                    // reset current
+                    current.toMerge = [row];
+                    current.whKey = row.whKey;
 
                     this.push(merged);
                     next();
                 }
             }
         }
+    }
+
+    function mergeData (data) {
+        // baseline 
+        var mergedData = data.toMerge.slice(1).webhook;
+
+        data.toMerge.forEach(function (toMerge) {
+            var resolvedKey = toMerge.toResolve.relationshipKey;
+            mergedData[resolvedKey] = toMerge.webhook[resolvedKey];
+        });
+
+        return mergedData;
     }
 }
 
