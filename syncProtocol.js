@@ -223,6 +223,9 @@ function sourceStreamToFirebaseSource () {
 
 function resolveRelationships () {
     var self = this;
+    // flatten this into a series of through
+    // streams piped here? rather than
+    // resolve holding onto the entire stack.
     return through.obj(resolve);
 
     // expecting this to be pulling data
@@ -242,7 +245,7 @@ function resolveRelationships () {
 
         var resolver =
             from.obj(toResolveArr)
-                .pipe(MakeWithResolveObjectAndWebhookObject());
+                .pipe(through.obj(getRelatedData, end));
 
         resolver.on('data', function () {});
         resolver.on('end', function () {
@@ -251,189 +254,186 @@ function resolveRelationships () {
         });
     }
 
-    function MakeWithResolveObjectAndWebhookObject () {
-        return through.obj(getRelatedData, end);
+    function getRelatedData (toResolve, enc, next) {
+        console.log('Get related data');
+        toResolve.relatedData = false;
 
-        function getRelatedData (toResolve, enc, next) {
-            var stream = this;
-            toResolve.relatedData = false;
+        if (toResolve.itemsToRelate.length === 0) {
+            console.log('No relationships to make.');
+            this.push(toResolve);
+            next();
+        } else {
+            var maker = this;
+            var w = relatedDataStream(toResolve)
+                .pipe(populateRelated(toResolve))
+                .pipe(saveReverse())
+                .pipe(saveCurrent(toResolve));
 
-            if (toResolve.itemsToRelate.length === 0) {
-                console.log('No relationships to make.');
-                stream.push(toResolve);
+            w.on('data', function () {});
+            w.on('end', function () {
+                maker.push(toResolve);
                 next();
-            } else {
-                var w = relatedDataStream(toResolve)
-                    .pipe(populateRelated(toResolve))
-                    .pipe(saveReverse())
-                    .pipe(saveCurrent(toResolve));
-
-                w.on('data', function () {});
-                w.on('end', function () {
-                    stream.push(toResolve);
-                    next();
-                });
-            }
+            });
         }
+    }
 
-        function end () { this.push(null); }
+    function end () { this.push(null); }
 
-        function relatedDataStream (toResolve) {
-            /*
-            Get data for the related content type
-            and push keys and values as individual
-            objects into the stream.
-             */
-            var t = through.obj();
+    function relatedDataStream (toResolve) {
+        /*
+        Get data for the related content type
+        and push keys and values as individual
+        objects into the stream.
+         */
+        var t = through.obj();
 
-            self._firebase
+        self._firebase
+                .webhookDataRoot
+                .child(toResolve.relateToContentType)
+                .once('value', function onComplete (snapshot) {
+                    var keysAndValuesObj = snapshot.val();
+                    if (keysAndValuesObj) {
+                        Object.keys(keysAndValuesObj)
+                            .forEach(function (key) {
+                                var value = keysAndValuesObj[key];
+                                t.push({
+                                    key: key,
+                                    value: value
+                                });
+                            });
+                    }
+                    t.push(null);
+                });
+        
+        return t;   
+    }
+
+    function populateRelated (toResolve) {
+        /*
+        Expected related.{key, value}
+        Pushes any an object with key, value
+        pairs to save.
+
+        { currentContentTypeData: [],
+          relatedContentTypeData: []  }
+
+        currentData.length === 1
+        relatedData.length === N
+
+         */
+
+        return through.obj(populate);
+
+        function populate (related, enc, next) {
+            related.updated = false;
+            toResolve
+                .itemsToRelate
+                .forEach(function (itemToRelate) {
+                    var relate =
+                        itemToRelate
+                            [toResolve.relateToContentType];
+                    var related =
+                        related
+                            .value[toResolve
+                                .relateToContentTypeDataUsingKey];
+
+                    if (relate === related) {
+                        console.log('Match!');
+                        var relationshipValue = [
+                                toResolve.relateToContentType,
+                                related.key
+                            ]
+                            .join(' ');
+
+                        var revsereKey = [
+                                self.webhookContentType,
+                                toResolve.relationshipKey
+                            ]
+                            .join('_');
+
+                        var reverseValue = [
+                                self.webhookContentType,
+                                row.whKey
+                            ]
+                            .join(' ');
+
+                        if (!(toResolve.relationshipKey in row.webhook)) {
+                            row.webhook[toResolve.relationshipKey] = [];
+                        }
+                        if (row.webhook[toResolve.relationshipKey]
+                                .indexOf(relationshipValue) === -1) {
+
+                            row.webhook[toResolve.relationshipKey]
+                                .push(relationshipValue);
+                            row.updated = true;
+                        }
+
+                        if (!(revsereKey in related.value)) {
+                            related.value[revsereKey] = [];
+                        }
+                        if (related.value[revsereKey]
+                                .indexOf(reverseValue) === -1) {
+                            related[revsereKey].push(reverseValue);
+                            related.updated = true;
+                        }
+                    }
+                });
+            
+            this.push(related);
+            next();
+        }
+    }
+
+    function saveReverse (toResolve) {
+        /*
+        Expects related.{key, value}
+        save these to their original location.
+        These are used to set the current object,
+        so only when all of these are done saving,
+        should the next step in the stream be done.
+         */
+        
+        return through.obj(save, push);
+
+        function save (related, enc, next) {
+            if (related.updated) {
+                console.log('Save Reverse.');
+                self._firebase
                     .webhookDataRoot
                     .child(toResolve.relateToContentType)
-                    .once('value', function onComplete (snapshot) {
-                        var keysAndValuesObj = snapshot.val();
-                        if (keysAndValuesObj) {
-                            Object.keys(keysAndValuesObj)
-                                .forEach(function (key) {
-                                    var value = keysAndValuesObj[key];
-                                    t.push({
-                                        key: key,
-                                        value: value
-                                    });
-                                });
-                        }
-                        t.push(null);
+                    .child(related.key)
+                    .set(related.value, function saved () {
+                        next();
                     });
-            
-            return t;   
-        }
-
-        function populateRelated (toResolve) {
-            /*
-            Expected related.{key, value}
-            Pushes any an object with key, value
-            pairs to save.
-
-            { currentContentTypeData: [],
-              relatedContentTypeData: []  }
-
-            currentData.length === 1
-            relatedData.length === N
-
-             */
-
-            return through.obj(populate);
-
-            function populate (related, enc, next) {
-                related.updated = false;
-                toResolve
-                    .itemsToRelate
-                    .forEach(function (itemToRelate) {
-                        var relate =
-                            itemToRelate
-                                [toResolve.relateToContentType];
-                        var related =
-                            related
-                                .value[toResolve
-                                    .relateToContentTypeDataUsingKey];
-
-                        if (relate === related) {
-                            console.log('Match!');
-                            var relationshipValue = [
-                                    toResolve.relateToContentType,
-                                    related.key
-                                ]
-                                .join(' ');
-
-                            var revsereKey = [
-                                    self.webhookContentType,
-                                    toResolve.relationshipKey
-                                ]
-                                .join('_');
-
-                            var reverseValue = [
-                                    self.webhookContentType,
-                                    row.whKey
-                                ]
-                                .join(' ');
-
-                            if (!(toResolve.relationshipKey in row.webhook)) {
-                                row.webhook[toResolve.relationshipKey] = [];
-                            }
-                            if (row.webhook[toResolve.relationshipKey]
-                                    .indexOf(relationshipValue) === -1) {
-
-                                row.webhook[toResolve.relationshipKey]
-                                    .push(relationshipValue);
-                                row.updated = true;
-                            }
-
-                            if (!(revsereKey in related.value)) {
-                                related.value[revsereKey] = [];
-                            }
-                            if (related.value[revsereKey]
-                                    .indexOf(reverseValue) === -1) {
-                                related[revsereKey].push(reverseValue);
-                                related.updated = true;
-                            }
-                        }
-                    });
-                
-                this.push(related);
+            } else {
                 next();
             }
         }
 
-        function saveReverse (toResolve) {
-            /*
-            Expects related.{key, value}
-            save these to their original location.
-            These are used to set the current object,
-            so only when all of these are done saving,
-            should the next step in the stream be done.
-             */
-            
-            return through.obj(save, push);
+        function push () {
+            this.push({});
+            this.push(null);
+        }
+    }
 
-            function save (related, enc, next) {
-                if (related.updated) {
-                    console.log('Save Reverse.');
-                    self._firebase
-                        .webhookDataRoot
-                        .child(toResolve.relateToContentType)
-                        .child(related.key)
-                        .set(related.value, function saved () {
-                            next();
-                        });
-                } else {
-                    next();
-                }
-            }
+    function saveCurrent () {
+        return through.obj(save);
 
-            function push () {
+        function save (notifier, enc, next) {
+            if (row.updated) {
+                var saver = this;
+                console.log('Save object.');
+                self._firebase
+                    .webhook
+                    .child(self.webhookContentType)
+                    .child(row.whKey)
+                    .set(row.webhook, function saved () {
+                        saver.push({});
+                        saver.push(null);
+                    });
+            } else {
                 this.push({});
                 this.push(null);
-            }
-        }
-
-        function saveCurrent () {
-            return through.obj(save);
-
-            function save (notifier, enc, next) {
-                if (row.updated) {
-                    var saver = this;
-                    console.log('Save object.');
-                    self._firebase
-                        .webhook
-                        .child(self.webhookContentType)
-                        .child(row.whKey)
-                        .set(row.webhook, function saved () {
-                            saver.push({});
-                            saver.push(null);
-                        });
-                } else {
-                    this.push({});
-                    this.push(null);
-                }
             }
         }
     }
