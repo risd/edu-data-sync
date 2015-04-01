@@ -105,6 +105,7 @@ module.exports = function () {
     };
 
     function webhookDepartmentForCourseCatalogue (catalogueDepartment) {
+
         var f = departmentMap
             .filter(function (d) {
                 return d.courseCatalogue === catalogueDepartment;
@@ -123,7 +124,7 @@ module.exports = function () {
             return false;
 
         } else {
-            var webhookDepartment = f[0].webhook;
+            var webhookDepartment = f[0];
             return webhookDepartment;
         }
     }

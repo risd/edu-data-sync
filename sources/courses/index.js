@@ -167,11 +167,6 @@ Courses.prototype.relationshipsToResolve = function (currentWHData) {
 
     var departments =
         currentWHData.colleague_departments
-            .filter(function (d) {
-                return whUtil
-                        .webhookDepartmentForCourseCatalogue(
-                            d.department);
-            })
             .map(function (d) {
                 return {
                     departments:
@@ -179,6 +174,9 @@ Courses.prototype.relationshipsToResolve = function (currentWHData) {
                             .webhookDepartmentForCourseCatalogue(
                                 d.department)
                 };
+            })
+            .filter(function (d) {
+                return d.departments !== false;
             });
 
     toResolve[0].itemsToRelate = departments;

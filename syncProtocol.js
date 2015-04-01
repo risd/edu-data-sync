@@ -1,4 +1,4 @@
- Pass in a model, and modify it to get the common 
+/* Pass in a model, and modify it to get the common 
    functions necessary for sync, and consistent
    across any api/implementation */
 
@@ -256,8 +256,6 @@ function rrAddRelationshipsToResolve () {
       before saving, merge the items back together.
      */
     function resolve (row, enc, next) {
-        console.log("Resolving relationship.");
-
         row.updated = false;
         var toResolveArr = self.relationshipsToResolve(row.webhook);
 
@@ -271,15 +269,17 @@ function rrAddRelationshipsToResolve () {
 }
 
 function rrGetRelatedData () {
+    var self = this;
+
     return through.obj(get);
 
     function get (row, enc, next) {
-        console.log('Get related data');
-        row.relatedDataArr = false;
+        // console.log('Get related data');
+        row.relatedDataCollection = false;
         var stream = this;
 
         if (row.toResolve.itemsToRelate.length === 0) {
-            console.log('No relationships to make.');
+            // console.log('No relationships to make.');
             this.push(row);
             next();
         } else {
@@ -287,7 +287,7 @@ function rrGetRelatedData () {
                 .webhookDataRoot
                 .child(row.toResolve.relateToContentType)
                 .once('value', function (snapshot) {
-                    row.relatedDataArr = snapshot.val();
+                    row.relatedDataCollection = snapshot.val();
                     stream.push(row);
                     next();
                 });
@@ -301,28 +301,29 @@ function rrPopulateRelated () {
     return through.obj(populate);
 
     function populate (row, enc, next) {
-        console.log('rrPopulateRelated');
-        if (row.relatedDataArr) {
+        // console.log('rrPopulateRelated');
+        if (row.relatedDataCollection) {
             Object
-                .keys(row.relatedDataArr)
+                .keys(row.relatedDataCollection)
                 .forEach(function (relatedKey) {
-                    var relatedValue = row.relatedDataArr[relatedKey];
+                    var relatedValue = row.relatedDataCollection[relatedKey];
                     var related =
                         relatedValue
                             [row.toResolve
                                 .relateToContentTypeDataUsingKey];
 
-                    console.log(related);
+                    // console.log(related);
                     row.toResolve
-                        .itemsToRelate(function (itemToRelate) {
+                        .itemsToRelate
+                        .forEach(function (itemToRelate) {
                             var relate =
-                                itemsToRelate
+                                itemToRelate
                                     [row.toResolve
                                         .relateToContentType];
 
-                            console.log(relate);
+                            // console.log(relate);
                             if (related === relate) {
-                                console.log('Match!');
+                                console.log('\n\nMatch!\n\n');
                                 // sort out updating objects
                                 row.updated = true;
                             }
@@ -339,13 +340,15 @@ function rrPopulateRelated () {
 }
 
 function rrSaveReverse () {
+    var self = this;
+
     return through.obj(save);
 
     function save (row, enc, next) {
         if (row.updated) {
-            console.log('Save.');
+            // console.log('Save.');
         } else {
-            console.log('Do not save.');
+            // console.log('Do not save.');
         }
 
         this.push(row);
@@ -354,6 +357,8 @@ function rrSaveReverse () {
 }
 
 function rrSaveCurrent () {
+    var self = this;
+
     var current = {
         whKey: false,
         toMerge: []
@@ -379,7 +384,7 @@ function rrSaveCurrent () {
             } else {
                 // new key? check to see if either
                 // row was updated
-                console.log('Check for updated');
+                // console.log('Check for updated');
 
                 var makeSave = false;
                 current.toMerge.forEach(function (d) {
@@ -407,12 +412,12 @@ function rrSaveCurrent () {
                 current.whKey = row.whKey;
 
                 if (makeSave) {
-                    console.log('Make merge & save');
+                    // console.log('Make merge & save');
 
                     stream.push(merged);
                     next();
                 } else {
-                    console.log('Do not save.');
+                    // console.log('Do not save.');
 
                     this.push(merged);
                     next();
