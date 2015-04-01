@@ -1,4 +1,4 @@
-/* Pass in a model, and modify it to get the common 
+ Pass in a model, and modify it to get the common 
    functions necessary for sync, and consistent
    across any api/implementation */
 
@@ -9,16 +9,33 @@ var combine = require('stream-combiner2');
 module.exports = SyncProtocol;
 
 function SyncProtocol (model, firebaseref) {
+
+    var m = ['Model does not conform to Sync protocol.'];
+
+
     model.prototype.listFirebaseWebhook = listFirebaseWebhook;
     model.prototype.listFirebaseSource = listFirebaseSource;
     model.prototype.addSourceToWebhook = addSourceToWebhook;
-    model.prototype.resolveRelationships = resolveRelationships;
+
+    // Resolve relationship pipeline - Start
+    model.prototype.rrAddRelationshipsToResolve =
+        rrAddRelationshipsToResolve;
+    model.prototype.rrGetRelatedData = rrGetRelatedData;
+    model.prototype.rrPopulateRelated = rrPopulateRelated;
+    model.prototype.rrSaveReverse = rrSaveReverse;
+    model.prototype.rrSaveCurrent = rrSaveCurrent;
+
+    if (typeof model.prototype.relationshipsToResolve !== 'function') {
+        m.push('Requires relationshipsToResolve method.');
+    }
+    // Resolve relationship pipeline - End
+
 
     if (typeof model.prototype.sourceStreamToFirebaseSource === 'undefined') {
         model.prototype.sourceStreamToFirebaseSource = sourceStreamToFirebaseSource;
     }
 
-    var m = ['Model does not conform to Sync protocol.'];
+    
 
     if (typeof model.prototype.webhookContentType !== 'string') {
         m.push('Requires webhookContentType string.');
@@ -38,9 +55,7 @@ function SyncProtocol (model, firebaseref) {
     if (typeof model.prototype.listSource !== 'function') {
         m.push('Requires getAllFromSource method.');
     }
-    if (typeof model.prototype.relationshipsToResolve !== 'function') {
-        m.push('Requires relationshipsToResolve method.');
-    }
+    
     if (m.length !== 1) {
         throw new Error(m.join('\n'));
     }
@@ -221,220 +236,190 @@ function sourceStreamToFirebaseSource () {
     }
 }
 
-function resolveRelationships () {
+
+/* relationship resolution - rr */
+
+function rrAddRelationshipsToResolve () {
     var self = this;
-    // flatten this into a series of through
-    // streams piped here? rather than
-    // resolve holding onto the entire stack.
     return through.obj(resolve);
 
-    // expecting this to be pulling data
-    // from listFirebaseWebhook
-    // row.{webhook, whKey}
-
-    // leans on the `relationshipsToResolve`
-    // method being on the prototype to 
-    // capture the data for the relationships
+    /*
+      expecting this to be pulling data
+      from listFirebaseWebhook
+      row.{webhook, whKey}
+  
+      push row.{webhook, whKey, updated, toResolve}
+      for every relationship that needs to get
+      resolved.
+      if there are two relationships, two objects
+      get pushed
+      before saving, merge the items back together.
+     */
     function resolve (row, enc, next) {
         console.log("Resolving relationship.");
-        stream = this;
-
-        var toResolveArr = self.relationshipsToResolve(row.webhook);
 
         row.updated = false;
+        var toResolveArr = self.relationshipsToResolve(row.webhook);
 
-        var resolver =
-            from.obj(toResolveArr)
-                .pipe(through.obj(getRelatedData, end));
-
-        resolver.on('data', function () {});
-        resolver.on('end', function () {
+        var stream = this;
+        toResolveArr.forEach(function (toResolve) {
+            row.toResolve = toResolve;
             stream.push(row);
-            next();
         });
+        next();
     }
+}
 
-    function getRelatedData (toResolve, enc, next) {
+function rrGetRelatedData () {
+    return through.obj(get);
+
+    function get (row, enc, next) {
         console.log('Get related data');
-        toResolve.relatedData = false;
+        row.relatedDataArr = false;
+        var stream = this;
 
-        if (toResolve.itemsToRelate.length === 0) {
+        if (row.toResolve.itemsToRelate.length === 0) {
             console.log('No relationships to make.');
-            this.push(toResolve);
+            this.push(row);
             next();
         } else {
-            var maker = this;
-            var w = relatedDataStream(toResolve)
-                .pipe(populateRelated(toResolve))
-                .pipe(saveReverse())
-                .pipe(saveCurrent(toResolve));
-
-            w.on('data', function () {});
-            w.on('end', function () {
-                maker.push(toResolve);
-                next();
-            });
+            self._firebase
+                .webhookDataRoot
+                .child(row.toResolve.relateToContentType)
+                .once('value', function (snapshot) {
+                    row.relatedDataArr = snapshot.val();
+                    stream.push(row);
+                    next();
+                });
         }
     }
+}
 
-    function end () { this.push(null); }
+function rrPopulateRelated () {
+    // If something is getting updated, it will
+    // likely occur here.
+    return through.obj(populate);
 
-    function relatedDataStream (toResolve) {
-        /*
-        Get data for the related content type
-        and push keys and values as individual
-        objects into the stream.
-         */
-        var t = through.obj();
-
-        self._firebase
-                .webhookDataRoot
-                .child(toResolve.relateToContentType)
-                .once('value', function onComplete (snapshot) {
-                    var keysAndValuesObj = snapshot.val();
-                    if (keysAndValuesObj) {
-                        Object.keys(keysAndValuesObj)
-                            .forEach(function (key) {
-                                var value = keysAndValuesObj[key];
-                                t.push({
-                                    key: key,
-                                    value: value
-                                });
-                            });
-                    }
-                    t.push(null);
-                });
-        
-        return t;   
-    }
-
-    function populateRelated (toResolve) {
-        /*
-        Expected related.{key, value}
-        Pushes any an object with key, value
-        pairs to save.
-
-        { currentContentTypeData: [],
-          relatedContentTypeData: []  }
-
-        currentData.length === 1
-        relatedData.length === N
-
-         */
-
-        return through.obj(populate);
-
-        function populate (related, enc, next) {
-            related.updated = false;
-            toResolve
-                .itemsToRelate
-                .forEach(function (itemToRelate) {
-                    var relate =
-                        itemToRelate
-                            [toResolve.relateToContentType];
+    function populate (row, enc, next) {
+        console.log('rrPopulateRelated');
+        if (row.relatedDataArr) {
+            Object
+                .keys(row.relatedDataArr)
+                .forEach(function (relatedKey) {
+                    var relatedValue = row.relatedDataArr[relatedKey];
                     var related =
-                        related
-                            .value[toResolve
+                        relatedValue
+                            [row.toResolve
                                 .relateToContentTypeDataUsingKey];
 
-                    if (relate === related) {
-                        console.log('Match!');
-                        var relationshipValue = [
-                                toResolve.relateToContentType,
-                                related.key
-                            ]
-                            .join(' ');
+                    console.log(related);
+                    row.toResolve
+                        .itemsToRelate(function (itemToRelate) {
+                            var relate =
+                                itemsToRelate
+                                    [row.toResolve
+                                        .relateToContentType];
 
-                        var revsereKey = [
-                                self.webhookContentType,
-                                toResolve.relationshipKey
-                            ]
-                            .join('_');
-
-                        var reverseValue = [
-                                self.webhookContentType,
-                                row.whKey
-                            ]
-                            .join(' ');
-
-                        if (!(toResolve.relationshipKey in row.webhook)) {
-                            row.webhook[toResolve.relationshipKey] = [];
-                        }
-                        if (row.webhook[toResolve.relationshipKey]
-                                .indexOf(relationshipValue) === -1) {
-
-                            row.webhook[toResolve.relationshipKey]
-                                .push(relationshipValue);
-                            row.updated = true;
-                        }
-
-                        if (!(revsereKey in related.value)) {
-                            related.value[revsereKey] = [];
-                        }
-                        if (related.value[revsereKey]
-                                .indexOf(reverseValue) === -1) {
-                            related[revsereKey].push(reverseValue);
-                            related.updated = true;
-                        }
-                    }
+                            console.log(relate);
+                            if (related === relate) {
+                                console.log('Match!');
+                                // sort out updating objects
+                                row.updated = true;
+                            }
+                        });
                 });
-            
-            this.push(related);
+
+            this.push(row);
+            next();
+        } else {
+            this.push(row);
             next();
         }
     }
+}
 
-    function saveReverse (toResolve) {
-        /*
-        Expects related.{key, value}
-        save these to their original location.
-        These are used to set the current object,
-        so only when all of these are done saving,
-        should the next step in the stream be done.
-         */
-        
-        return through.obj(save, push);
+function rrSaveReverse () {
+    return through.obj(save);
 
-        function save (related, enc, next) {
-            if (related.updated) {
-                console.log('Save Reverse.');
-                self._firebase
-                    .webhookDataRoot
-                    .child(toResolve.relateToContentType)
-                    .child(related.key)
-                    .set(related.value, function saved () {
-                        next();
-                    });
-            } else {
-                next();
-            }
+    function save (row, enc, next) {
+        if (row.updated) {
+            console.log('Save.');
+        } else {
+            console.log('Do not save.');
         }
 
-        function push () {
-            this.push({});
-            this.push(null);
-        }
+        this.push(row);
+        next();
     }
+}
 
-    function saveCurrent () {
-        return through.obj(save);
+function rrSaveCurrent () {
+    var current = {
+        whKey: false,
+        toMerge: []
+    };
+    return through.obj(save);
 
-        function save (notifier, enc, next) {
-            if (row.updated) {
-                var saver = this;
-                console.log('Save object.');
-                self._firebase
-                    .webhook
-                    .child(self.webhookContentType)
-                    .child(row.whKey)
-                    .set(row.webhook, function saved () {
-                        saver.push({});
-                        saver.push(null);
-                    });
+    function save (row, enc, next) {
+        var stream = this;
+        if (current.whKey === false) {
+            // first time through
+            current.whKey = row.whKey;
+            current.toMerge.push(row);
+
+            next();
+        } else {
+            // compare previous and current key
+            if (current.whKey === row.whKey) {
+                // same key, push this object on.
+                current.toMerge.push(row);
+
+                this.push(row);
+                next();
             } else {
-                this.push({});
-                this.push(null);
+                // new key? check to see if either
+                // row was updated
+                console.log('Check for updated');
+
+                var makeSave = false;
+                current.toMerge.forEach(function (d) {
+                    if (d.updated) {
+                        makeSave = true;
+                    }
+                });
+
+                // TODO
+                // this will need to inspect all
+                // in toMerge, and see which key
+                // they were looking to resolve,
+                // and update each other.
+                var merged = {
+                    key: current.whKey,
+                    data: current.toMerge.slice(0)
+                };
+
+                // TODO
+                // on merge/save complete, push
+                // the merged object
+
+                // reset to merge
+                current.toMerge = [row];
+                current.whKey = row.whKey;
+
+                if (makeSave) {
+                    console.log('Make merge & save');
+
+                    stream.push(merged);
+                    next();
+                } else {
+                    console.log('Do not save.');
+
+                    this.push(merged);
+                    next();
+                }
             }
         }
     }
 }
+
+/* end relationship resolution - rr */

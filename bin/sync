@@ -130,7 +130,11 @@ function ResolveRelationships () {
         var resolvers = sources
             .map(function (source) {
                 return source.listFirebaseWebhook()
-                    .pipe(source.resolveRelationships());
+                    .pipe(source.rrAddRelationshipsToResolve())
+                    .pipe(source.rrGetRelatedData())
+                    .pipe(source.rrPopulateRelated())
+                    .pipe(source.rrSaveReverse())
+                    .pipe(source.rrSaveCurrent());
             });
 
         var resolversCount = resolvers.length;
