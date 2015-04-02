@@ -17,7 +17,8 @@ Courses.prototype.keyFromWebhook = function (row) {
     return row.name;
 };
 Courses.prototype.keyFromSource = function (row) {
-    return row.COURSENAME;
+    return [row.COURSESYNONYM,
+            row.COURSENAME].join(' ');
 };
 
 Courses.prototype.listSource = function () {

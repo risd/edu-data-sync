@@ -296,6 +296,8 @@ function rrGetRelatedData () {
 }
 
 function rrPopulateRelated () {
+    var self = this;
+
     // If something is getting updated, it will
     // likely occur here.
     return through.obj(populate);
@@ -326,16 +328,16 @@ function rrPopulateRelated () {
 
                             // console.log(relate);
                             if (related === relate) {
-                                console.log('\n\nMatch!\n\n');
+                                console.log('Match!');
                                 // sort out updating objects
 
-                                if (!(row.toResolve
-                                         .relationshipKey in
-                                      row.webhook)) {
+                                var relationshipKey =
+                                    row.toResolve.relationshipKey;
+
+                                if (!(relationshipKey in row.webhook)) {
 
                                     row.webhook
-                                        [row.toResolve
-                                            .relationshipKey] = [];
+                                        [relationshipKey] = [];
                                 }
 
                                 var relationshipValue = [
@@ -344,14 +346,12 @@ function rrPopulateRelated () {
                                     ].join(' ');
 
                                 if (row.webhook
-                                        [row.toResolve
-                                            .relationshipKey]
+                                        [relationshipKey]
                                             .indexOf(relationshipValue) === -1) {
 
                                     row.updated = true;
                                     row.webhook
-                                        [row.toResolve
-                                            .relationshipKey]
+                                        [relationshipKey]
                                                 .push(relationshipValue);
                                 }
 
@@ -396,27 +396,33 @@ function rrSaveReverse () {
         var stream = this;
 
         if (row.reverseToSave) {
-            console.log('Save reverse.');
             var saverKeys = Object.keys(row.reverseToSave);
             var saversCount = saverKeys.length;
-            var savers =
-                saverKeys
-                    .map(function (reverseKey) {
-                        return saver(reverseKey,
-                                     row.reverseToSave[reverseKey]);
+            console.log('Save reverse.');
+            console.log(saversCount);
+            if (saversCount === 0) {
+                this.push(row);
+                next();
+            } else {
+                var savers =
+                    saverKeys
+                        .map(function (reverseKey) {
+                            return saver(reverseKey,
+                                         row.reverseToSave[reverseKey]);
+                        });
+
+                savers.forEach(function (s) {
+                    s.on('data', function () {});
+                    s.on('end', function () {
+                        saversCount -= 1;
+                        if (saversCount === 0) {
+                            console.log('Save reverse::done');
+                            stream.push(row);
+                            next();
+                        }
                     });
-
-            savers.forEach(function (s) {
-                s.on('data', function () {});
-                s.on('end', function () {
-                    saversCount -= 1;
-                    if (saversCount === 0) {
-                        stream.push(row);
-                        next();
-                    }
                 });
-            });
-
+            }
         } else {
             console.log('Do not save reverse.');
             this.push(row);
@@ -425,7 +431,9 @@ function rrSaveReverse () {
 
         function saver (key, value) {
             var t = through.obj();
-
+            console.log('saver');
+            console.log(key);
+            console.log(value);
             self._firebase
                 .webhookDataRoot
                 .child(row.toResolve.relateToContentType)
@@ -460,12 +468,14 @@ function rrSaveCurrent () {
         } else {
             // compare previous and current key
             if (current.whKey === row.whKey) {
+                console.log('Save current::key match');
                 // same key, push this object on.
                 current.toMerge.push(row);
 
                 this.push(row);
                 next();
             } else {
+                console.log('Save current::new key');
                 // new key? check to see if either
                 // row was updated
                 // console.log('Check for updated');
@@ -479,7 +489,7 @@ function rrSaveCurrent () {
 
                 var merged = {
                     key: current.whKey,
-                    value: mergeData(current)
+                    value: mergeData(current.toMerge)
                 };
                 
                 if (makeSave) {
@@ -489,6 +499,8 @@ function rrSaveCurrent () {
                         .set(merged.value, function () {
                             current.toMerge = [row];
                             current.whKey = row.whKey;
+
+                            console.log('Save current::saved.');
 
                             stream.push(merged);
                             next();
@@ -507,9 +519,9 @@ function rrSaveCurrent () {
 
     function mergeData (data) {
         // baseline 
-        var mergedData = data.toMerge.slice(1).webhook;
+        var mergedData = data.pop().webhook;
 
-        data.toMerge.forEach(function (toMerge) {
+        data.forEach(function (toMerge) {
             var resolvedKey = toMerge.toResolve.relationshipKey;
             mergedData[resolvedKey] = toMerge.webhook[resolvedKey];
         });
