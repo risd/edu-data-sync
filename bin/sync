@@ -166,6 +166,7 @@ function ResolveRelationships () {
                 return source.listFirebaseWebhook()
                     .pipe(source.rrAddRelationshipsToResolve())
                     .pipe(source.rrGetRelatedData())
+                    .pipe(source.rrResetRelated())
                     .pipe(source.rrPopulateRelated())
                     .pipe(source.rrSaveReverse())
                     .pipe(source.rrSaveCurrent());
