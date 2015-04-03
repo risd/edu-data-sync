@@ -12,7 +12,6 @@ function Courses () {
 }
 
 Courses.prototype.webhookContentType = 'courses';
-Courses.prototype.webhookKeyName = 'name';
 Courses.prototype.keyFromWebhook = function (row) {
     return row.name;
 };

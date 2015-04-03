@@ -16,6 +16,7 @@ function SyncProtocol (model, firebaseref) {
     model.prototype.listFirebaseWebhook = listFirebaseWebhook;
     model.prototype.listFirebaseSource = listFirebaseSource;
     model.prototype.addSourceToWebhook = addSourceToWebhook;
+    model.prototype.addInSourceBool = addInSourceBool;
 
     // Resolve relationship pipeline - Start
     model.prototype.rrAddRelationshipsToResolve =
@@ -31,17 +32,18 @@ function SyncProtocol (model, firebaseref) {
     // Resolve relationship pipeline - End
 
 
+    // Defaults for overwrittable methods - Start
     if (typeof model.prototype.sourceStreamToFirebaseSource === 'undefined') {
         model.prototype.sourceStreamToFirebaseSource = sourceStreamToFirebaseSource;
     }
-
+    if (typeof model.prototype.updateWebhookValueNotInSource === 'undefined') {
+        model.prototype.updateWebhookValueNotInSource = updateWebhookValueNotInSource;
+    }
+    // Defaults for overwrittable methods - End */
     
 
     if (typeof model.prototype.webhookContentType !== 'string') {
         m.push('Requires webhookContentType string.');
-    }
-    if (typeof model.prototype.webhookKeyName !== 'string') {
-        m.push('Requires webhookKeyName string.');
     }
     if (typeof model.prototype.keyFromSource !== 'function') {
         m.push('Requires keyFromSource method.');
@@ -136,6 +138,39 @@ function listFirebaseSource () {
     }
 }
 
+
+/**
+ * `addSourceToWebhook` is a transform stream.
+ * It expects a row of the source key and data.
+ * `row.{srcKey, source}`.
+ *
+ * A snapshot of the current webhook data is
+ * captured once to compare against the incoming
+ * source data against.
+ *
+ * In `findKeyInWhData`, the key of every `webhook`
+ * entry is compared to the `source` entry that
+ * was originally passed through the stream. When
+ * a match is found, the `webhook` data is added
+ * to the `row`. Coming out of this function will
+ * be `row.{srcKey, source, whKey, webhook}`.
+ *
+ * In `updateWebhook`, the source value,
+ * `row.source`, is used to update the webhook
+ * value, `row.webhook`. This is a done using
+ * the `updateWebhookValueWithSourceValue`
+ * defined on the source model prototype. The
+ * updated `row.webhook` value is then saved
+ * to the key defined by `row.whKey`, if one
+ * was found, or a new key is made using the
+ * firebase `push` method.
+ *
+ * This stream pushes the updated `webhook`
+ * as part of the `row`.
+ * `row.{srcKey, source, whKey, webhook}`
+ *
+ * @return through.obj stream
+ */
 function addSourceToWebhook () {
     var self = this;
     var whData = false;
@@ -161,7 +196,7 @@ function addSourceToWebhook () {
             Object
                 .keys(whData)
                 .forEach(function (key) {
-                    if (whData[key][self.webhookKeyName] === row.srcKey) {
+                    if (self.keyFromWebhook(whData[key]) === row.srcKey) {
                         row.webhook = whData[key];
                         row.whKey = key;
                     }
@@ -209,7 +244,7 @@ function addSourceToWebhook () {
             if (error) {
                 throw new Error(error);
             }
-            row.updatedWebhook = value;
+            row.webhook = value;
             stream.push(row);
             next();
         }
@@ -231,6 +266,109 @@ function sourceStreamToFirebaseSource () {
 
         function onComplete () {
             stream.push(row);
+            next();
+        }
+    }
+}
+
+
+/**
+ * `addInSourceBool` is a transform stream.
+ * Expects `row.{whKey, webhook}`. A local
+ * copy of the `self._firebase.source` will
+ * be stashed in a local `sourceData` variable.
+ * Each of the `webhook` values will be
+ * compared to the `sourceData` values.
+ * Incoming `webhook` values that are not
+ * in the `sourceData` array will be flagged
+ * using `row.inSource`. This will be a boolean
+ * value. `true` for in source, `false for not.
+ *
+ * This stream will push `row` like this:
+ * `row.{whKey, webhook, inSource}`
+ * 
+ * @return through.obj stream
+ */
+function addInSourceBool () {
+    var self = this;
+    var srcData = false;
+    
+    return through.obj(adder);
+
+    function adder (row, enc, next) {
+        var stream = this;
+
+        if (srcData === false) {
+            self._firebase
+                .source
+                .once('value', onData, onError);
+        } else {
+            findKeyInSrcDataAndMark();
+        }
+
+        function onData (snapshot) {
+            srcData = snapshot.val();
+            if (srcData === null) {
+                srcData = {};
+            }
+            findKeyInSrcDataAndMark();
+        }
+
+        function onError (error) {
+            console.log('addInSourceBool');
+            console.log(error);
+        }
+
+        function findKeyInSrcDataAndMark () {
+            row.inSource = false;
+            Object
+                .keys(srcData)
+                .forEach(function (srcKey) {
+                    if (self.keyFromSource(srcData[key]) ===
+                        self.keyFromWebhook(row.webhook)) {
+
+                        row.inSource = true;
+                    }
+                });
+            stream.push(row);
+            next();
+        }
+    }
+}
+
+/**
+ * `updateWebhookValueNotInSource` default method
+ * is to remove any `webhook` value that is not
+ * represented as a `source` value.
+ *
+ * Expects `row.inSource` a boolean value.
+ * If false, the `webhook` value is not represented
+ * in the source values.
+ *
+ * This is default, which removes the entry.
+ * This can be overwritten per model.
+ * 
+ * @return through.obj stream
+ */
+function updateWebhookValueNotInSource () {
+    var self = this;
+    return through.obj(updateNotInSource);
+
+    function updateNotInSource (row, enc, next) {
+        var stream = this;
+        if (row.inSource === false) {
+            console.log('Not in source. Remove.');
+            self._firebase
+                .webhook
+                .child(row.whKey)
+                .remove(function onComplete () {
+                    row.whKey = undefined;
+                    row.webhook = undefined;
+                    stream.push(row);
+                    next();
+                });
+        } else {
+            this.push(row);
             next();
         }
     }

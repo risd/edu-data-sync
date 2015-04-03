@@ -17,8 +17,9 @@ Env();
 Firebaseref()
     .pipe(AddEduSyncNodeToFirebase())
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
-    // .pipe(GetSourcesData())
-    // .pipe(AddSourceToWebHook())
+    .pipe(GetSourcesData())
+    .pipe(AddSourceToWebHook())
+    .pipe(RemoveFromWebhookBasedOnSource())
     .pipe(ResolveRelationships())
     .pipe(Exit());
 
@@ -119,6 +120,39 @@ function AddSourceToWebHook () {
     }
 }
 
+function RemoveFromWebhookBasedOnSource () {
+    /**
+     * List the webhook and source values
+     * if the webhook value is not in the
+     * source values, invoke the model's
+     * `webhookValueNotInSource`
+     */
+    return through.obj(remove);
+
+    function remove (sources, enc, next) {
+        var stream = this;
+
+        var removers = sources
+            .map(function (source) {
+                return source.listFirebaseWebhook()
+                    .pipe(source.addInSourceBool())
+                    .pipe(source.updateWebhookValueNotInSource());
+            });
+
+        var removersCount = removers.length;
+        removers.forEach(function (remover) {
+            remover.on('data', function () {});
+            remover.on('end', function () {
+                removersCount -= 1;
+                if (removersCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
 function ResolveRelationships () {
     return through.obj(relationships);
 
@@ -160,13 +194,6 @@ function Exit () {
         process.exit();
     }
 }
-
-
-// This should be done conditionally?
-// Removing the items that are no longer
-// represented in the api?
-function RemoveFromWebhookBasedOnSource () {}
-
 
 function DeleteEmployees () {
     return through.obj (del);
