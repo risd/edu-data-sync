@@ -90,3 +90,52 @@ Employees.prototype.relationshipsToResolve = function (currentWHData) {
 
     return toResolve;
 };
+
+
+/**
+ * `updateWebhookValueNotInSource` implementation
+ * for employees. If they are in Webhook & not in
+ * source, there is an active flag that gets switched
+ * from off to on.
+ * 
+ * @return {stream} through.obj transform stream
+ */
+Employees.prototype.updateWebhookValueNotInSource = function () {
+    var self = this;
+    return through.obj(updateNotInSource);
+
+    function updateNotInSource (row, enc, next) {
+        var stream = this;
+        var dirty = false;
+
+        if (!('colleague_status' in row.webhook)) {
+            row.webhook.colleague_status = false;
+            dirty = true;
+        }
+        
+        if (row.inSource === false) {
+            if (row.webhook.colleague_status === true) {
+                row.webhook.colleague_status = false;
+                dirty = true;
+            }
+        } else {
+            if (row.webhook.colleague_status === false) {
+                row.webhook.colleague_status = true;
+                dirty = true;
+            }
+        }
+
+        if (dirty) {
+            self._firebase
+                .webhook
+                .child(row.whKey)
+                .set(row.webhook, function () {
+                    stream.push(row);
+                    next();
+                });
+        } else {
+            this.push(row);
+            next();
+        }
+    }
+};
