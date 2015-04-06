@@ -1,20 +1,3 @@
-/*
-
-Event from localist. Each event is accounted
-for multiple times, but only written once.
-
-If you want to account for individual event
-instances. You can look at the event instance
-id for the event.
-
-value
-    .event
-    .event_instances[0]
-    .event_instance
-    .id
-
-*/
-
 var request = require('request');
 var moment = require('moment');
 var through = require('through2');
@@ -23,6 +6,9 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Events;
 
+/**
+ * Events are powered by the Localist API.
+ */
 function Events () {
     if (!(this instanceof Events)) return new Events();
     var self = this;
@@ -64,7 +50,6 @@ function Events () {
 }
 
 Events.prototype.webhookContentType = 'events';
-Events.prototype.webhookKeyName = 'localist_uid';
 Events.prototype.keyFromWebhook = function (row) {
     return row.localist_uid;
 };
@@ -170,6 +155,7 @@ Events.prototype.listSource = function () {
     }
 };
 
+
 Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     src = src.event;
 
@@ -200,7 +186,7 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.localist_filters__department = (function (filters) {
             if ('departments' in filters) {
                 return filters.departments.map(function (d) {
-                    return { name: d.name };
+                    return { department: d.name };
                 });
             } else {
                 return [];
@@ -239,4 +225,38 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
         return d;
     }
+};
+
+
+Events.prototype.relationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = [{
+        relationshipKey: 'related_departments',
+        relateToContentType: 'departments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
+    }];
+
+    if (!('localist_filters__department' in currentWHData)) {
+        return toResolve;
+    }
+
+    var departments =
+        currentWHData.localist_filters__department
+            .map(function (d) {
+                return {
+                    departments: 
+                        whUtil
+                            .webhookDepartmentForLocalist(
+                                d.department)
+                };
+            })
+            .filter(function (d) {
+                return d.departments !== false;
+            });
+
+    toResolve[0].itemsToRelate = departments;
+
+    return toResolve;
 };

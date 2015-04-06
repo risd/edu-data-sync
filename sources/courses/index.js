@@ -6,6 +6,10 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Courses;
 
+
+/**
+ * Courses are provided via XML dump from Colleague.
+ */
 function Courses () {
     if (!(this instanceof Courses)) return new Courses();
     var self = this;

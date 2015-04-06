@@ -101,7 +101,9 @@ module.exports = function () {
         formattedDate: formattedDate,
         whRequiredDates: whRequiredDates,
         webhookDepartmentForCourseCatalogue:
-            webhookDepartmentForCourseCatalogue
+            webhookDepartmentForCourseCatalogue,
+        webhookDepartmentForLocalist:
+            webhookDepartmentForLocalist
     };
 
     function webhookDepartmentForCourseCatalogue (catalogueDepartment) {
@@ -123,6 +125,29 @@ module.exports = function () {
             console.log(m.join(''));
             return false;
 
+        } else {
+            var webhookDepartment = f[0];
+            return webhookDepartment;
+        }
+    }
+
+    function webhookDepartmentForLocalist (localistDepartment) {
+        var f = departmentMap
+            .filter(function (d) {
+                return d.webhook === localistDepartment;
+            })
+            .map(function (d) {
+                return d.webhook;
+            });
+
+        if (f.length !== 1) {
+            var m = [
+                'Could not find webhook name for ',
+                'Localist department: ',
+                localistDepartment
+            ];
+            console.log(m.join(''));
+            return false;
         } else {
             var webhookDepartment = f[0];
             return webhookDepartment;
