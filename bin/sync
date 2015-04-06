@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var through = require('through2');
-var util = require('../util.js');
 
 var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
@@ -10,7 +9,7 @@ var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
 
-var sourcePrototypes = [Events, Employees, Courses];
+var sourcePrototypes = [Courses];
 
 
 Env();
@@ -20,6 +19,8 @@ Firebaseref()
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
     .pipe(GetSourcesData())
     .pipe(AddSourceToWebHook())
+    .pipe(RemoveFromWebhookBasedOnSource())
+    .pipe(ResolveRelationships())
     .pipe(Exit());
 
 
@@ -119,11 +120,81 @@ function AddSourceToWebHook () {
     }
 }
 
-// This should be done conditionally?
-// Removing the items that are no longer
-// represented in the api?
-function RemoveFromWebhookBasedOnSource () {}
+function RemoveFromWebhookBasedOnSource () {
+    /**
+     * List the webhook and source values
+     * if the webhook value is not in the
+     * source values, invoke the model's
+     * `webhookValueNotInSource`
+     */
+    return through.obj(remove);
 
+    function remove (sources, enc, next) {
+        var stream = this;
+
+        var removers = sources
+            .map(function (source) {
+                return source.listFirebaseWebhook()
+                    .pipe(source.addInSourceBool())
+                    .pipe(source.updateWebhookValueNotInSource());
+            });
+
+        var removersCount = removers.length;
+        removers.forEach(function (remover) {
+            remover.on('data', function () {});
+            remover.on('end', function () {
+                removersCount -= 1;
+                if (removersCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function ResolveRelationships () {
+    return through.obj(relationships);
+
+    function relationships (sources, enc, next) {
+        console.log('Resolve Relationships.');
+
+        var stream = this;
+
+        var resolvers = sources
+            .map(function (source) {
+                return source.listFirebaseWebhook()
+                    .pipe(source.rrAddRelationshipsToResolve())
+                    .pipe(source.rrGetRelatedData())
+                    .pipe(source.rrResetRelated())
+                    .pipe(source.rrPopulateRelated())
+                    .pipe(source.rrSaveReverse())
+                    .pipe(source.rrSaveCurrent());
+            });
+
+        var resolversCount = resolvers.length;
+        resolvers.forEach(function (resolver) {
+            resolver.on('data', function () {});
+            resolver.on('end', function () {
+                resolversCount -= 1;
+                if (resolversCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function Exit () {
+    return through.obj(exit);
+
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
+}
 
 function DeleteEmployees () {
     return through.obj (del);
@@ -163,15 +234,5 @@ function FirebaseTopLevel () {
             self.push({});
             self.push(null);
         }
-    }
-}
-
-function Exit () {
-    return through.obj(exit);
-
-    function exit (row, enc, next) {
-        console.log('Done!');
-        this.push(null);
-        process.exit();
     }
 }
