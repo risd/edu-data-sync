@@ -6,18 +6,22 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Courses;
 
+
+/**
+ * Courses are provided via XML dump from Colleague.
+ */
 function Courses () {
     if (!(this instanceof Courses)) return new Courses();
     var self = this;
 }
 
 Courses.prototype.webhookContentType = 'courses';
-Courses.prototype.webhookKeyName = 'name';
 Courses.prototype.keyFromWebhook = function (row) {
     return row.name;
 };
 Courses.prototype.keyFromSource = function (row) {
-    return row.COURSENAME;
+    return [row.COURSESYNONYM,
+            row.COURSENAME].join(' ');
 };
 
 Courses.prototype.listSource = function () {
@@ -44,7 +48,7 @@ Courses.prototype.listSource = function () {
         source.collect('COURSE');
         source.on('endElement: DEPARTMENT', function (row) {
             row.COURSE.forEach(function (d) {
-                d.departments = [row.NAME];
+                d.departments = [row.NAME.trim()];
                 eventStream.push(d);
             });
         });
@@ -147,4 +151,39 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_course_faculty_id = src.COURSEFACULTY || '';
 
     return (whUtil.whRequiredDates(wh));
+};
+
+
+
+Courses.prototype.relationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = [{
+        relationshipKey: 'related_departments',
+        relateToContentType: 'departments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
+    }];
+
+    if (!('colleague_departments' in currentWHData)) {
+        return toResolve;
+    }
+
+    var departments =
+        currentWHData.colleague_departments
+            .map(function (d) {
+                return {
+                    departments:
+                        whUtil
+                            .webhookDepartmentForCourseCatalogue(
+                                d.department)
+                };
+            })
+            .filter(function (d) {
+                return d.departments !== false;
+            });
+
+    toResolve[0].itemsToRelate = departments;
+
+    return toResolve;
 };

@@ -6,13 +6,16 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Employees;
 
+
+/**
+ * Employees are provided via XML dump from Colleague.
+ */
 function Employees () {
     if (!(this instanceof Employees)) return new Employees();
     var self = this;
 }
 
 Employees.prototype.webhookContentType = 'employees';
-Employees.prototype.webhookKeyName = 'colleague_id';
 Employees.prototype.keyFromWebhook = function (row) {
     return row.colleague_id;
 };
@@ -59,4 +62,80 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_status = true;
 
     return (whUtil.whRequiredDates(wh));
+};
+
+Employees.prototype.relationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = [{
+        relationshipKey: 'related_departments',
+        relateToContentType: 'departments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
+    }];
+
+    if (!('colleague_department' in currentWHData)) {
+        return toResolve;
+    }
+
+    var department = whUtil
+        .webhookDepartmentForCourseCatalogue(
+            currentWHData.colleague_department);
+
+    if (department !== false) {
+        toResolve[0].itemsToRelate = [{
+            departments: department
+        }];
+    }
+
+    return toResolve;
+};
+
+
+/**
+ * `updateWebhookValueNotInSource` implementation
+ * for employees. If they are in Webhook & not in
+ * source, there is an active flag that gets switched
+ * from off to on.
+ * 
+ * @return {stream} through.obj transform stream
+ */
+Employees.prototype.updateWebhookValueNotInSource = function () {
+    var self = this;
+    return through.obj(updateNotInSource);
+
+    function updateNotInSource (row, enc, next) {
+        var stream = this;
+        var dirty = false;
+
+        if (!('colleague_status' in row.webhook)) {
+            row.webhook.colleague_status = false;
+            dirty = true;
+        }
+        
+        if (row.inSource === false) {
+            if (row.webhook.colleague_status === true) {
+                row.webhook.colleague_status = false;
+                dirty = true;
+            }
+        } else {
+            if (row.webhook.colleague_status === false) {
+                row.webhook.colleague_status = true;
+                dirty = true;
+            }
+        }
+
+        if (dirty) {
+            self._firebase
+                .webhook
+                .child(row.whKey)
+                .set(row.webhook, function () {
+                    stream.push(row);
+                    next();
+                });
+        } else {
+            this.push(row);
+            next();
+        }
+    }
 };
