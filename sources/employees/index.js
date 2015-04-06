@@ -6,13 +6,16 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Employees;
 
+
+/**
+ * Employees are provided via XML dump from Colleague.
+ */
 function Employees () {
     if (!(this instanceof Employees)) return new Employees();
     var self = this;
 }
 
 Employees.prototype.webhookContentType = 'employees';
-Employees.prototype.webhookKeyName = 'colleague_id';
 Employees.prototype.keyFromWebhook = function (row) {
     return row.colleague_id;
 };
@@ -59,4 +62,31 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_status = true;
 
     return (whUtil.whRequiredDates(wh));
+};
+
+Employees.prototype.relationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = [{
+        relationshipKey: 'related_departments',
+        relateToContentType: 'departments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
+    }];
+
+    if (!('colleague_department' in currentWHData)) {
+        return toResolve;
+    }
+
+    var department = whUtil
+        .webhookDepartmentForCourseCatalogue(
+            currentWHData.colleague_department);
+
+    if (department !== false) {
+        toResolve[0].itemsToRelate = [{
+            departments: department
+        }];
+    }
+
+    return toResolve;
 };
