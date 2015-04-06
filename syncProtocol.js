@@ -325,7 +325,7 @@ function addInSourceBool () {
             Object
                 .keys(srcData)
                 .forEach(function (srcKey) {
-                    if (self.keyFromSource(srcData[key]) ===
+                    if (self.keyFromSource(srcData[srcKey]) ===
                         self.keyFromWebhook(row.webhook)) {
 
                         row.inSource = true;
