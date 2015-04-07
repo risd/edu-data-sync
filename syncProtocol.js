@@ -455,7 +455,8 @@ function rrResetRelated () {
                 .keys(row.relatedDataCollection)
                 .forEach(function (relatedKey) {
                     row.relatedDataCollection
-                        [relatedKey] = [];
+                        [relatedKey]
+                        [reverseKey] = [];
                 });
 
             this.push(row);
