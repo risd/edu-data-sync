@@ -67,11 +67,13 @@ function SyncProtocol (model, firebaseref) {
     var webhookDataRoot = 'data';
     var webhookPath = 'data/' + type;
     var sourcePath = 'eduSync/' + type;
+    var reversePath = 'eduSync/reverseRelationships';
 
     model.prototype._firebase = {
         webhook: firebaseref.child(webhookPath),
         source:  firebaseref.child(sourcePath),
-        webhookDataRoot: firebaseref.child(webhookDataRoot)
+        webhookDataRoot: firebaseref.child(webhookDataRoot),
+        reverse: firebaseref.child(reversePath)
     };
 }
 
@@ -451,6 +453,9 @@ function rrResetRelated () {
                     row.toResolve.relationshipKey
                 ].join('_');
 
+            console.log('rrResetRelated');
+            console.log(reverseKey);
+
             Object
                 .keys(row.relatedDataCollection)
                 .forEach(function (relatedKey) {
@@ -506,12 +511,6 @@ function rrPopulateRelated () {
                                 var relationshipKey =
                                     row.toResolve.relationshipKey;
 
-                                if (!(relationshipKey in row.webhook)) {
-
-                                    row.webhook
-                                        [relationshipKey] = [];
-                                }
-
                                 var relationshipValue = [
                                         row.toResolve.relateToContentType,
                                         relatedKey
@@ -531,18 +530,28 @@ function rrPopulateRelated () {
                                         row.toResolve.relationshipKey
                                     ].join('_');
 
-                                if (!(reverseKey in relatedValue)) {
-                                    relatedValue[reverseKey] = [];
-                                }
-
                                 var reverseValue = [
                                         self.webhookContentType,
                                         row.whKey
                                     ].join(' ');
 
-                                if (relatedValue[reverseKey]
+                                if (row.relatedDataCollection
+                                        [relatedKey]
+                                        [reverseKey]
                                         .indexOf(reverseValue) === -1) {
-                                    relatedValue[reverseKey].push(reverseValue);
+
+                                    console.log('Added related.');
+                                    row.relatedDataCollection
+                                        [relatedKey]
+                                        [reverseKey]
+                                        .push(reverseValue);
+                                } else {
+                                    console.log('Did not add related.');
+                                    console.log(reverseValue + ' already in: ');
+                                    console.log(
+                                        row.relatedDataCollection
+                                            [relatedKey]
+                                            [reverseKey]);
                                 }
                             }
                         });
@@ -603,8 +612,6 @@ function rrSaveReverse () {
         function saver (key, value) {
             var t = through.obj();
             console.log('saver');
-            console.log(key);
-            console.log(value);
             self._firebase
                 .webhookDataRoot
                 .child(row.toResolve.relateToContentType)

@@ -9,7 +9,7 @@ var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
 
-var sourcePrototypes = [Courses, Events, Employees];
+var sourcePrototypes = [Events];
 
 
 Env();
@@ -21,6 +21,7 @@ Firebaseref()
     .pipe(AddSourceToWebHook())
     .pipe(RemoveFromWebhookBasedOnSource())
     .pipe(ResolveRelationships())
+    .pipe(ResolveReverseRelationships())
     .pipe(Exit());
 
 
@@ -170,6 +171,34 @@ function ResolveRelationships () {
                     .pipe(source.rrPopulateRelated())
                     .pipe(source.rrSaveReverse())
                     .pipe(source.rrSaveCurrent());
+            });
+
+        var resolversCount = resolvers.length;
+        resolvers.forEach(function (resolver) {
+            resolver.on('data', function () {});
+            resolver.on('end', function () {
+                resolversCount -= 1;
+                if (resolversCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function ResolveReverseRelationships () {
+    return through.obj(reverse);
+
+    function reverse (sources, enc, next) {
+        var stream = this;
+
+        var resolvers = sources
+            .map(function (source) {
+                return source.listRelationshipsToResolve()
+                    .pipe(source.addReverseData())
+                    .pipe(source.formatReverseData())
+                    .pipe(source.saveReverse());
             });
 
         var resolversCount = resolvers.length;

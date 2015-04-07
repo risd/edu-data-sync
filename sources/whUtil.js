@@ -4,94 +4,117 @@ module.exports = function () {
     var departmentMap = [{
             "colleague": "Textiles",
             "webhook": "Textiles",
+            "localist": "Textiles",
             "courseCatalogue": "TEXTILES"
         }, {
             "colleague": "Painting Dept",
             "webhook": "Painting",
+            "localist": "Painting",
             "courseCatalogue": "PAINTING"
         }, {
             "colleague": "Glass Dept",
             "webhook": "Glass",
+            "localist": "Glass",
             "courseCatalogue": "GLASS"
         }, {
             "colleague": "Sculpture Dept",
             "webhook": "Sculpture",
+            "localist": "Sculpture",
             "courseCatalogue": "SCULPTURE"
         }, {
             "colleague": "Printmaking Dept",
             "webhook": "Printmaking",
+            "localist": "Printmaking",
             "courseCatalogue": "PRINTMAKING"
         }, {
             "colleague": "Photography Dept",
             "webhook": "Photography",
+            "localist": "Photography",
             "courseCatalogue": "PHOTOGRAPHY"
         }, {
             "colleague": "LA Hist Art &amp; Vis",
             "webhook": "History of Art + Visual Culture",
+            "localist": "History of Art + Visual Culture",
             "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE"
         }, {
             "colleague": "LA English",
             "webhook": "Literary Arts + Studies",
+            "localist": "Literary Arts + Studies",
             "courseCatalogue": "LITERARY ARTS AND STUDIES"
         }, {
             "colleague": "LA His/Phil/Soc",
             "webhook": "History, Philosophy + The Social Sciences",
+            "localist": "History, Philosophy + The Social Sciences",
             "courseCatalogue": "HIST/PHIL/SO SC DEPT"
         }, {
             "colleague": "Digital Media Dept",
             "webhook": "Digital + Media",
+            "localist": "Digital + Media",
             "courseCatalogue": "DIGITAL & MEDIA"
         }, {
             "colleague": "Teach Learn Art+",
             "webhook": "Teaching + Learning in Art + Design",
+            "localist": "Teaching + Learning in Art + Design",
             "courseCatalogue": "TLAD TEACHING + LEARNING"
         }, {
             "colleague": "Landscape Arch",
             "webhook": "Landscape Architecture",
+            "localist": "Landscape Architecture",
             "courseCatalogue": "LANDSCAPE ARCH"
         }, {
             "colleague": "Jewelry &amp; Metalsmith",
             "webhook": "Jewelry + Metalsmithing",
+            "localist": "Jewelry + Metalsmithing",
             "courseCatalogue": "JEWELRY & METAL"
         }, {
             "colleague": "Interior Arch",
             "webhook": "Interior Architecture",
+            "localist": "Interior Architecture",
             "courseCatalogue": "INTERIOR ARCH"
         }, {
             "colleague": "Industrial Design",
             "webhook": "Industrial Design",
+            "localist": "Industrial Design",
             "courseCatalogue": "INDUSTRIAL DESIGN"
         }, {
             "colleague": "Illustration",
             "webhook": "Illustration",
+            "localist": "Illustration",
             "courseCatalogue": "ILLUSTRATION"
         }, {
             "colleague": "Furniture Design",
             "webhook": "Furniture Design",
+            "localist": "Furniture Design",
             "courseCatalogue": "FURNITURE DESIGN"
         }, {
             "colleague": "Foundation Studies",
             "webhook": "Foundation Studies",
+            "localist": "Foundation Studies",
             "courseCatalogue": "FOUNDATION STUDIES"
         }, {
             "colleague": "Film/Anim/Video",
             "webhook": "Film / Animation / Video",
+            "localist": "Film/Animation/Video",
             "courseCatalogue": "FILM/ANIMATION/VIDEO"
         }, {
             "colleague": "Ceramics Dept",
             "webhook": "Ceramics",
+            "localist": "Ceramics",
             "courseCatalogue": "CERAMICS"
         }, {
             "colleague": "Architecture",
             "webhook": "Architecture",
+            "localist": "Architecture",
             "courseCatalogue": "ARCHITECTURE"
         }, {
             "colleague": "Graphic Design",
             "webhook": "Graphic Design",
+            "localist": "Graphic Design",
             "courseCatalogue": "GRAPHIC DESIGN"
         }, {
             "colleague": "Apparel Design",
             "webhook": "Apparel Design",
+            "localist": "Apparel Design",
             "courseCatalogue": "APPAREL DESIGN"
         }];
 
