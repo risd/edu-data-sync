@@ -624,6 +624,7 @@ function rrEnsureReverseKeyNode () {
     return through.obj(ensure);
 
     function ensure (row, enc, next) {
+        var stream = this;
         if (row.relatedDataCollection) {
             var keyToEnsure =
                 [self.webhookContentType,
@@ -986,9 +987,9 @@ function rrrSave () {
         if (saverCount > 0) {
             console.log('to save');
             console.log(toSave);
-            // toSave
-            //     .map(saver)
-            //     .map(watcher);
+            toSave
+                .map(saver)
+                .map(watcher);
         } else {
             this.push({});
             next();
@@ -1001,7 +1002,7 @@ function rrrSave () {
                 .child(d.contentType)
                 .child(d.contentTypeKey)
                 .child(d.reverseKey)
-                .update(d.reverseValue, function () {
+                .set(d.reverseValue, function () {
                     t.push({});
                     t.push(null);
                 });
