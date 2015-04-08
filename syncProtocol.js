@@ -827,7 +827,8 @@ function rrSaveReverse () {
                     .child(d.contentType)
                     .child(d.relatedKey)
                     .child(d.reverseKey)
-                    .update(d.reverseValue, function () {
+                    .child(d.reverseValue)
+                    .set(true, function () {
                         t.push({});
                         t.push(null);
                     });
