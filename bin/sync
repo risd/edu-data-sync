@@ -168,6 +168,10 @@ function ResolveRelationships () {
                     .pipe(source.rrAddRelationshipsToResolve())
                     .pipe(source.rrGetRelatedData())
                     .pipe(source.rrResetRelated())
+                    .pipe(source.rrEnsureReverseRootNode())
+                    .pipe(source.rrEnsureReverseContenTypeNode())
+                    .pipe(source.rrEnsureReverseContentTypeValueNode())
+                    .pipe(source.rrEnsureReverseKeyNode())
                     .pipe(source.rrPopulateRelated())
                     .pipe(source.rrSaveReverse())
                     .pipe(source.rrSaveCurrent());
@@ -195,10 +199,10 @@ function ResolveReverseRelationships () {
 
         var resolvers = sources
             .map(function (source) {
-                return source.listRelationshipsToResolve()
-                    .pipe(source.addReverseData())
-                    .pipe(source.formatReverseData())
-                    .pipe(source.saveReverse());
+                return source.rrrListRelationshipsToResolve()
+                    .pipe(source.rrrAddData())
+                    .pipe(source.rrrFormatData())
+                    .pipe(source.rrrSave());
             });
 
         var resolversCount = resolvers.length;

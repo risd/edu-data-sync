@@ -227,16 +227,20 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     }
 };
 
-
-Events.prototype.relationshipsToResolve = function (currentWHData) {
-    var self = this;
-
-    var toResolve = [{
+Events.prototype.relationshipsToResolve = function () {
+    return [{
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
     }];
+};
+
+
+Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = self.relationshipsToResolve();
 
     if (!('localist_filters__department' in currentWHData)) {
         return toResolve;
