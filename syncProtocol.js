@@ -715,13 +715,17 @@ function rrPopulateRelated () {
                                                 .push(relationshipValue);
                                 }
 
+                                if (!(relatedKey in row.reverseToSave)) {
+                                    row.reverseToSave[relatedKey] = {};
+                                }
+
                                 var reverseKey = [
                                         self.webhookContentType,
                                         row.toResolve.relationshipKey
                                     ].join('_');
 
-                                if (!(reverseKey in row.reverseToSave)) {
-                                    row.reverseToSave[reverseKey] = {};
+                                if (!(reverseKey in row.reverseToSave[relatedKey])) {
+                                    row.reverseToSave[relatedKey][reverseKey] = {};
                                 }
 
                                 var reverseValue = [
@@ -730,6 +734,7 @@ function rrPopulateRelated () {
                                     ].join(' ');
 
                                 row.reverseToSave
+                                    [relatedKey]
                                     [reverseKey]
                                     [reverseValue] = true;
                             }
@@ -753,38 +758,54 @@ function rrSaveReverse () {
     function save (row, enc, next) {
         var stream = this;
 
+        var relatedKeys = false;
+        var toSaveCount = 0;
+
         if (row.reverseToSave) {
             console.log('Save reverse.');
             
-            var saverKeys = Object.keys(row.reverseToSave);
-            var saversCount = saverKeys.length;
+            relatedKeys = Object.keys(row.reverseToSave);
+            relatedCount = relatedKeys.length;
             
-            if (saversCount === 0) {
+            if (relatedKeys.length === 0) {
                 this.push(row);
                 next();
             } else {
-                // must run save for every key
-                // otherwise the `update` will be
-                // more than one level deep, and
-                // would be treated as a `set`
-                var savers =
-                    saverKeys
-                        .map(function (reverseKey) {
-                            return saver(reverseKey,
-                                         row.reverseToSave[reverseKey]);
-                        });
+                // include relatedKey in this sequence
+                var toSave = [];
 
-                savers.forEach(function (s) {
-                    s.on('data', function () {});
-                    s.on('end', function () {
-                        saversCount -= 1;
-                        if (saversCount === 0) {
-                            console.log('Save reverse::done');
-                            stream.push(row);
-                            next();
-                        }
+                relatedKeys.forEach(function (relatedKey) {
+                        var reverseKeys =
+                            Object.keys(
+                                    row.reverseToSave[relatedKey]);
+
+                        reverseKeys.forEach(function (reverseKey) {
+
+                            var reverseValues = Object.keys(
+                                    rows.reverseToSave[relatedKey]
+                                                      [reverseKey]);
+
+                            reverseValues.forEach(function (reverseValue) {
+                                toSave.push({
+                                    contentType:
+                                        row.toResolve.relateToContentType,
+                                    relatedKey: relatedKey,
+                                    reverseKey: reverseKey,
+                                    reverseValue: reverseValue
+                                });
+                            });
+                        });
                     });
-                });
+
+                toSaveCount = toSave.length;
+
+                if (toSaveCount === 0) {
+                    this.push(row);
+                    next();
+                } else {
+                    toSave.map(saver)
+                          .map(watcher);
+                }
             }
         } else {
             console.log('No reverse to save.');
@@ -793,24 +814,36 @@ function rrSaveReverse () {
         }
 
 
-        function saver (reverseKey, reverseValue) {
+        function saver (d) {
             var t = through.obj();
             console.log('rrSaveReverse:saver');
-            console.log(row.toResolve.relateToContentType);
-            console.log(row.whKey);
-            console.log(reverseKey);
-            console.log(reverseValue);
+            console.log(d.contentType);
+            console.log(d.relatedKey);
+            console.log(d.reverseKey);
+            console.log(d.reverseValue);
             self._firebase
                     .reverse
-                    .child(row.toResolve.relateToContentType)
-                    .child(row.whKey)
-                    .child(reverseKey)
-                    .update(reverseValue, function () {
+                    .child(d.contentType)
+                    .child(d.relatedKey)
+                    .child(d.reverseKey)
+                    .update(d.reverseValue, function () {
                         t.push({});
                         t.push(null);
                     });
 
             return t;
+        }
+
+        function watcher (s) {
+            s.on('data', function () {});
+            s.on('end', function () {
+                toSaveCount -= 1;
+                if (toSaveCount === 0) {
+                    console.log('Save reverse::done');
+                    stream.push(row);
+                    next();
+                }
+            });
         }
     }
 }
