@@ -782,8 +782,9 @@ function rrSaveReverse () {
                         reverseKeys.forEach(function (reverseKey) {
 
                             var reverseValues = Object.keys(
-                                    rows.reverseToSave[relatedKey]
-                                                      [reverseKey]);
+                                    row.reverseToSave
+                                        [relatedKey]
+                                        [reverseKey]);
 
                             reverseValues.forEach(function (reverseValue) {
                                 toSave.push({
