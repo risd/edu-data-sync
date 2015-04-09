@@ -153,17 +153,20 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     return (whUtil.whRequiredDates(wh));
 };
 
-
-
-Courses.prototype.relationshipsToResolve = function (currentWHData) {
-    var self = this;
-
-    var toResolve = [{
+Courses.prototype.relationshipsToResolve = function () {
+    return [{
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
     }];
+};
+
+
+Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = self.relationshipsToResolve();
 
     if (!('colleague_departments' in currentWHData)) {
         return toResolve;

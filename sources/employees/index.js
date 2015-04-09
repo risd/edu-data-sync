@@ -64,15 +64,19 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     return (whUtil.whRequiredDates(wh));
 };
 
-Employees.prototype.relationshipsToResolve = function (currentWHData) {
-    var self = this;
-
-    var toResolve = [{
+Employees.prototype.relationshipsToResolve = function () {
+    return [{
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
     }];
+};
+
+Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = self.relationshipsToResolve();
 
     if (!('colleague_department' in currentWHData)) {
         return toResolve;
