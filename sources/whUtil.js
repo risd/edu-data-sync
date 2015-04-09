@@ -32,7 +32,7 @@ module.exports = function () {
             "localist": "Photography",
             "courseCatalogue": "PHOTOGRAPHY"
         }, {
-            "colleague": "LA Hist Art &amp; Vis",
+            "colleague": "LA Hist Art & Vis",
             "webhook": "History of Art + Visual Culture",
             "localist": "History of Art + Visual Culture",
             "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE"
@@ -62,7 +62,7 @@ module.exports = function () {
             "localist": "Landscape Architecture",
             "courseCatalogue": "LANDSCAPE ARCH"
         }, {
-            "colleague": "Jewelry &amp; Metalsmith",
+            "colleague": "Jewelry & Metalsmith",
             "webhook": "Jewelry + Metalsmithing",
             "localist": "Jewelry + Metalsmithing",
             "courseCatalogue": "JEWELRY & METAL"
@@ -86,11 +86,6 @@ module.exports = function () {
             "webhook": "Furniture Design",
             "localist": "Furniture Design",
             "courseCatalogue": "FURNITURE DESIGN"
-        }, {
-            "colleague": "Foundation Studies",
-            "webhook": "Foundation Studies",
-            "localist": "Foundation Studies",
-            "courseCatalogue": "FOUNDATION STUDIES"
         }, {
             "colleague": "Film/Anim/Video",
             "webhook": "Film / Animation / Video",
@@ -118,6 +113,13 @@ module.exports = function () {
             "courseCatalogue": "APPAREL DESIGN"
         }];
 
+    var foundationstudiesMap = [{
+            "colleague": "Foundation Studies",
+            "webhook": "Foundation Studies",
+            "localist": "Division of Foundation Studies",
+            "courseCatalogue": "FOUNDATION STUDIES"
+        }];
+
     return {
         guid: guid,
         getKey: getKey,
@@ -126,8 +128,33 @@ module.exports = function () {
         webhookDepartmentForCourseCatalogue:
             webhookDepartmentForCourseCatalogue,
         webhookDepartmentForLocalist:
-            webhookDepartmentForLocalist
+            webhookDepartmentForLocalist,
+        webhookDepartmentForColleague:
+            webhookDepartmentForColleague        
     };
+
+    function webhookDepartmentForColleague (colleagueDepartment) {
+        var f = departmentMap
+            .filter(function (d) {
+                return d.colleague === colleagueDepartment;
+            })
+            .map(function (d) {
+                return d.webhook;
+            });
+
+        if (f.length !== 1) {
+            var m = [
+                'Could not find webhook name for ',
+                'colleague department: ',
+                colleagueDepartment
+            ];
+            console.log(m.join(''));
+            return false;
+        } else {
+            var webhookDepartment = f[0];
+            return webhookDepartment;
+        }
+    }
 
     function webhookDepartmentForCourseCatalogue (catalogueDepartment) {
 
@@ -142,7 +169,7 @@ module.exports = function () {
         if (f.length !== 1) {
             var m = [
                 'Could not find webhook name for ',
-                'colleague department: ',
+                'course catalogue department: ',
                 catalogueDepartment
             ];
             console.log(m.join(''));

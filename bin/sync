@@ -9,7 +9,7 @@ var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
 
-var sourcePrototypes = [Events];
+var sourcePrototypes = [Events, Employees, Courses];
 
 
 Env();

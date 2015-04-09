@@ -83,7 +83,7 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     }
 
     var department = whUtil
-        .webhookDepartmentForCourseCatalogue(
+        .webhookDepartmentForColleague(
             currentWHData.colleague_department);
 
     if (department !== false) {

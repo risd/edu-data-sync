@@ -233,6 +233,10 @@ Events.prototype.relationshipsToResolve = function () {
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
+    }, {
+        relationshipKey: 'related_foundation_studies',
+        relateToContentType: 'foundationstudies',
+        relateToContentTypeDataUsingKey: 'name'
     }];
 };
 
