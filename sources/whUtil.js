@@ -113,12 +113,12 @@ module.exports = function () {
             "courseCatalogue": "APPAREL DESIGN"
         }];
 
-    var foundationstudiesMap = [{
-            "colleague": "Foundation Studies",
-            "webhook": "Foundation Studies",
-            "localist": "Division of Foundation Studies",
-            "courseCatalogue": "FOUNDATION STUDIES"
-        }];
+    // var foundationstudiesMap = [{
+    //         "colleague": "Foundation Studies",
+    //         "webhook": "Foundation Studies",
+    //         "localist": "Division of Foundation Studies",
+    //         "courseCatalogue": "FOUNDATION STUDIES"
+    //     }];
 
     return {
         guid: guid,

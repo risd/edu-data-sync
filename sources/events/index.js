@@ -229,14 +229,17 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
 Events.prototype.relationshipsToResolve = function () {
     return [{
+        multipleToRelate: true,
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
     }, {
+        multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
         relateToContentType: 'foundationstudies',
-        relateToContentTypeDataUsingKey: 'name'
+        relateToContentTypeDataUsingKey: 'name',
+        itemToRelate: false
     }];
 };
 
@@ -246,25 +249,35 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     var toResolve = self.relationshipsToResolve();
 
-    if (!('localist_filters__department' in currentWHData)) {
-        return toResolve;
+    if ('localist_filters__department' in currentWHData) {
+        var departments =
+            currentWHData.localist_filters__department
+                .map(function (d) {
+                    return {
+                        departments: 
+                            whUtil
+                                .webhookDepartmentForLocalist(
+                                    d.department)
+                    };
+                })
+                .filter(function (d) {
+                    return d.departments !== false;
+                });
+
+        toResolve[0].itemsToRelate = departments;
     }
 
-    var departments =
-        currentWHData.localist_filters__department
-            .map(function (d) {
-                return {
-                    departments: 
-                        whUtil
-                            .webhookDepartmentForLocalist(
-                                d.department)
-                };
-            })
-            .filter(function (d) {
-                return d.departments !== false;
-            });
-
-    toResolve[0].itemsToRelate = departments;
+    if ('localist_filters__department' in currentWHData) {
+        var foundation =
+            currentWHData.localist_filters__department
+                .filter(function (d) {
+                    return d.department ===
+                           "Division of Foundation Studies";
+                });
+        if (foundation.length === 1) {
+            toResolve[1].itemToRelate = true;
+        }
+    }
 
     return toResolve;
 };
