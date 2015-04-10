@@ -798,7 +798,7 @@ function rrPopulateRelated () {
                         row.toResolve.relationshipKey
                     ].join('_');
 
-                if (!(reverseKey in row.reverseToSave[relatedKey])) {
+                if (!(reverseKey in row.reverseToSave)) {
                     row.reverseToSave[reverseKey] = {};
                 }
 
