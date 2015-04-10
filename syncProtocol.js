@@ -892,9 +892,14 @@ function rrSaveReverse () {
 
 
         function saver (d) {
-            var t = through.obj();
             console.log('rrSaveReverse:saver');
+            
+            var t = through.obj();
             var ref;
+
+            // relatedKey is only used for
+            // content types that have multiple
+            // entries
             if ('relatedKey' in d) {
                 ref = self._firebase
                           .reverse
@@ -902,7 +907,10 @@ function rrSaveReverse () {
                           .child(d.relatedKey)
                           .child(d.reverseKey)
                           .child(d.reverseValue);
-            } else {
+            }
+            // if no relatedKey, it means we are
+            // looking at a one-off content-type
+            else {
                 ref = self._firebase
                           .reverse
                           .child(d.contentType)
@@ -1029,6 +1037,7 @@ function rrrAddData () {
     function add (row, enc, next) {
         var stream = this;
         row.reverseContentTypeCollection = false;
+        row.reverseContentTypeItem = false;
 
         self._firebase
             .reverse
@@ -1038,7 +1047,11 @@ function rrrAddData () {
                 console.log('reverseContentTypeCollection');
                 console.log(value);
                 if (value) {
-                    row.reverseContentTypeCollection = value;
+                    if (row.toResolve.multipleToRelate) {
+                        row.reverseContentTypeCollection = value;
+                    } else {
+                        row.reverseContentTypeItem = value;
+                    }
                 }
                 stream.push(row);
                 next();
@@ -1085,7 +1098,22 @@ function rrrFormatData () {
             this.push(toSave);
             next();
 
-        } else {
+        }
+        else if (row.reverseContentTypeItem) {
+            var reverseKey = Object.keys(row.reverseContentTypeItem)
+                                   .pop();
+
+            var reverseValue = Object.keys(row.reverseContentTypeItem
+                                              [reverseKey])
+                                     .pop();
+            toSave.push({
+                contentType:
+                    row.toResolve.relateToContentType,
+                reverseKey: reverseKey,
+                reverseValue: reverseValue
+            });   
+        }
+        else {
             this.push(toSave);
             next();
         }
@@ -1114,15 +1142,27 @@ function rrrSave () {
 
         function saver (d) {
             var t = through.obj();
-            self._firebase
-                .webhookDataRoot
-                .child(d.contentType)
-                .child(d.contentTypeKey)
-                .child(d.reverseKey)
-                .set(d.reverseValue, function () {
+            var ref;
+            if ('contentTypeKey' in d) {
+                ref = self._firebase
+                          .webhookDataRoot
+                          .child(d.contentType)
+                          .child(d.contentTypeKey)
+                          .child(d.reverseKey);
+            }
+            else {
+                ref = self._firebase
+                          .webhookDataRoot
+                          .child(d.contentType)
+                          .child(d.reverseKey);
+
+            }
+            
+            ref.set(d.reverseValue, function () {
                     t.push({});
                     t.push(null);
                 });
+
             return t;
         }
 
