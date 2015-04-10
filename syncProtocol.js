@@ -429,6 +429,11 @@ function rrAddRelationshipsToResolve () {
     }
 }
 
+// if the relationship to resolve can have
+// multiple related values, stash those values
+// in `relatedDataCollection`. Otherwise its a
+// relationship to a one-off content type, in
+// which case stash the data in relatedDataItem
 function rrGetRelatedData () {
     var self = this;
 
@@ -437,6 +442,7 @@ function rrGetRelatedData () {
     function get (row, enc, next) {
         // console.log('Get related data');
         row.relatedDataCollection = false;
+        row.relatedDataItem = false;
         var stream = this;
 
         if (row.toResolve.itemsToRelate.length === 0) {
@@ -448,7 +454,12 @@ function rrGetRelatedData () {
                 .webhookDataRoot
                 .child(row.toResolve.relateToContentType)
                 .once('value', function (snapshot) {
-                    row.relatedDataCollection = snapshot.val();
+                    var value = snapshot.val();
+                    if (row.toResolve.multipleToRelate) {
+                        row.relatedDataCollection = value;    
+                    } else {
+                        row.relatedDataItem = value;
+                    }
                     stream.push(row);
                     next();
                 });
@@ -562,6 +573,8 @@ function rrEnsureReverseContentTypeValueNode () {
     // the content type value node is going to be
     // determined by the row coming through
     // 
+    // Relationship to content type with
+    // multiple values:
     // eduSync/
     // reverseRelationships/
     // {contentType}/
@@ -585,7 +598,8 @@ function rrEnsureReverseContentTypeValueNode () {
                         makeKey(keyToEnsure);
                     }
                 });
-        } else {
+        }
+        else {
             done ();
         }
 
@@ -615,41 +629,57 @@ function rrEnsureReverseKeyNode () {
     // the content type node is going to be
     // determined by the row coming through
     // 
+    // Relationship to content-type with
+    // multiple values.
     // eduSync/
     //   reverseRelationships/
     //   {contentType}/
     //   {contentTypeValue}/
     //   {reverseKey}
+    //   
+    // Relationship with one-off content-type
+    // eduSync/
+    //   reverseRelationships/
+    //   {contentType}/
+    //   {reverseKey}/
     var self = this;
     return through.obj(ensure);
 
     function ensure (row, enc, next) {
         var stream = this;
-        if (row.relatedDataCollection) {
-            var keyToEnsure =
+
+        var keyToEnsure =
                 [self.webhookContentType,
                  row.toResolve.relationshipKey].join('_');
-            self._firebase
-                .reverse
-                .child(row.toResolve.relateToContentType)
-                .child(row.whKey)
-                .once('value', function (snapshot) {
+        var ref;
+
+        if (row.relatedDataCollection || row.relatedDataItem) {
+            if (row.relatedDataCollection) {
+                ref = self._firebase
+                    .reverse
+                    .child(row.toResolve.relateToContentType)
+                    .child(row.whKey);
+            }
+            else if (row.relatedDataItem) {
+                ref = self._firebase
+                    .reverse
+                    .child(row.toResolve.relateToContentType);
+            }
+
+            ref.once('value', function (snapshot) {
                     if (snapshot.hasChild(keyToEnsure)) {
                         done();
                     } else {
-                        makeKey(keyToEnsure);
+                        makeKey(ref, keyToEnsure);
                     }
                 });
-        } else {
+        }
+        else {
             done ();
         }
 
-        function makeKey (key) {
-            self._firebase
-                .reverse
-                .child(row.toResolve.relateToContentType)
-                .child(row.whKey)
-                .child(key)
+        function makeKey (ref, key) {
+            ref.child(key)
                 .set({}, function () {
                     done();
                 });
@@ -743,7 +773,40 @@ function rrPopulateRelated () {
 
             this.push(row);
             next();
-        } else {
+        }
+        else if (row.relatedDataItem) {
+            row.reverseToSave = {};
+            if (row.toResolve.itemToRelate) {
+                var relationshipKey = row.toResolve.relationshipKey;
+                var relationshipValue =
+                    row.toResolve.relateToContentType;
+
+                if (row.webhook[relationshipKey]
+                       .indexOf(relationshipValue) === -1) {
+
+                    row.webhook[relationshipKey].push(relationshipValue);
+                }
+                
+                var reverseKey = [
+                        self.webhookContentType,
+                        row.toResolve.relationshipKey
+                    ].join('_');
+
+                if (!(reverseKey in row.reverseToSave[relatedKey])) {
+                    row.reverseToSave[reverseKey] = {};
+                }
+
+                var reverseValue = [
+                        self.webhookContentType,
+                        row.whKey
+                    ].join(' ');
+
+                row.reverseToSave
+                    [reverseKey]
+                    [reverseValue] = true;
+            }
+        }
+        else {
             this.push(row);
             next();
         }
@@ -758,45 +821,57 @@ function rrSaveReverse () {
     function save (row, enc, next) {
         var stream = this;
 
-        var relatedKeys = false;
+        var toSaveKeys = false;
         var toSaveCount = 0;
 
         if (row.reverseToSave) {
-            console.log('Save reverse.');
+            console.log('Save reverse multiple.');
             
-            relatedKeys = Object.keys(row.reverseToSave);
-            relatedCount = relatedKeys.length;
+            toSaveKeys = Object.keys(row.reverseToSave);
             
-            if (relatedKeys.length === 0) {
+            if (toSaveKeys.length === 0) {
                 this.push(row);
                 next();
             } else {
                 // include relatedKey in this sequence
                 var toSave = [];
 
-                relatedKeys.forEach(function (relatedKey) {
-                        var reverseKeys =
-                            Object.keys(
-                                    row.reverseToSave[relatedKey]);
+                if (row.relatedDataCollection) {
+                    var relatedKeys = toSaveKeys;
+                    relatedKeys.forEach(function (relatedKey) {
+                            var reverseKeys =
+                                Object.keys(
+                                        row.reverseToSave[relatedKey]);
 
-                        reverseKeys.forEach(function (reverseKey) {
+                            reverseKeys.forEach(function (reverseKey) {
 
-                            var reverseValues = Object.keys(
-                                    row.reverseToSave
-                                        [relatedKey]
-                                        [reverseKey]);
+                                var reverseValues = Object.keys(
+                                        row.reverseToSave
+                                            [relatedKey]
+                                            [reverseKey]);
 
-                            reverseValues.forEach(function (reverseValue) {
-                                toSave.push({
-                                    contentType:
-                                        row.toResolve.relateToContentType,
-                                    relatedKey: relatedKey,
-                                    reverseKey: reverseKey,
-                                    reverseValue: reverseValue
+                                reverseValues.forEach(function (reverseValue) {
+                                    toSave.push({
+                                        contentType:
+                                            row.toResolve.relateToContentType,
+                                        relatedKey: relatedKey,
+                                        reverseKey: reverseKey,
+                                        reverseValue: reverseValue
+                                    });
                                 });
                             });
                         });
+                }
+                else if (row.relatedDataItem) {
+                    var reverseKey = toSaveKeys[0];
+                    var reverseValue = Object.keys(reverseKey).pop();
+                    toSave.push({
+                        contentType:
+                            row.toResolve.relateToContentType,
+                        reverseKey: reverseKey,
+                        reverseValue: reverseValue
                     });
+                }
 
                 toSaveCount = toSave.length;
 
@@ -808,7 +883,8 @@ function rrSaveReverse () {
                           .map(watcher);
                 }
             }
-        } else {
+        }
+        else {
             console.log('No reverse to save.');
             this.push(row);
             next();
@@ -816,22 +892,36 @@ function rrSaveReverse () {
 
 
         function saver (d) {
-            var t = through.obj();
             console.log('rrSaveReverse:saver');
-            console.log(d.contentType);
-            console.log(d.relatedKey);
-            console.log(d.reverseKey);
-            console.log(d.reverseValue);
-            self._firebase
-                    .reverse
-                    .child(d.contentType)
-                    .child(d.relatedKey)
-                    .child(d.reverseKey)
-                    .child(d.reverseValue)
-                    .set(true, function () {
-                        t.push({});
-                        t.push(null);
-                    });
+            
+            var t = through.obj();
+            var ref;
+
+            // relatedKey is only used for
+            // content types that have multiple
+            // entries
+            if ('relatedKey' in d) {
+                ref = self._firebase
+                          .reverse
+                          .child(d.contentType)
+                          .child(d.relatedKey)
+                          .child(d.reverseKey)
+                          .child(d.reverseValue);
+            }
+            // if no relatedKey, it means we are
+            // looking at a one-off content-type
+            else {
+                ref = self._firebase
+                          .reverse
+                          .child(d.contentType)
+                          .child(d.reverseKey)
+                          .child(d.reverseValue);
+            }
+            
+            ref.set(true, function () {
+                    t.push({});
+                    t.push(null);
+                });
 
             return t;
         }
@@ -947,6 +1037,7 @@ function rrrAddData () {
     function add (row, enc, next) {
         var stream = this;
         row.reverseContentTypeCollection = false;
+        row.reverseContentTypeItem = false;
 
         self._firebase
             .reverse
@@ -956,7 +1047,11 @@ function rrrAddData () {
                 console.log('reverseContentTypeCollection');
                 console.log(value);
                 if (value) {
-                    row.reverseContentTypeCollection = value;
+                    if (row.toResolve.multipleToRelate) {
+                        row.reverseContentTypeCollection = value;
+                    } else {
+                        row.reverseContentTypeItem = value;
+                    }
                 }
                 stream.push(row);
                 next();
@@ -1003,7 +1098,22 @@ function rrrFormatData () {
             this.push(toSave);
             next();
 
-        } else {
+        }
+        else if (row.reverseContentTypeItem) {
+            var reverseKey = Object.keys(row.reverseContentTypeItem)
+                                   .pop();
+
+            var reverseValue = Object.keys(row.reverseContentTypeItem
+                                              [reverseKey])
+                                     .pop();
+            toSave.push({
+                contentType:
+                    row.toResolve.relateToContentType,
+                reverseKey: reverseKey,
+                reverseValue: reverseValue
+            });   
+        }
+        else {
             this.push(toSave);
             next();
         }
@@ -1032,15 +1142,27 @@ function rrrSave () {
 
         function saver (d) {
             var t = through.obj();
-            self._firebase
-                .webhookDataRoot
-                .child(d.contentType)
-                .child(d.contentTypeKey)
-                .child(d.reverseKey)
-                .set(d.reverseValue, function () {
+            var ref;
+            if ('contentTypeKey' in d) {
+                ref = self._firebase
+                          .webhookDataRoot
+                          .child(d.contentType)
+                          .child(d.contentTypeKey)
+                          .child(d.reverseKey);
+            }
+            else {
+                ref = self._firebase
+                          .webhookDataRoot
+                          .child(d.contentType)
+                          .child(d.reverseKey);
+
+            }
+            
+            ref.set(d.reverseValue, function () {
                     t.push({});
                     t.push(null);
                 });
+
             return t;
         }
 
