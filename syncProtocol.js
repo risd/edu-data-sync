@@ -445,11 +445,17 @@ function rrGetRelatedData () {
         row.relatedDataItem = false;
         var stream = this;
 
-        if (row.toResolve.itemsToRelate.length === 0) {
-            // console.log('No relationships to make.');
+        if ((row.toResolve.multipleToRelate === true) &&
+            (row.toResolve.itemsToRelate.length === 0)) {
             this.push(row);
             next();
-        } else {
+        }
+        else if ((row.toResolve.multipleToRelate === false) &&
+                 (row.toResolve.itemToRelate === false)) {
+            this.push(row);
+            next();
+        }
+        else {
             self._firebase
                 .webhookDataRoot
                 .child(row.toResolve.relateToContentType)
