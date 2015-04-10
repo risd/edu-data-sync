@@ -943,64 +943,24 @@ function rrSaveReverse () {
 function rrSaveCurrent () {
     var self = this;
 
-    var current = {
-        whKey: false,
-        toMerge: []
-    };
     return through.obj(save);
 
     function save (row, enc, next) {
-        console.log('Save current?');
+        console.log('Save current.');
         var stream = this;
-        if (current.whKey === false) {
-            // first time through
-            current.whKey = row.whKey;
-            current.toMerge.push(row);
 
-            next();
-        } else {
-            // compare previous and current key
-            if (current.whKey === row.whKey) {
-                console.log('Save current::key match');
-                // same key, push this object on.
-                current.toMerge.push(row);
+        var relationshipValue = row.webhook
+                                   [row.toResolve
+                                       .relationshipKey];
 
-                this.push(row);
+        self._firebase
+            .webhook
+            .child(row.whKey)
+            .child(row.toResolve.relationshipKey)
+            .set(relationshipValue, function () {
+                stream.push(row);
                 next();
-            } else {
-                console.log('Save current::new key');
-
-                var merged = {
-                    key: current.whKey,
-                    value: mergeData(current.toMerge)
-                };
-                
-                self._firebase
-                    .webhook
-                    .child(merged.key)
-                    .set(merged.value, function () {
-                        current.toMerge = [row];
-                        current.whKey = row.whKey;
-
-                        console.log('Save current::saved.');
-
-                        stream.push(merged);
-                        next();
-                    });
-            }
-        }
-    }
-
-    function mergeData (data) {
-        // baseline 
-        var mergedData = data.pop().webhook;
-
-        data.forEach(function (toMerge) {
-            var resolvedKey = toMerge.toResolve.relationshipKey;
-            mergedData[resolvedKey] = toMerge.webhook[resolvedKey];
-        });
-
-        return mergedData;
+            });
     }
 }
 
