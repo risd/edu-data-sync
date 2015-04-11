@@ -19,8 +19,8 @@ function SyncProtocol (model, firebaseref) {
     model.prototype.addInSourceBool = addInSourceBool;
 
     // Resolve relationship pipeline - Start
-    model.prototype.rrAddRelationshipsToResolve =
-        rrAddRelationshipsToResolve;
+    model.prototype.rrListWebhookWithRelationshipsToResolve =
+        rrListWebhookWithRelationshipsToResolve;
     model.prototype.rrGetRelatedData = rrGetRelatedData;
     model.prototype.rrResetRelated = rrResetRelated;
     model.prototype.rrEnsureReverseRootNode = rrEnsureReverseRootNode;
@@ -400,32 +400,54 @@ function updateWebhookValueNotInSource () {
 
 /* relationship resolution - rr */
 
-function rrAddRelationshipsToResolve () {
+/**
+ * push row.{webhook, whKey, toResolve}
+ * for every relationship that needs to get
+ * resolved. if there are two relationships,
+ * two objects get pushed before saving,
+ * merge the items back together.
+ * 
+ * @return {stream} through.obj
+ */
+function rrListWebhookWithRelationshipsToResolve () {
     var self = this;
-    return through.obj(resolve);
 
-    /*
-      expecting this to be pulling data
-      from listFirebaseWebhook
-      row.{webhook, whKey}
-  
-      push row.{webhook, whKey, updated, toResolve}
-      for every relationship that needs to get
-      resolved.
-      if there are two relationships, two objects
-      get pushed
-      before saving, merge the items back together.
-     */
-    function resolve (row, enc, next) {
-        var toResolveArr = self.dataForRelationshipsToResolve(
-                                    row.webhook);
+    var eventStream = through.obj();
 
-        var stream = this;
-        toResolveArr.forEach(function (toResolve) {
-            row.toResolve = toResolve;
-            stream.push(row);
-        });
-        next();
+    self._firebase
+        .webhook
+        .once('value', onData, onError);
+
+    return eventStream;
+
+    function onData (snapshot) {
+        var values = snapshot.val();
+        if (values) {
+            Object
+                .keys(values)
+                .map(function (key) {
+                    return {
+                        webhook: values[key],
+                        whKey: key
+                    };
+                })
+                .forEach(function (row) {
+                    var toResolveArr =
+                        self.dataForRelationshipsToResolve(
+                                row.webhook);
+
+                    toResolveArr.forEach(function (toResolve) {
+                        row.toResolve = toResolve;
+                        eventStream.push(row);
+                    });
+                });
+        }
+        eventStream.push(null);
+    }
+
+    function onError (error) {
+        console.log('listFirebaseWebhook');
+        console.log(error);
     }
 }
 
@@ -606,7 +628,7 @@ function rrEnsureReverseContentTypeValueNode () {
                 });
         }
         else {
-            done ();
+            done();
         }
 
         function makeKey (key) {
@@ -681,7 +703,7 @@ function rrEnsureReverseKeyNode () {
                 });
         }
         else {
-            done ();
+            done();
         }
 
         function makeKey (ref, key) {
@@ -785,7 +807,8 @@ function rrPopulateRelated () {
             if (row.toResolve.itemToRelate) {
                 var relationshipKey = row.toResolve.relationshipKey;
                 var relationshipValue =
-                    row.toResolve.relateToContentType;
+                    [row.toResolve.relateToContentType,
+                     row.toResolve.relateToContentType].join(' ');
 
                 if (row.webhook[relationshipKey]
                        .indexOf(relationshipValue) === -1) {
@@ -811,6 +834,8 @@ function rrPopulateRelated () {
                     [reverseKey]
                     [reverseValue] = true;
             }
+            this.push(row);
+            next();
         }
         else {
             this.push(row);
@@ -869,8 +894,15 @@ function rrSaveReverse () {
                         });
                 }
                 else if (row.relatedDataItem) {
+                    console.log('save reverse ref');
+                    console.log(row.reverseToSave);
+                    console.log(toSaveKeys[0]);
                     var reverseKey = toSaveKeys[0];
-                    var reverseValue = Object.keys(reverseKey).pop();
+                    var reverseValue =
+                        Object
+                            .keys(row.reverseToSave[reverseKey])
+                            .pop();
+
                     toSave.push({
                         contentType:
                             row.toResolve.relateToContentType,
@@ -882,6 +914,7 @@ function rrSaveReverse () {
                 toSaveCount = toSave.length;
 
                 if (toSaveCount === 0) {
+                    console.log('No reverse to save.');
                     this.push(row);
                     next();
                 } else {
@@ -949,6 +982,7 @@ function rrSaveReverse () {
 function rrSaveCurrent () {
     var self = this;
 
+    var current = false;
     return through.obj(save);
 
     function save (row, enc, next) {
@@ -959,11 +993,19 @@ function rrSaveCurrent () {
                                    [row.toResolve
                                        .relationshipKey];
 
+        
+        if (relationshipValue.length > 0) {
+            console.log(row.whKey);
+            console.log(row.toResolve.relationshipKey);
+            console.log(relationshipValue);    
+        }
+
         self._firebase
             .webhook
             .child(row.whKey)
             .child(row.toResolve.relationshipKey)
             .set(relationshipValue, function () {
+                console.log('Save current::end');
                 stream.push(row);
                 next();
             });
@@ -995,7 +1037,9 @@ function rrrListRelationshipsToResolve () {
 
 function rrrAddData () {
     // pushes
-    // row.{toResolve, reverseContentTypeCollection}
+    // row.{toResolve, {reverseContentTypeCollection,
+    //                  reverseContentTypeItem}
+    //     }
     var self = this;
 
     return through.obj(add);
@@ -1010,12 +1054,14 @@ function rrrAddData () {
             .child(row.toResolve.relateToContentType)
             .once('value', function (snapshot) {
                 var value = snapshot.val();
-                console.log('reverseContentTypeCollection');
-                console.log(value);
                 if (value) {
                     if (row.toResolve.multipleToRelate) {
+                        console.log('reverseContentTypeCollection');
+                        console.log(value);
                         row.reverseContentTypeCollection = value;
                     } else {
+                        console.log('reverseContentTypeItem');
+                        console.log(value);
                         row.reverseContentTypeItem = value;
                     }
                 }
@@ -1077,7 +1123,10 @@ function rrrFormatData () {
                     row.toResolve.relateToContentType,
                 reverseKey: reverseKey,
                 reverseValue: reverseValue
-            });   
+            });
+
+            this.push(toSave);
+            next();
         }
         else {
             this.push(toSave);

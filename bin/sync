@@ -131,6 +131,7 @@ function RemoveFromWebhookBasedOnSource () {
     return through.obj(remove);
 
     function remove (sources, enc, next) {
+        console.log('Remove from WebHook based on source.');
         var stream = this;
 
         var removers = sources
@@ -164,8 +165,7 @@ function ResolveRelationships () {
 
         var resolvers = sources
             .map(function (source) {
-                return source.listFirebaseWebhook()
-                    .pipe(source.rrAddRelationshipsToResolve())
+                return source.rrListWebhookWithRelationshipsToResolve()
                     .pipe(source.rrGetRelatedData())
                     .pipe(source.rrResetRelated())
                     .pipe(source.rrEnsureReverseRootNode())
