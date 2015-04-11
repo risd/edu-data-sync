@@ -155,10 +155,23 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
 Courses.prototype.relationshipsToResolve = function () {
     return [{
+        multipleToRelate: true,
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_foundation_studies',
+        relateToContentType: 'foundationstudies',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: false
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_graduate_studies',
+        relateToContentType: 'graduatestudies',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: false
     }];
 };
 

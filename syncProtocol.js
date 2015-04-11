@@ -1112,12 +1112,20 @@ function rrrFormatData () {
 
         }
         else if (row.reverseContentTypeItem) {
+            console.log('row.reverseContentTypeItem');
+            console.log(row.reverseContentTypeItem);
             var reverseKey = Object.keys(row.reverseContentTypeItem)
                                    .pop();
 
-            var reverseValue = Object.keys(row.reverseContentTypeItem
-                                              [reverseKey])
-                                     .pop();
+            var reverseValue = [];
+
+            Object
+                .keys(row.reverseContentTypeItem
+                              [reverseKey])
+                .forEach(function (singleReverseValue) {
+                    reverseValue.push(singleReverseValue);
+                });
+
             toSave.push({
                 contentType:
                     row.toResolve.relateToContentType,
