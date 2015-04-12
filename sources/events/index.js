@@ -265,9 +265,7 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
                 });
 
         toResolve[0].itemsToRelate = departments;
-    }
 
-    if ('localist_filters__department' in currentWHData) {
         var foundation =
             currentWHData.localist_filters__department
                 .filter(function (d) {

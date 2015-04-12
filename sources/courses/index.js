@@ -181,25 +181,29 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     var toResolve = self.relationshipsToResolve();
 
-    if (!('colleague_departments' in currentWHData)) {
-        return toResolve;
+    if ('colleague_department' in currentWHData) {
+        var department = whUtil
+            .webhookDepartmentForColleague(
+                currentWHData.colleague_department);
+
+        if (department !== false) {
+            toResolve[0].itemsToRelate = [{
+                departments: department
+            }];
+        }
+
+        if (currentWHData.colleague_department ===
+            'FOUNDATION STUDIES') {
+            console.log('Course is in Foundation Studies.');
+            toResolve[1].itemToRelate = true;
+        }
+
+        if (currentWHData.colleague_department ===
+            'GRADUATE STUDIES') {
+            console.log('Course is in Graduate Studies.');
+            toResolve[2].itemToRelate = true;
+        }
     }
-
-    var departments =
-        currentWHData.colleague_departments
-            .map(function (d) {
-                return {
-                    departments:
-                        whUtil
-                            .webhookDepartmentForCourseCatalogue(
-                                d.department)
-                };
-            })
-            .filter(function (d) {
-                return d.departments !== false;
-            });
-
-    toResolve[0].itemsToRelate = departments;
 
     return toResolve;
 };

@@ -148,7 +148,7 @@ module.exports = function () {
                 'colleague department: ',
                 colleagueDepartment
             ];
-            console.log(m.join(''));
+            // console.log(m.join(''));
             return false;
         } else {
             var webhookDepartment = f[0];
@@ -172,7 +172,7 @@ module.exports = function () {
                 'course catalogue department: ',
                 catalogueDepartment
             ];
-            console.log(m.join(''));
+            // console.log(m.join(''));
             return false;
 
         } else {
@@ -196,7 +196,7 @@ module.exports = function () {
                 'Localist department: ',
                 localistDepartment
             ];
-            console.log(m.join(''));
+            // console.log(m.join(''));
             return false;
         } else {
             var webhookDepartment = f[0];

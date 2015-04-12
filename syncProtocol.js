@@ -987,28 +987,25 @@ function rrSaveCurrent () {
 
     function save (row, enc, next) {
         console.log('Save current.');
+        console.log(row.webhook);
+        console.log(row.toResolve.relationshipKey);
+
         var stream = this;
 
-        var relationshipValue = row.webhook
-                                   [row.toResolve
-                                       .relationshipKey];
-
-        
-        if (relationshipValue.length > 0) {
-            console.log(row.whKey);
-            console.log(row.toResolve.relationshipKey);
-            console.log(relationshipValue);    
+        if (!(row.webhook[row.toResolve.relationshipKey])) {
+            row.webhook[row.toResolve.relationshipKey] = [];
         }
 
         self._firebase
             .webhook
             .child(row.whKey)
             .child(row.toResolve.relationshipKey)
-            .set(relationshipValue, function () {
-                console.log('Save current::end');
-                stream.push(row);
-                next();
-            });
+            .set(row.webhook[row.toResolve.relationshipKey],
+                function () {
+                    console.log('Save current::end');
+                    stream.push(row);
+                    next();
+                });
     }
 }
 
