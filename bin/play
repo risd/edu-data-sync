@@ -5,6 +5,18 @@ var util = require('../util.js');
 
 var Env = require('../env.js');
 
-var Courses = require('../sources/courses/index.js')();
+var News = require('../sources/news/index.js')();
 
-Courses.listSource().pipe(util.stringify()).pipe(process.stdout);
+var tags = [];
+News.listSource().pipe(through.obj(add, done));
+
+function add (row, enc, next) {
+	if (tags.indexOf(row.tags[0]) === -1) {
+		tags.push(row.tags[0]);
+	}
+	next();
+}
+
+function done () {
+	console.log(tags);
+}

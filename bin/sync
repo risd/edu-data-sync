@@ -242,30 +242,3 @@ function DeleteEmployees () {
                });
     }
 }
-
-function FirebaseTopLevel () {
-    return through.obj(fbref);
-    
-    function fbref (fb, enc, next) {
-        var self = this;
-        fb.once('value', data, error);
-
-        function data (snapshot) {
-            var v = snapshot.val();
-            console.log(Object.keys(v));
-
-            done();
-        }
-
-        function error (err) {
-            console.log(err);
-
-            done();
-        }
-
-        function done () {
-            self.push({});
-            self.push(null);
-        }
-    }
-}

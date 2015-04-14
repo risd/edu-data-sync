@@ -104,7 +104,7 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
                     onAddComplete();
                 } else {
                     // department needs to be added
-                    value.departments =
+                    var departments =
                         value
                             .departments
                             .concat(row.departments);
@@ -112,7 +112,8 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
                     self._firebase
                         .source
                         .child(key)
-                        .set(value, onAddComplete);
+                        .child('departments')
+                        .set(departments, onAddComplete);
                 }
             } else {
                 // value does not exist, add it
@@ -165,13 +166,13 @@ Courses.prototype.relationshipsToResolve = function () {
         relationshipKey: 'related_foundation_studies',
         relateToContentType: 'foundationstudies',
         relateToContentTypeDataUsingKey: 'name',
-        itemsToRelate: false
+        itemToRelate: false
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_graduate_studies',
         relateToContentType: 'graduatestudies',
         relateToContentTypeDataUsingKey: 'name',
-        itemsToRelate: false
+        itemToRelate: false
     }];
 };
 
