@@ -2,6 +2,7 @@
    functions necessary for sync, and consistent
    across any api/implementation */
 
+var clone = require('clone');
 var from = require('from2-array');
 var through = require('through2');
 var combine = require('stream-combiner2');
@@ -423,7 +424,7 @@ function rrListWebhookWithRelationshipsToResolve () {
     function onData (snapshot) {
         var values = snapshot.val();
         if (values) {
-            Object
+            var rows = Object
                 .keys(values)
                 .map(function (key) {
                     return {
@@ -432,13 +433,14 @@ function rrListWebhookWithRelationshipsToResolve () {
                     };
                 })
                 .map(function (row) {
-                    var toResolveArr =
-                        self.dataForRelationshipsToResolve(row.webhook);
+                    self.dataForRelationshipsToResolve(
+                            row.webhook)
+                        .map(function (toResolve) {
+                            row.toResolve = toResolve;
+                            var toPush = clone(row);
+                            eventStream.push(toPush);
+                        });
 
-                    for (var i = toResolveArr.length - 1; i >= 0; i--) {
-                        row.toResolve = toResolveArr[i];
-                        eventStream.push(row);
-                    }
                 });
         }
         eventStream.push(null);
@@ -466,9 +468,9 @@ function rrGetRelatedData () {
         row.relatedDataItem = false;
         var stream = this;
 
-        // console.log('\n\nTo resolve');
+        console.log('\n\nTo resolve');
         // console.log(row.whKey);
-        // console.log(row.toResolve.relationshipKey);
+        console.log(row.toResolve.relationshipKey);
         
 
         if ((row.toResolve.multipleToRelate === true) &&
@@ -856,61 +858,63 @@ function rrSaveReverse () {
         var toSaveKeys = Object.keys(row.reverseToSave);
         var toSave = [];
 
-        if (row.toResolve.multipleToRelate) {
-            // console.log('Save reverse multiple.');
-            var relatedKeys = toSaveKeys;
-            relatedKeys.forEach(function (relatedKey) {
-                    var reverseKeys =
-                        Object.keys(
-                                row.reverseToSave[relatedKey]);
-
-                    reverseKeys.forEach(function (reverseKey) {
-
-                        var reverseValues = Object.keys(
-                                row.reverseToSave
-                                    [relatedKey]
-                                    [reverseKey]);
-
-                        reverseValues.forEach(function (reverseValue) {
-                            toSave.push({
-                                contentType:
-                                    row.toResolve.relateToContentType,
-                                relatedKey: relatedKey,
-                                reverseKey: reverseKey,
-                                reverseValue: reverseValue
-                            });
-                        });
-                    });
-                });
-        }
-        else  {
-            var reverseKey = toSaveKeys[0];
-            var reverseValue =
-                Object
-                    .keys(row.reverseToSave[reverseKey])
-                    .pop();
-
-            if (reverseValue) {
-                reverseValue = [reverseValue];
-            } else {
-                reverseValue = [];
-            }
-
-            if (reverseValue) {
-                toSave.push({
-                    contentType:
-                        row.toResolve.relateToContentType,
-                    reverseKey: reverseKey,
-                    reverseValue: reverseValue
-                });
-            }
-        }
-
-        toSaveCount = toSave.length;
-        if (toSaveCount === 0) {
+        if (toSaveKeys.length === 0) {
             this.push(row);
             next();
         } else {
+            if (row.relatedDataCollection) {
+                // console.log('Save reverse multiple.');
+                var relatedKeys = toSaveKeys;
+                relatedKeys.forEach(function (relatedKey) {
+                        var reverseKeys =
+                            Object.keys(
+                                    row.reverseToSave[relatedKey]);
+
+                        reverseKeys.forEach(function (reverseKey) {
+
+                            var reverseValues = Object.keys(
+                                    row.reverseToSave
+                                        [relatedKey]
+                                        [reverseKey]);
+
+                            reverseValues.forEach(function (reverseValue) {
+                                toSave.push({
+                                    contentType:
+                                        row.toResolve.relateToContentType,
+                                    relatedKey: relatedKey,
+                                    reverseKey: reverseKey,
+                                    reverseValue: reverseValue
+                                });
+                            });
+                        });
+                    });
+            }
+            else if (row.relatedDataItem)  {
+                var reverseKey = toSaveKeys[0];
+                console.log(row);
+                var reverseValue =
+                    Object
+                        .keys(row.reverseToSave[reverseKey])
+                        .pop();
+
+                if (reverseValue) {
+                    reverseValue = [reverseValue];
+                } else {
+                    reverseValue = [];
+                }
+
+                if (reverseValue) {
+                    toSave.push({
+                        contentType:
+                            row.toResolve.relateToContentType,
+                        reverseKey: reverseKey,
+                        reverseValue: reverseValue
+                    });
+                }
+            }
+
+            toSaveCount = toSave.length;
+
             toSave.map(saver)
                   .map(watcher);
         }
