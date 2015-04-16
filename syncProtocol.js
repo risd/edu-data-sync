@@ -732,14 +732,12 @@ function rrPopulateRelated () {
     return through.obj(populate);
 
     function populate (row, enc, next) {
-        // console.log('rrPopulateRelated');
+        console.log('rrPopulateRelated');
         // console.log(row.toResolve.relationshipKey);
 
         row.reverseToSave = {};
 
-        if (row.toResolve.multipleToRelate &&
-            row.relatedDataCollection) {
-
+        if (row.relatedDataCollection) {
             Object
                 .keys(row.relatedDataCollection)
                 .forEach(function (relatedKey) {
@@ -769,7 +767,9 @@ function rrPopulateRelated () {
                                     .keys(row.reverseToSave[relatedKey])
                                     .indexOf(reverseKey) === -1) {
 
-                                row.reverseToSave[relatedKey][reverseKey] = {};
+                                row.reverseToSave
+                                   [relatedKey]
+                                   [reverseKey] = {};
                             }
 
                             // console.log(relate);
@@ -804,7 +804,7 @@ function rrPopulateRelated () {
                         });
                 });
         }
-        else if(row.toResolve.multipleToRelate === false) {
+        else if(row.relatedDataItem) {
 
             var reverseKey = [
                     self.webhookContentType,
@@ -848,8 +848,8 @@ function rrSaveReverse () {
     return through.obj(save);
 
     function save (row, enc, next) {
-        // console.log('\n\nrrSaveReverse');
-        // console.log(row.toResolve.relationshipKey);
+        console.log('\n\nrrSaveReverse');
+        console.log(row.toResolve.relationshipKey);
 
         var stream = this;
 
@@ -889,6 +889,12 @@ function rrSaveReverse () {
                 Object
                     .keys(row.reverseToSave[reverseKey])
                     .pop();
+
+            if (reverseValue) {
+                reverseValue = [reverseValue];
+            } else {
+                reverseValue = [];
+            }
 
             if (reverseValue) {
                 toSave.push({
@@ -992,7 +998,7 @@ function rrSaveCurrent () {
 
 /* resolve reverse relationship - rrr - start */
 function rrrListRelationshipsToResolve () {
-    // console.log('rrrListRelationshipsToResolve');
+    console.log('rrrListRelationshipsToResolve');
     var self = this;
 
     var stream = through.obj();
