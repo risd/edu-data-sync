@@ -898,12 +898,6 @@ function rrSaveReverse () {
                         .pop();
 
                 if (reverseValue) {
-                    reverseValue = [reverseValue];
-                } else {
-                    reverseValue = [];
-                }
-
-                if (reverseValue) {
                     toSave.push({
                         contentType:
                             row.toResolve.relateToContentType,
@@ -915,8 +909,14 @@ function rrSaveReverse () {
 
             toSaveCount = toSave.length;
 
-            toSave.map(saver)
-                  .map(watcher);
+            if (toSaveCount === 0) {
+                this.push(row);
+                next();
+            }
+            else {
+                toSave.map(saver)
+                      .map(watcher);
+            }
         }
 
 

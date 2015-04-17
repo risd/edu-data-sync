@@ -154,13 +154,13 @@ News.prototype.relationshipsToResolve = function () {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
         relateToContentType: 'foundationstudies',
-        relateToContentTypeDataUsingKey: 'name',
+        // relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_graduate_studies',
         relateToContentType: 'graduatestudies',
-        relateToContentTypeDataUsingKey: 'name',
+        // relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }];
 };
@@ -172,6 +172,14 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     if ('tags' in currentWHData) {
         // what are the tags? how do they get resolved?
+        // is this just a series of relationships?
+        // related_departments
+        // related_froundation_studies
+        // related_graduate_studies
+        // 
+        // where do we want things to end up?
+        // tags are our organizational system. they should
+        // relate to a content type?
     }
 
     return toResolve;
