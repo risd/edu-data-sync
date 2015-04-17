@@ -165,13 +165,11 @@ Courses.prototype.relationshipsToResolve = function () {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
         relateToContentType: 'foundationstudies',
-        relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_graduate_studies',
         relateToContentType: 'graduatestudies',
-        relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }];
 };
@@ -195,13 +193,11 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         if (currentWHData.colleague_department ===
             'FOUNDATION STUDIES') {
-            console.log('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
         if (currentWHData.colleague_department ===
             'GRADUATE STUDIES') {
-            console.log('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }
     }

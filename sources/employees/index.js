@@ -75,13 +75,11 @@ Employees.prototype.relationshipsToResolve = function () {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
         relateToContentType: 'foundationstudies',
-        relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_graduate_studies',
         relateToContentType: 'graduatestudies',
-        relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }];
 };
