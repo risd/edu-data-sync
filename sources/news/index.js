@@ -1,4 +1,5 @@
 var fs = require('fs');
+var cheerio = require('cheerio');
 var through = require('through2');
 var xmlStream = require('xml-stream');
 var moment = require('moment');
@@ -126,9 +127,9 @@ News.prototype.sourceStreamToFirebaseSource = function () {
 };
 
 News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
-	wh.name = src.Title;
+	wh.name = toTitleCase(src.Title);
 	wh.ektron_id = this.keyFromSource(src);
-	wh.body = src.body;
+	wh.body = formatBody(src.body);
 	wh.ektron_tags = src.tags;
 
 	// These carry dates that we want to maintain
@@ -141,6 +142,34 @@ News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 	wh.preview_url = whUtil.guid();
 
 	return wh;
+
+	function toTitleCase(str) {
+	    return str.replace(
+	    	/\w\S*/g,
+	    	function (txt) {
+	    		return txt
+		    			.charAt(0)
+		    			.toUpperCase() +
+	    			txt.substr(1)
+	    			   .toLowerCase();
+		});
+	}
+
+	function formatBody (body) {
+		body = body.replace(/<br \/>/g, '</p><p>')
+				   .replace(/<br\/>/g, '</p><p>');
+
+		var $ = cheerio.load('<div>' + body + '</div>');
+
+		// remove empty p tags
+		$('p').each(function () {
+			if ($(this).text().trim() === 0) {
+				$(this).remove();
+			}
+		});
+
+		return $.html();
+	}
 };
 
 News.prototype.relationshipsToResolve = function () {

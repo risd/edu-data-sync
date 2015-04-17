@@ -1022,7 +1022,9 @@ function rrSaveCurrent () {
             .child(row.toResolve.relationshipKey)
             .set(row.webhook[row.toResolve.relationshipKey],
                 function () {
-                    // console.log('Save current::end');
+                    console.log('\n\nSave current::end');
+                    console.log(self.webhookContentType);
+                    console.log(row.toResolve.relationshipKey);
                     stream.push(row);
                     next();
                 });
