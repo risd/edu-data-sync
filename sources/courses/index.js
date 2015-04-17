@@ -180,10 +180,10 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     var toResolve = self.relationshipsToResolve();
 
-    if ('colleague_department' in currentWHData) {
+    if ('colleague_departments' in currentWHData) {
         var department = whUtil
             .webhookDepartmentForColleague(
-                currentWHData.colleague_department);
+                currentWHData.colleague_departments);
 
         if (department !== false) {
             toResolve[0].itemsToRelate = [{
@@ -191,13 +191,25 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             }];
         }
 
-        if (currentWHData.colleague_department ===
-            'FOUNDATION STUDIES') {
+        var foundation =
+            currentWHData.colleague_departments
+                .filter(function (d) {
+                    return d.department ===
+                           'FOUNDATION STUDIES';
+                });
+
+        if (foundation.length === 1) {
             toResolve[1].itemToRelate = true;
         }
 
-        if (currentWHData.colleague_department ===
-            'GRADUATE STUDIES') {
+        var graduate =
+            currentWHData.colleague_departments
+                .filter(function (d) {
+                    return d.department ===
+                           'GRADUATE STUDIES';
+                });
+
+        if (graduate.length === 1) {
             toResolve[2].itemToRelate = true;
         }
     }
