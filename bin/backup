@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var through = require('through2');
+
+var Env = require('../env.js');
+var Firebaseref = require('../firebaseref.js');
+
+Env();
+
+var backupDir = __dirname + '/../backups';
+
+Firebaseref()
+    .pipe(FirebaseData())
+    .pipe(WebhookData())
+    .pipe(ToFileIn(backupDir))
+    .pipe(Exit());
+
+function FirebaseData () {
+    return through.obj(fbref);
+    
+    function fbref (fb, enc, next) {
+        console.log('Reading Firebase data');
+        var self = this;
+        var data = false;
+
+        fb.once('value', onData, onError);
+
+        function onData (snapshot) {
+            var v = snapshot.val();
+            data = v;
+            done();
+        }
+
+        function onError (err) {
+            console.log(err);
+            done();
+        }
+
+        function done () {
+            self.push(data);
+            self.push(null);
+        }
+    }
+}
+
+function WebhookData () {
+    return through.obj(webhook);
+
+    function webhook (firebaseData, enc, next) {
+        var wh = {
+            contentType: firebaseData.contentType,
+            data: firebaseData.data
+        };
+        this.push(wh);
+        this.push(null);
+    }
+}
+
+function ToFileIn (dir) {
+    return through.obj(write);
+
+    function write (data, enc, next) {
+        var stream = this;
+
+        var fileName = Date.now();
+        var path = dir + '/' + fileName + '.json';
+        console.log('Writing to: ', path);
+
+        var toWrite = JSON.stringify(data, null, 2);
+
+        fs.writeFile(
+            path,
+            toWrite,
+            { encoding: 'utf8' },
+            function () {
+                stream.push({});
+                stream.push(null);
+            });
+    }
+}
+
+function Exit () {
+    return through.obj(exit);
+
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
+}

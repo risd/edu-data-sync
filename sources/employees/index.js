@@ -64,28 +64,53 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     return (whUtil.whRequiredDates(wh));
 };
 
-Employees.prototype.relationshipsToResolve = function (currentWHData) {
-    var self = this;
-
-    var toResolve = [{
+Employees.prototype.relationshipsToResolve = function () {
+    return [{
+        multipleToRelate: true,
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_foundation_studies',
+        relateToContentType: 'foundationstudies',
+        itemToRelate: false
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_graduate_studies',
+        relateToContentType: 'graduatestudies',
+        itemToRelate: false
     }];
+};
 
-    if (!('colleague_department' in currentWHData)) {
-        return toResolve;
-    }
+Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
+    var self = this;
 
-    var department = whUtil
-        .webhookDepartmentForCourseCatalogue(
-            currentWHData.colleague_department);
+    var toResolve = self.relationshipsToResolve();
 
-    if (department !== false) {
-        toResolve[0].itemsToRelate = [{
-            departments: department
-        }];
+    if ('colleague_department' in currentWHData) {
+        var department = whUtil
+            .webhookDepartmentForColleague(
+                currentWHData.colleague_department);
+
+        if (department !== false) {
+            toResolve[0].itemsToRelate = [{
+                departments: department
+            }];
+        }
+
+        if (currentWHData.colleague_department ===
+            'Foundation Studies') {
+            // console.log('Course is in Foundation Studies.');
+            toResolve[1].itemToRelate = true;
+        }
+
+        if (currentWHData.colleague_department ===
+            'Graduate Studies') {
+            // console.log('Course is in Graduate Studies.');
+            toResolve[2].itemToRelate = true;
+        }
     }
 
     return toResolve;

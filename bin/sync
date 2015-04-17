@@ -9,7 +9,7 @@ var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
 
-var sourcePrototypes = [Courses, Events, Employees];
+var sourcePrototypes = [Events, Employees, Courses];
 
 
 Env();
@@ -21,6 +21,7 @@ Firebaseref()
     .pipe(AddSourceToWebHook())
     .pipe(RemoveFromWebhookBasedOnSource())
     .pipe(ResolveRelationships())
+    .pipe(ResolveReverseRelationships())
     .pipe(Exit());
 
 
@@ -130,6 +131,7 @@ function RemoveFromWebhookBasedOnSource () {
     return through.obj(remove);
 
     function remove (sources, enc, next) {
+        console.log('Remove from WebHook based on source.');
         var stream = this;
 
         var removers = sources
@@ -163,13 +165,44 @@ function ResolveRelationships () {
 
         var resolvers = sources
             .map(function (source) {
-                return source.listFirebaseWebhook()
-                    .pipe(source.rrAddRelationshipsToResolve())
+                return source.rrListWebhookWithRelationshipsToResolve()
                     .pipe(source.rrGetRelatedData())
                     .pipe(source.rrResetRelated())
+                    .pipe(source.rrEnsureReverseRootNode())
+                    .pipe(source.rrEnsureReverseContenTypeNode())
+                    .pipe(source.rrEnsureReverseContentTypeValueNode())
+                    .pipe(source.rrEnsureReverseKeyNode())
                     .pipe(source.rrPopulateRelated())
                     .pipe(source.rrSaveReverse())
                     .pipe(source.rrSaveCurrent());
+            });
+
+        var resolversCount = resolvers.length;
+        resolvers.forEach(function (resolver) {
+            resolver.on('data', function () {});
+            resolver.on('end', function () {
+                resolversCount -= 1;
+                if (resolversCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function ResolveReverseRelationships () {
+    return through.obj(reverse);
+
+    function reverse (sources, enc, next) {
+        var stream = this;
+
+        var resolvers = sources
+            .map(function (source) {
+                return source.rrrListRelationshipsToResolve()
+                    .pipe(source.rrrAddData())
+                    .pipe(source.rrrFormatData())
+                    .pipe(source.rrrSave());
             });
 
         var resolversCount = resolvers.length;
@@ -207,32 +240,5 @@ function DeleteEmployees () {
                    stream.push({});
                    stream.push(null);
                });
-    }
-}
-
-function FirebaseTopLevel () {
-    return through.obj(fbref);
-    
-    function fbref (fb, enc, next) {
-        var self = this;
-        fb.once('value', data, error);
-
-        function data (snapshot) {
-            var v = snapshot.val();
-            console.log(Object.keys(v));
-
-            done();
-        }
-
-        function error (err) {
-            console.log(err);
-
-            done();
-        }
-
-        function done () {
-            self.push({});
-            self.push(null);
-        }
     }
 }

@@ -104,7 +104,7 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
                     onAddComplete();
                 } else {
                     // department needs to be added
-                    value.departments =
+                    var departments =
                         value
                             .departments
                             .concat(row.departments);
@@ -112,7 +112,8 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
                     self._firebase
                         .source
                         .child(key)
-                        .set(value, onAddComplete);
+                        .child('departments')
+                        .set(departments, onAddComplete);
                 }
             } else {
                 // value does not exist, add it
@@ -153,37 +154,53 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     return (whUtil.whRequiredDates(wh));
 };
 
-
-
-Courses.prototype.relationshipsToResolve = function (currentWHData) {
-    var self = this;
-
-    var toResolve = [{
+Courses.prototype.relationshipsToResolve = function () {
+    return [{
+        multipleToRelate: true,
         relationshipKey: 'related_departments',
         relateToContentType: 'departments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_foundation_studies',
+        relateToContentType: 'foundationstudies',
+        itemToRelate: false
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_graduate_studies',
+        relateToContentType: 'graduatestudies',
+        itemToRelate: false
     }];
+};
 
-    if (!('colleague_departments' in currentWHData)) {
-        return toResolve;
+
+Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
+    var self = this;
+
+    var toResolve = self.relationshipsToResolve();
+
+    if ('colleague_department' in currentWHData) {
+        var department = whUtil
+            .webhookDepartmentForColleague(
+                currentWHData.colleague_department);
+
+        if (department !== false) {
+            toResolve[0].itemsToRelate = [{
+                departments: department
+            }];
+        }
+
+        if (currentWHData.colleague_department ===
+            'FOUNDATION STUDIES') {
+            toResolve[1].itemToRelate = true;
+        }
+
+        if (currentWHData.colleague_department ===
+            'GRADUATE STUDIES') {
+            toResolve[2].itemToRelate = true;
+        }
     }
-
-    var departments =
-        currentWHData.colleague_departments
-            .map(function (d) {
-                return {
-                    departments:
-                        whUtil
-                            .webhookDepartmentForCourseCatalogue(
-                                d.department)
-                };
-            })
-            .filter(function (d) {
-                return d.departments !== false;
-            });
-
-    toResolve[0].itemsToRelate = departments;
 
     return toResolve;
 };
