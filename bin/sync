@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var through = require('through2');
+var parseArgs = require('minimist');
 
 var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
@@ -9,8 +11,40 @@ var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
 
-var sourcePrototypes = [Events, Employees, Courses];
+var sourcePrototypes = [];
 
+// Based on arguments passed into this process
+// populate the sources that will be sync'd.
+var args = parseArgs(process.argv.slice(2));
+if (args._.indexOf('help') > -1) {
+    var usage = fs.readFileSync(
+                    __dirname +
+                    '/syncUsage.md')
+                .toString()
+                .replace(/```/g, '\n');
+    console.log(usage);
+    return;
+}
+if (args._.length === 0) {
+    sourcePrototypes.push(Events);
+    sourcePrototypes.push(Employees);
+    sourcePrototypes.push(Courses);
+} else {
+    var largs = args._
+                    .map(function (d) {
+                        return d.toLowerCase();
+                    });
+
+    if (largs.indexOf('events') > -1) {
+        sourcePrototypes.push(Events);
+    }
+    if (largs.indexOf('employees') > -1) {
+        sourcePrototypes.push(Employees);
+    }
+    if (largs.indexOf('courses') > -1) {
+        sourcePrototypes.push(Courses);
+    }
+}
 
 Env();
 
