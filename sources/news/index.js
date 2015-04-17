@@ -162,6 +162,12 @@ News.prototype.relationshipsToResolve = function () {
         relateToContentType: 'graduatestudies',
         // relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_liberal_arts_departments',
+        relateToContentType: 'liberalartsdepartments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
     }];
 };
 
