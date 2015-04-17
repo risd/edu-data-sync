@@ -155,6 +155,35 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 };
 
 Courses.prototype.relationshipsToResolve = function () {
+    /*
+    mutlipleToRelate: boolean
+        Are we relating to a one-off or
+        mutliple entry content-type
+    relationshipKey: string
+        What is the name of the key in the
+        Course object that is being used to
+        store any relationships that are made
+    relateToContentType
+        The name of the content-type that we
+        are creating a relationship to. This is
+        the webhook name. All lowercase, no spaces
+        or hyphens.
+    relateToContentTypeDataUsingKey
+        The key in the webhook object that we
+        are seeing if we have a relationship to.
+        Only used for multiple content-type
+        relationships
+    itemsToRelate
+        The webhook relationship values that
+        should be added to the relationshipKey
+        for this webhook Course object.
+        This will take the form of an array
+        with an object that has a key of the
+        content-type to compare against,
+        and the value of the Course object's
+        `relateToContentTypeDataUsingKey` value
+
+     */
     return [{
         multipleToRelate: true,
         relationshipKey: 'related_departments',
@@ -171,6 +200,18 @@ Courses.prototype.relationshipsToResolve = function () {
         relationshipKey: 'related_graduate_studies',
         relateToContentType: 'graduatestudies',
         itemToRelate: false
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_liberal_arts_departments',
+        relateToContentType: 'liberalartsdepartments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_employees',
+        relateToContentType: 'employees',
+        relateToContentTypeDataUsingKey: 'colleague_id',
+        itemsToRelate: []
     }];
 };
 
@@ -212,6 +253,22 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         if (graduate.length === 1) {
             toResolve[2].itemToRelate = true;
         }
+
+        var liberalArtsDepartment = whUtil
+            .webhookLiberalArtsDepartmentForCourseCatalogue(
+                currentWHData.colleague_departments);
+
+        if (liberalArtsDepartment !== false) {
+            toResolve[3].itemsToRelate = [{
+                liberalartsdepartments: liberalArtsDepartment
+            }];
+        }
+    }
+
+    if ('colleague_id' in currentWHData) {
+        toResolve[4].itemsToRelate = [{
+            employees: currentWHData.colleague_id
+        }];
     }
 
     return toResolve;

@@ -81,6 +81,12 @@ Employees.prototype.relationshipsToResolve = function () {
         relationshipKey: 'related_graduate_studies',
         relateToContentType: 'graduatestudies',
         itemToRelate: false
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_liberal_arts_departments',
+        relateToContentType: 'liberalartsdepartments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
     }];
 };
 
@@ -110,6 +116,15 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             'Graduate Studies') {
             // console.log('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
+        }
+
+        var liberalArtsDepartment = whUtil
+            .webhookLiberalArtsDepartmentForColleague(
+                currentWHData.colleague_department);
+        if (liberalArtsDepartment !== false) {
+            toResolve[3].itemsToRelate = [{
+                liberalartsdepartments: liberalArtsDepartment
+            }];
         }
     }
 
