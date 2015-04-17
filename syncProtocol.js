@@ -460,6 +460,14 @@ function rrListWebhookWithRelationshipsToResolve () {
 function rrGetRelatedData () {
     var self = this;
 
+    // cache data that is being used to resolve
+    // the relationships. this data does not get
+    // changed, only id's get referenced for
+    // creating the relationships, then stashed
+    // if they are used, to create the reverse
+    // relationships
+    var cache = {};
+
     return through.obj(get);
 
     function get (row, enc, next) {
@@ -484,19 +492,42 @@ function rrGetRelatedData () {
             next();
         }
         else {
-            self._firebase
-                .webhookDataRoot
-                .child(row.toResolve.relateToContentType)
-                .once('value', function (snapshot) {
-                    var value = snapshot.val();
-                    if (row.toResolve.multipleToRelate) {
-                        row.relatedDataCollection = value;    
-                    } else {
-                        row.relatedDataItem = value;
-                    }
-                    stream.push(row);
-                    next();
-                });
+            if (Object
+                    .keys(cache)
+                    .indexOf(row.toResolve
+                                .relateToContentType) === -1) {
+                // Data is not cached
+                self._firebase
+                    .webhookDataRoot
+                    .child(row.toResolve.relateToContentType)
+                    .once('value', function (snapshot) {
+                        var value = snapshot.val();
+                        cache[row.toResolve
+                                 .relateToContentType] = value;
+
+                        if (row.toResolve.multipleToRelate) {
+                            row.relatedDataCollection = value;    
+                        }
+                        else {
+                            row.relatedDataItem = value;
+                        }
+                        stream.push(row);
+                        next();
+                    });
+            } else {
+                if (row.toResolve.multipleToRelate) {
+                    row.relatedDataCollection =
+                        cache[row.toResolve
+                                 .relateToContentType];
+                }
+                else {
+                    row.relatedDataItem =
+                        cache[row.toResolve
+                                 .relateToContentType];
+                }
+                this.push(row);
+                next();
+            }
         }
     }
 }

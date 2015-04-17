@@ -1,7 +1,24 @@
 var moment = require('moment');
 
 module.exports = function () {
-    var departmentMap = [{
+    var maps = {
+        forLiberalArtsDepartments: [{
+            "colleague": "LA Hist Art & Vis",
+            "webhook": "History of Art + Visual Culture",
+            "localist": "History of Art + Visual Culture",
+            "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE"
+        }, {
+            "colleague": "LA English",
+            "webhook": "Literary Arts + Studies",
+            "localist": "Literary Arts + Studies",
+            "courseCatalogue": "LITERARY ARTS AND STUDIES"
+        }, {
+            "colleague": "LA His/Phil/Soc",
+            "webhook": "History, Philosophy + The Social Sciences",
+            "localist": "History, Philosophy + The Social Sciences",
+            "courseCatalogue": "HIST/PHIL/SO SC DEPT"
+        }],
+        forDepartments: [{
             "colleague": "Textiles",
             "webhook": "Textiles",
             "localist": "Textiles",
@@ -31,21 +48,6 @@ module.exports = function () {
             "webhook": "Photography",
             "localist": "Photography",
             "courseCatalogue": "PHOTOGRAPHY"
-        }, {
-            "colleague": "LA Hist Art & Vis",
-            "webhook": "History of Art + Visual Culture",
-            "localist": "History of Art + Visual Culture",
-            "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE"
-        }, {
-            "colleague": "LA English",
-            "webhook": "Literary Arts + Studies",
-            "localist": "Literary Arts + Studies",
-            "courseCatalogue": "LITERARY ARTS AND STUDIES"
-        }, {
-            "colleague": "LA His/Phil/Soc",
-            "webhook": "History, Philosophy + The Social Sciences",
-            "localist": "History, Philosophy + The Social Sciences",
-            "courseCatalogue": "HIST/PHIL/SO SC DEPT"
         }, {
             "colleague": "Digital Media Dept",
             "webhook": "Digital + Media",
@@ -111,7 +113,8 @@ module.exports = function () {
             "webhook": "Apparel Design",
             "localist": "Apparel Design",
             "courseCatalogue": "APPAREL DESIGN"
-        }];
+        }]
+    };
 
     // var foundationstudiesMap = [{
     //         "colleague": "Foundation Studies",
@@ -126,82 +129,49 @@ module.exports = function () {
         formattedDate: formattedDate,
         whRequiredDates: whRequiredDates,
         webhookDepartmentForCourseCatalogue:
-            webhookDepartmentForCourseCatalogue,
+            forMapUsingKeyFindWebhookValue(
+                'forDepartments',
+                'courseCatalogue'),
         webhookDepartmentForLocalist:
-            webhookDepartmentForLocalist,
+            forMapUsingKeyFindWebhookValue(
+                'forDepartments',
+                'webhook'),
         webhookDepartmentForColleague:
-            webhookDepartmentForColleague        
+            forMapUsingKeyFindWebhookValue(
+                'forDepartments',
+                'colleague'),
+        webhookLiberalArtsDepartmentForCourseCatalogue:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'courseCatalogue'),
+        webhookLiberalArtsDepartmentForColleague:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'colleague')
     };
 
-    function webhookDepartmentForColleague (colleagueDepartment) {
-        var f = departmentMap
-            .filter(function (d) {
-                return d.colleague === colleagueDepartment;
-            })
-            .map(function (d) {
-                return d.webhook;
-            });
+    function forMapUsingKeyFindWebhookValue (mapName, compareKey) {
+        return function withValue (compareValue) {
+            var f =
+                maps[mapName]
+                    .filter(function (d) {
+                        return d[compareKey] === compareValue;
+                    })
+                    .map(function (d) {
+                        return d.webhook;
+                    });
 
-        if (f.length !== 1) {
-            var m = [
-                'Could not find webhook name for ',
-                'colleague department: ',
-                colleagueDepartment
-            ];
-            // console.log(m.join(''));
-            return false;
-        } else {
-            var webhookDepartment = f[0];
-            return webhookDepartment;
-        }
-    }
-
-    function webhookDepartmentForCourseCatalogue (catalogueDepartment) {
-
-        var f = departmentMap
-            .filter(function (d) {
-                return d.courseCatalogue === catalogueDepartment;
-            })
-            .map(function (d) {
-                return d.webhook;
-            });
-
-        if (f.length !== 1) {
-            var m = [
-                'Could not find webhook name for ',
-                'course catalogue department: ',
-                catalogueDepartment
-            ];
-            // console.log(m.join(''));
-            return false;
-
-        } else {
-            var webhookDepartment = f[0];
-            return webhookDepartment;
-        }
-    }
-
-    function webhookDepartmentForLocalist (localistDepartment) {
-        var f = departmentMap
-            .filter(function (d) {
-                return d.webhook === localistDepartment;
-            })
-            .map(function (d) {
-                return d.webhook;
-            });
-
-        if (f.length !== 1) {
-            var m = [
-                'Could not find webhook name for ',
-                'Localist department: ',
-                localistDepartment
-            ];
-            // console.log(m.join(''));
-            return false;
-        } else {
-            var webhookDepartment = f[0];
-            return webhookDepartment;
-        }
+            if (f.length !== 1) {
+                var m = [
+                    'Could not find webhook name for ',
+                    compareKey + ' in map ' + mapName
+                ];
+                console.log(m.join());
+            } else {
+                var webhookDepartment = f[0];
+                return webhookDepartment;
+            }
+        };
     }
 };
 
