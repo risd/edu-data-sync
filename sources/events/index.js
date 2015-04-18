@@ -59,6 +59,7 @@ Events.prototype.keyFromSource = function (row) {
 
 Events.prototype.listSource = function () {
     var self = this;
+    console.log('Events.listSource::start');
 
     // stream of Event objects from localist
     var eventStream = through.obj();

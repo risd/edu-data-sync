@@ -952,9 +952,8 @@ function rrSaveReverse () {
 
 
         function saver (d) {
-            // console.log('rrSaveReverse:saver');
-            // console.log(d.reverseKey);
-            // console.log(d.reverseValue);
+            console.log('rrSaveReverse:saver');
+            console.log(d);
 
             var t = through.obj();
             var ref;
@@ -1009,9 +1008,9 @@ function rrSaveCurrent () {
     return through.obj(save);
 
     function save (row, enc, next) {
-        // console.log('\n\nSave current.');
-        // console.log(row.whKey);
-        // console.log(row.toResolve.relationshipKey);
+        console.log('\n\nSave current.');
+        console.log(row.whKey);
+        console.log(row.toResolve.relationshipKey);
         // console.log(row.webhook[row.toResolve.relationshipKey]);
 
         var stream = this;
