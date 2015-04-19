@@ -253,15 +253,14 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var departments =
             currentWHData.localist_filters__department
                 .map(function (d) {
-                    return {
-                        departments: 
-                            whUtil
-                                .webhookDepartmentForLocalist(
-                                    d.department)
-                    };
+                    return d.department;
                 })
+                .map(whUtil.webhookDepartmentForLocalist)
                 .filter(function (d) {
-                    return d.departments !== false;
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { departments: d };
                 });
 
         toResolve[0].itemsToRelate = departments;

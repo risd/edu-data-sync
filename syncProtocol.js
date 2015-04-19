@@ -517,13 +517,13 @@ function rrGetRelatedData () {
             } else {
                 if (row.toResolve.multipleToRelate) {
                     row.relatedDataCollection =
-                        cache[row.toResolve
-                                 .relateToContentType];
+                        clone(cache[row.toResolve
+                                   .relateToContentType]);
                 }
                 else {
                     row.relatedDataItem =
-                        cache[row.toResolve
-                                 .relateToContentType];
+                        clone(cache[row.toResolve
+                                   .relateToContentType]);
                 }
                 this.push(row);
                 next();
@@ -952,7 +952,7 @@ function rrSaveReverse () {
 
 
         function saver (d) {
-            console.log('rrSaveReverse:saver');
+            console.log('rrSaveReverse:saver::start');
             console.log(d);
 
             var t = through.obj();
@@ -980,6 +980,7 @@ function rrSaveReverse () {
             }
             
             ref.set(true, function () {
+                    console.log('rrSaveReverse:saver::end');
                     t.push({});
                     t.push(null);
                 });

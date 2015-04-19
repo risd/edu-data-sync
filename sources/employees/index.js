@@ -96,15 +96,16 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     var toResolve = self.relationshipsToResolve();
 
     if ('colleague_department' in currentWHData) {
-        var department = whUtil
-            .webhookDepartmentForColleague(
-                currentWHData.colleague_department);
+        var departments = [currentWHData.colleague_department]
+            .map(whUtil.webhookDepartmentForColleague)
+            .filter(function (d) {
+                return d !== false;
+            })
+            .map(function (d) {
+                return { departments: d };
+            });
 
-        if (department !== false) {
-            toResolve[0].itemsToRelate = [{
-                departments: department
-            }];
-        }
+        toResolve[0].itemsToRelate = departments;
 
         if (currentWHData.colleague_department ===
             'Foundation Studies') {
@@ -118,14 +119,17 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             toResolve[2].itemToRelate = true;
         }
 
-        var liberalArtsDepartment = whUtil
-            .webhookLiberalArtsDepartmentForColleague(
-                currentWHData.colleague_department);
-        if (liberalArtsDepartment !== false) {
-            toResolve[3].itemsToRelate = [{
-                liberalartsdepartments: liberalArtsDepartment
-            }];
-        }
+        var liberalArtsDepartments =
+            [currentWHData.colleague_department]
+                .map(whUtil.webhookLiberalArtsDepartmentForColleague)
+                .filter(function (d) {
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { liberalartsdepartments: d };
+                });
+        
+        toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
     return toResolve;

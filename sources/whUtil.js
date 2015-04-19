@@ -161,12 +161,12 @@ module.exports = function () {
                         return d.webhook;
                     });
 
-            if (f.length !== 1) {
-                var m = [
-                    'Could not find webhook name for ',
-                    compareKey + ' in map ' + mapName
-                ];
-                console.log(m.join());
+            if (f.length === 0) {
+                // console.log('Could not find webhook name for');
+                // console.log(compareValue);
+                // console.log('in map: ', mapName);
+                // console.log('using key: ', compareKey);
+                return false;
             } else {
                 var webhookDepartment = f[0];
                 return webhookDepartment;

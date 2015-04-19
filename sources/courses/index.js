@@ -224,15 +224,20 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     var toResolve = self.relationshipsToResolve();
 
     if ('colleague_departments' in currentWHData) {
-        var department = whUtil
-            .webhookDepartmentForColleague(
-                currentWHData.colleague_departments);
+        var departments =
+            currentWHData.colleague_departments
+                .map(function (d) {
+                    return d.department;
+                })
+                .map(whUtil.webhookDepartmentForCourseCatalogue)
+                .filter(function (d) {
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { departments: d };
+                });
 
-        if (department !== false) {
-            toResolve[0].itemsToRelate = [{
-                departments: department
-            }];
-        }
+        toResolve[0].itemsToRelate = departments;
 
         var foundation =
             currentWHData.colleague_departments
@@ -256,15 +261,21 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             toResolve[2].itemToRelate = true;
         }
 
-        var liberalArtsDepartment = whUtil
-            .webhookLiberalArtsDepartmentForCourseCatalogue(
-                currentWHData.colleague_departments);
+        var liberalArtsDepartments =
+            currentWHData.colleague_departments
+                .map(function (d) {
+                    return d.department;
+                })
+                .map(whUtil
+                        .webhookLiberalArtsDepartmentForCourseCatalogue)
+                .filter(function (d) {
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { liberalartsdepartments: d };
+                });
 
-        if (liberalArtsDepartment !== false) {
-            toResolve[3].itemsToRelate = [{
-                liberalartsdepartments: liberalArtsDepartment
-            }];
-        }
+        toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
     if ('colleague_id' in currentWHData) {
