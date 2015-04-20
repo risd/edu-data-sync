@@ -145,15 +145,30 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             .map(function (d) {
                 return { department: d };
             });
-    wh.colleague_course_title = src.COURSETITLE;
+    wh.colleague_course_title = toTitleCase(src.COURSETITLE);
     wh.colleague_course_name = src.COURSENAME;
-    wh.colleague_course_description = src.COURSEDESC;
+    wh.colleague_course_description = formatDescription(src.COURSEDESC);
     wh.colleague_course_term = src.COURSETERM;
     wh.colleague_course_credits = src.COURSECREDITS;
     wh.colleague_course_academic_level = src.COURSEACADEMICLEVEL;
     wh.colleague_course_faculty_id = src.COURSEFACULTY || '';
 
     return (whUtil.whRequiredDates(wh));
+
+    function toTitleCase (str) {
+        return str.replace(
+            /\w\S*/g,
+            function (txt) {
+                return txt.charAt(0)
+                          .toUpperCase() +
+                       txt.substr(1)
+                          .toLowerCase();
+        });
+    }
+
+    function formatDescription (desc) {
+        return desc;
+    }
 };
 
 Courses.prototype.relationshipsToResolve = function () {
