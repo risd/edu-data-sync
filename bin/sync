@@ -10,6 +10,8 @@ var Firebaseref = require('../firebaseref.js');
 var Events = require('../sources/events/index.js');
 var Employees = require('../sources/employees/index.js');
 var Courses = require('../sources/courses/index.js');
+// Temporary sources during transition
+var News = require('../sources/news/index.js');
 
 var sourcePrototypes = [];
 

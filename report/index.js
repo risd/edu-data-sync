@@ -122,9 +122,16 @@ Report.prototype.update = function () {
 				if (value) {
 					Object.keys(value)
 						.forEach(function (key) {
+							var sortDate = moment(
+									value[key],
+									'MMMM Do YYYY, h:mm:ss a'
+								)
+								.valueOf();
+
 							toWrite.push({
 								contentType: key,
-								date: value[key]
+								date: value[key],
+								sortDate: sortDate
 							});
 						});
 				}
@@ -137,11 +144,15 @@ Report.prototype.update = function () {
 		var stream = this;
 		var htmlToWrite = '';
 
+		var sortedToWrite = toWrite.sort(function (a, b) {
+				return b.sortDate - a.sortDate;
+			});
+
 		fs.createReadStream(__dirname + '/template.html')
 			.pipe(self.html)
 			.pipe(through(capture, push));
 
-		toWrite.forEach(function (entry) {
+		sortedToWrite.forEach(function (entry) {
 			self.sources.write({
 				'[key=contentType]': entry.contentType,
 				'[key=date]': entry.date

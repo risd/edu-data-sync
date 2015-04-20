@@ -15,7 +15,7 @@ module.exports = function () {
         }, {
             "colleague": "LA His/Phil/Soc",
             "webhook": "History, Philosophy + The Social Sciences",
-            "localist": "History, Philosophy + The Social Sciences",
+            "localist": "History, Philosophy + the Social Sciences",
             "courseCatalogue": "HIST/PHIL/SO SC DEPT"
         }],
         forDepartments: [{
@@ -135,7 +135,11 @@ module.exports = function () {
         webhookDepartmentForLocalist:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
-                'webhook'),
+                'localist'),
+        webhookLiberalArtsDepartmentForLocalist:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'localist'),
         webhookDepartmentForColleague:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
