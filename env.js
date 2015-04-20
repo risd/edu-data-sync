@@ -2,9 +2,18 @@ var fs = require('fs');
 
 module.exports = Env;
 
+/**
+ * Env ensures that environment variables are set.
+ *
+ * The return value is an object that can be used
+ * by the ./bin/herokuConfig process to push these
+ * variables into the heroku app that will run
+ * this sync process.
+ */
 function Env () {
-    RISDMediaConfigToEnv();
-    FirebaseConfigToEnv();
+    return [].concat(RISDMediaConfigToEnv(),
+                     FirebaseConfigToEnv(),
+                     AWStoEnv());
 }
 
 
@@ -89,5 +98,32 @@ function FirebaseConfigToEnv () {
     return [
         'FB_SECRET=' + fbConf.secretKey,
         'FB_SITENAME=' + fbConf.siteName
+    ];
+}
+
+function AWStoEnv () {
+    console.log('Reading AWS Config.');
+    var fileName = process.env.HOME + '/.risdmedia/aws.json';
+
+    var awsConf;
+    try {
+        var file = fs.readFileSync(fileName);
+        awsConf = JSON.parse(file.toString());
+    } catch (err) {
+        var e = [
+            'Expecting ~/.risdmedia/aws.json.',
+            'Variables are expected already be',
+            'in process.env'
+        ];
+        console.log(e.join(' '));
+        return [];
+    }
+
+    process.env.AWS_KEY = awsConf.key;
+    process.env.AWS_SECRET = awsConf.secret;
+
+    return [
+        'AWS_KEY=' + awsConf.key,
+        'AWS_SECRET=' + awsConf.secret
     ];
 }

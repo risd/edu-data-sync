@@ -1,7 +1,12 @@
 var fs = require('fs');
+
+var s3 = require('s3-write-stream');
 var template = require('html-template');
 var moment = require('moment');
 var request = require('request');
+var through = require('through2');
+var combine = require('stream-combiner2');
+
 
 module.exports = Report;
 
@@ -15,16 +20,18 @@ module.exports = Report;
 function Report () {
     if (!(this instanceof Report)) return new Report();
     var self = this;
-    var html = template();
-    this.sources = html.template('source');
+    this.html = template();
+    this.sources = this.html.template('source');
 }
 
 /**
  * Configures this._firebase. The root of 
  * the report data.
- * @type {[type]}
+ *
+ * Expects a reference to the firebase,
+ * pushes that same reference to the firebase.
  */
-Report.prototype.configFirebase = function () {
+Report.prototype.config = function () {
 	var self = this;
 	var pathOnFirebase = 'eduSyncReport';
 	// setup s3
@@ -59,24 +66,8 @@ Report.prototype.configFirebase = function () {
 };
 
 /**
- * Fetch gets the report data from Firebase.
- *
- * Pushes an array to write to the template.
- *
- * [{ contentType: , updated: '' }]
- * 
- * @return {stream}
- */
-Report.prototype.fetch = function () {
-	return through.obj(ftch);
-
-	function ftch (row, enc, next) {
-
-	}
-};
-
-/**
- * Expecting a stream of HTML.
+ * Expecting an array of Sources who
+ * have completed the sync.
  * 
  * Using the content type, update
  * the date associated for its
@@ -86,24 +77,110 @@ Report.prototype.fetch = function () {
  */
 Report.prototype.update = function () {
 	var self = this;
-	return through.obj(updt);
+	return combine(
+			through.obj(toUpdate),
+			through.obj(writeToFirebase),
+			through.obj(fetchFirebase),
+			through.obj(writeHTML),
+			through.obj(pushToS3));
 
-	function updt (row, enc, next) {
-		self.write({
-			'[key=contentType]': '',
-			'[key=updated]': ''
+	function toUpdate (sources, enc, next) {
+		var date = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+		var keysToUpdate = {};
+
+		sources.forEach(function (source) {
+			keysToUpdate[source.webhookContentType] = date;
 		});
+
+		this.push(keysToUpdate);
+		this.push(null);
 	}
-};
 
-/**
- * Expecting a stream of HTML
- * @return {[type]} [description]
- */
-Report.prototype.put = function () {
-	return through.obj(pt);
+	function writeToFirebase (toUpdate, enc, next) {
+		var stream = this;
 
-	function pt (row, enc, next) {
+		self._firebase
+			.update(toUpdate, function (error) {
+				if (error) {
+					var m = 'Error writing report data ' +
+							'to Firebase.';
+					console.log(m);
+				}
+				stream.push(toUpdate);
+				stream.push(null);
+			});
+	}
 
+	function fetchFirebase (toUpdate, enc, next) {
+		var stream = this;
+		var toWrite = [];
+
+		self._firebase
+			.once('value', function (snapshot) {
+				var value = snapshot.val();
+				if (value) {
+					Object.keys(value)
+						.forEach(function (key) {
+							toWrite.push({
+								contentType: key,
+								date: value[key]
+							});
+						});
+				}
+				stream.push(toWrite);
+				stream.push(null);
+			});
+	}
+
+	function writeHTML (toWrite, enc, next) {
+		var stream = this;
+		var htmlToWrite = '';
+
+		fs.createReadStream(__dirname + '/template.html')
+			.pipe(self.html)
+			.pipe(through(capture, push));
+
+		toWrite.forEach(function (entry) {
+			self.sources.write({
+				'[key=contentType]': entry.contentType,
+				'[key=date]': entry.date
+			});
+		});
+
+		self.sources.end();
+
+		function capture (chunk, subenc, subnext) {
+			htmlToWrite += chunk.toString();
+			subnext();
+		}
+		function push () {
+			stream.push(htmlToWrite);
+			stream.push(null);
+		}
+	}
+
+	function pushToS3 (html, enc, next) {
+		var stream = this;
+
+		var source = through();
+		var upload = s3({
+			accessKeyId: process.env.AWS_KEY,
+			secretAccessKey: process.env.AWS_SECRET,
+			Bucket: 'edu-data-sync-report',
+			ContentType: 'text/html'
+		});
+
+		var writer = source.pipe(upload('index.html'));
+
+		writer
+			.on('end', function () {
+				stream.push(html);
+				stream.push(null);
+			});
+
+		console.log(html);
+		source.write(Buffer(html));
+		source.end();
 	}
 };
