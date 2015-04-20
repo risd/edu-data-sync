@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var s3 = require('s3-write-stream');
+var knox = require('knox');
 var template = require('html-template');
 var moment = require('moment');
 var request = require('request');
@@ -163,24 +163,25 @@ Report.prototype.update = function () {
 	function pushToS3 (html, enc, next) {
 		var stream = this;
 
-		var source = through();
-		var upload = s3({
-			accessKeyId: process.env.AWS_KEY,
-			secretAccessKey: process.env.AWS_SECRET,
-			Bucket: 'edu-data-sync-report',
-			ContentType: 'text/html'
+		var client = knox.createClient({
+			key: process.env.AWS_KEY,
+			secret: process.env.AWS_SECRET,
+			bucket: 'edu-data-sync-report'
 		});
 
-		var writer = source.pipe(upload('index.html'));
+		var req = client.put('/index.html', {
+			'Content-Length': Buffer.byteLength(html),
+			'Content-Type': 'text/html'
+		});
 
-		writer
-			.on('end', function () {
-				stream.push(html);
-				stream.push(null);
-			});
+		req.on('response', function (res) {
+			if (200 == res.statusCode) {
+				console.log('Report saved to: ', req.url);
+			}
+			stream.push(html);
+			stream.push(null);
+		});
 
-		console.log(html);
-		source.write(Buffer(html));
-		source.end();
+		req.end(html);
 	}
 };
