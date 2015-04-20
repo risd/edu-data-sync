@@ -59,6 +59,7 @@ Events.prototype.keyFromSource = function (row) {
 
 Events.prototype.listSource = function () {
     var self = this;
+    console.log('Events.listSource::start');
 
     // stream of Event objects from localist
     var eventStream = through.obj();
@@ -239,6 +240,17 @@ Events.prototype.relationshipsToResolve = function () {
         relationshipKey: 'related_foundation_studies',
         relateToContentType: 'foundationstudies',
         itemToRelate: false
+    }, {
+        multipleToRelate: false,
+        relationshipKey: 'related_graduate_studies',
+        relateToContentType: 'graduatestudies',
+        itemToRelate: false
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_liberal_arts_departments',
+        relateToContentType: 'liberalartsdepartments',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
     }];
 };
 
@@ -252,15 +264,14 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var departments =
             currentWHData.localist_filters__department
                 .map(function (d) {
-                    return {
-                        departments: 
-                            whUtil
-                                .webhookDepartmentForLocalist(
-                                    d.department)
-                    };
+                    return d.department;
                 })
+                .map(whUtil.webhookDepartmentForLocalist)
                 .filter(function (d) {
-                    return d.departments !== false;
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { departments: d };
                 });
 
         toResolve[0].itemsToRelate = departments;
@@ -274,6 +285,31 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         if (foundation.length === 1) {
             toResolve[1].itemToRelate = true;
         }
+
+        var graduate =
+            currentWHData.localist_filters__department
+                .filter(function (d) {
+                    return d.department ===
+                        "Division of Graduate Studies";
+                });
+        if (graduate.length === 1) {
+            toResolve[2].itemToRelate = true;
+        }
+
+        var liberalArtsDepartments =
+            currentWHData.localist_filters__department
+                .map(function (d) {
+                    return d.department;
+                })
+                .map(whUtil.webhookLiberalArtsDepartmentForLocalist)
+                .filter(function (d) {
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { liberalartsdepartments: d };
+                });
+
+        toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
     return toResolve;

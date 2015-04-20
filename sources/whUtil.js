@@ -15,7 +15,7 @@ module.exports = function () {
         }, {
             "colleague": "LA His/Phil/Soc",
             "webhook": "History, Philosophy + The Social Sciences",
-            "localist": "History, Philosophy + The Social Sciences",
+            "localist": "History, Philosophy + the Social Sciences",
             "courseCatalogue": "HIST/PHIL/SO SC DEPT"
         }],
         forDepartments: [{
@@ -135,7 +135,11 @@ module.exports = function () {
         webhookDepartmentForLocalist:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
-                'webhook'),
+                'localist'),
+        webhookLiberalArtsDepartmentForLocalist:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'localist'),
         webhookDepartmentForColleague:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -161,12 +165,12 @@ module.exports = function () {
                         return d.webhook;
                     });
 
-            if (f.length !== 1) {
-                var m = [
-                    'Could not find webhook name for ',
-                    compareKey + ' in map ' + mapName
-                ];
-                console.log(m.join());
+            if (f.length === 0) {
+                // console.log('Could not find webhook name for');
+                // console.log(compareValue);
+                // console.log('in map: ', mapName);
+                // console.log('using key: ', compareKey);
+                return false;
             } else {
                 var webhookDepartment = f[0];
                 return webhookDepartment;

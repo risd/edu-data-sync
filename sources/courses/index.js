@@ -26,6 +26,7 @@ Courses.prototype.keyFromSource = function (row) {
 
 Courses.prototype.listSource = function () {
     var self = this;
+    console.log('Courses.listSource::start');
 
     var eventStream = through.obj();
 
@@ -56,6 +57,7 @@ Courses.prototype.listSource = function () {
         source.on('end', function () {
             sourcesCount -= 1;
             if (sourcesCount === 0) {
+                console.log('Courses.listSource::end');
                 eventStream.push(null);
             }
         });
@@ -143,15 +145,30 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             .map(function (d) {
                 return { department: d };
             });
-    wh.colleague_course_title = src.COURSETITLE;
+    wh.colleague_course_title = toTitleCase(src.COURSETITLE);
     wh.colleague_course_name = src.COURSENAME;
-    wh.colleague_course_description = src.COURSEDESC;
+    wh.colleague_course_description = formatDescription(src.COURSEDESC);
     wh.colleague_course_term = src.COURSETERM;
     wh.colleague_course_credits = src.COURSECREDITS;
     wh.colleague_course_academic_level = src.COURSEACADEMICLEVEL;
     wh.colleague_course_faculty_id = src.COURSEFACULTY || '';
 
     return (whUtil.whRequiredDates(wh));
+
+    function toTitleCase (str) {
+        return str.replace(
+            /\w\S*/g,
+            function (txt) {
+                return txt.charAt(0)
+                          .toUpperCase() +
+                       txt.substr(1)
+                          .toLowerCase();
+        });
+    }
+
+    function formatDescription (desc) {
+        return desc;
+    }
 };
 
 Courses.prototype.relationshipsToResolve = function () {
@@ -222,15 +239,20 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     var toResolve = self.relationshipsToResolve();
 
     if ('colleague_departments' in currentWHData) {
-        var department = whUtil
-            .webhookDepartmentForColleague(
-                currentWHData.colleague_departments);
+        var departments =
+            currentWHData.colleague_departments
+                .map(function (d) {
+                    return d.department;
+                })
+                .map(whUtil.webhookDepartmentForCourseCatalogue)
+                .filter(function (d) {
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { departments: d };
+                });
 
-        if (department !== false) {
-            toResolve[0].itemsToRelate = [{
-                departments: department
-            }];
-        }
+        toResolve[0].itemsToRelate = departments;
 
         var foundation =
             currentWHData.colleague_departments
@@ -254,15 +276,21 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             toResolve[2].itemToRelate = true;
         }
 
-        var liberalArtsDepartment = whUtil
-            .webhookLiberalArtsDepartmentForCourseCatalogue(
-                currentWHData.colleague_departments);
+        var liberalArtsDepartments =
+            currentWHData.colleague_departments
+                .map(function (d) {
+                    return d.department;
+                })
+                .map(whUtil
+                        .webhookLiberalArtsDepartmentForCourseCatalogue)
+                .filter(function (d) {
+                    return d !== false;
+                })
+                .map(function (d) {
+                    return { liberalartsdepartments: d };
+                });
 
-        if (liberalArtsDepartment !== false) {
-            toResolve[3].itemsToRelate = [{
-                liberalartsdepartments: liberalArtsDepartment
-            }];
-        }
+        toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
     if ('colleague_id' in currentWHData) {

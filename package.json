@@ -1,6 +1,6 @@
 {
   "name": "edu-data-sync",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Sync risd.edu datastore with external data sources.",
   "main": "index.js",
   "repository": {
@@ -17,9 +17,13 @@
   "author": "Ruben Rodriguez <mail@rubenrodriguez.me> (http://rubenrodriguez.me/)",
   "license": "ISC",
   "dependencies": {
+    "cheerio": "^0.19.0",
     "clone": "^1.0.2",
     "firebase": "^2.2.3",
     "from2-array": "0.0.3",
+    "html-template": "^1.2.1",
+    "knox": "^0.9.2",
+    "minimist": "^1.1.1",
     "moment": "^2.9.0",
     "request": "^2.54.0",
     "stream-combiner2": "^1.0.2",

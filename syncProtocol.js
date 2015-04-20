@@ -517,13 +517,13 @@ function rrGetRelatedData () {
             } else {
                 if (row.toResolve.multipleToRelate) {
                     row.relatedDataCollection =
-                        cache[row.toResolve
-                                 .relateToContentType];
+                        clone(cache[row.toResolve
+                                   .relateToContentType]);
                 }
                 else {
                     row.relatedDataItem =
-                        cache[row.toResolve
-                                 .relateToContentType];
+                        clone(cache[row.toResolve
+                                   .relateToContentType]);
                 }
                 this.push(row);
                 next();
@@ -952,9 +952,8 @@ function rrSaveReverse () {
 
 
         function saver (d) {
-            // console.log('rrSaveReverse:saver');
-            // console.log(d.reverseKey);
-            // console.log(d.reverseValue);
+            console.log('rrSaveReverse:saver::start');
+            console.log(d);
 
             var t = through.obj();
             var ref;
@@ -981,6 +980,7 @@ function rrSaveReverse () {
             }
             
             ref.set(true, function () {
+                    console.log('rrSaveReverse:saver::end');
                     t.push({});
                     t.push(null);
                 });
@@ -1009,9 +1009,9 @@ function rrSaveCurrent () {
     return through.obj(save);
 
     function save (row, enc, next) {
-        // console.log('\n\nSave current.');
-        // console.log(row.whKey);
-        // console.log(row.toResolve.relationshipKey);
+        console.log('\n\nSave current.');
+        console.log(row.whKey);
+        console.log(row.toResolve.relationshipKey);
         // console.log(row.webhook[row.toResolve.relationshipKey]);
 
         var stream = this;
@@ -1022,7 +1022,9 @@ function rrSaveCurrent () {
             .child(row.toResolve.relationshipKey)
             .set(row.webhook[row.toResolve.relationshipKey],
                 function () {
-                    // console.log('Save current::end');
+                    console.log('\n\nSave current::end');
+                    console.log(self.webhookContentType);
+                    console.log(row.toResolve.relationshipKey);
                     stream.push(row);
                     next();
                 });
