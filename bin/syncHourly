@@ -1,3 +1,0 @@
-#!/usr/bin/env node
-
-console.log('It\'s been 60 minutes! Let\'s sync events.');

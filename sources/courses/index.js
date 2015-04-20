@@ -31,8 +31,8 @@ Courses.prototype.listSource = function () {
     var eventStream = through.obj();
 
     var xml = new xmlStream(
-    	fs.createReadStream(
-    		__dirname + '/COURSE.DATA.XML'),
+        fs.createReadStream(
+            __dirname + '/COURSE.DATA.XML'),
     	'iso-8859-1');
 
     var xmlEngl = new xmlStream(
