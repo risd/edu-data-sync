@@ -13,6 +13,8 @@ var Courses = require('../sources/courses/index.js');
 
 var sourcePrototypes = [];
 
+var Report = require('../report/index.js')();
+
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
 var args = parseArgs(process.argv.slice(2));
@@ -50,6 +52,7 @@ Env();
 
 Firebaseref()
     .pipe(AddEduSyncNodeToFirebase())
+    .pipe(Report.configFirebase())
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
     .pipe(GetSourcesData())
     .pipe(AddSourceToWebHook())
@@ -260,19 +263,5 @@ function Exit () {
         console.log('Done!');
         this.push(null);
         process.exit();
-    }
-}
-
-function DeleteEmployees () {
-    return through.obj (del);
-
-    function del (fb, enc, next) {
-        var stream = this;
-        fb.child('data/employees')
-          .set({},
-               function () {
-                   stream.push({});
-                   stream.push(null);
-               });
     }
 }

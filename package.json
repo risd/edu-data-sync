@@ -21,6 +21,7 @@
     "clone": "^1.0.2",
     "firebase": "^2.2.3",
     "from2-array": "0.0.3",
+    "html-template": "^1.2.1",
     "minimist": "^1.1.1",
     "moment": "^2.9.0",
     "request": "^2.54.0",
