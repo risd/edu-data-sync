@@ -11,3 +11,8 @@ args = args.concat(confArgs);
 args = args.concat(['--app', 'edu-data-sync']);
 
 spawn('heroku', args).stdout.pipe(process.stdout);
+spawn('heroku',
+      ['buildpack:set',
+       'https://github.com/ddollar/heroku-buildpack-multi.git'])
+    .stdout
+    .pipe(process.stdout);
