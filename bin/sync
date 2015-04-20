@@ -51,14 +51,14 @@ if (args._.length === 0) {
 Env();
 
 Firebaseref()
-    // .pipe(AddEduSyncNodeToFirebase())
+    .pipe(AddEduSyncNodeToFirebase())
     .pipe(Report.config())
     .pipe(ApplySyncProtocolToSources(sourcePrototypes))
-    // .pipe(GetSourcesData())
-    // .pipe(AddSourceToWebHook())
-    // .pipe(RemoveFromWebhookBasedOnSource())
-    // .pipe(ResolveRelationships())
-    // .pipe(ResolveReverseRelationships())
+    .pipe(GetSourcesData())
+    .pipe(AddSourceToWebHook())
+    .pipe(RemoveFromWebhookBasedOnSource())
+    .pipe(ResolveRelationships())
+    .pipe(ResolveReverseRelationships())
     .pipe(Report.update())
     .pipe(Exit());
 
