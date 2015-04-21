@@ -14,56 +14,141 @@ module.exports = News;
  * suppor the transition from Ektron to WebHook.
  */
 function News () {
-	if (!(this instanceof News)) return new News();
+    if (!(this instanceof News)) return new News();
 }
 
 News.prototype.webhookContentType = 'news';
 News.prototype.keyFromWebhook = function (row) {
-	return row.ektron_id;
+    return row.ektron_id;
 };
 News.prototype.keyFromSource = function (row) {
-	return row.ContentID;
+    return row.ContentID;
 };
 
 News.prototype.listSource = function () {
-	console.log('News.listSource');
-	var self = this;
+    console.log('News.listSource');
+    var self = this;
 
-	var eventStream = through.obj();
+    var eventStream = through.obj();
 
-	var xml = new xmlStream(
-		fs.createReadStream(__dirname + '/news2010.xml'));
+    var xmlFilePaths =
+        ['/news2014.xml'];
 
-	var valueForThumbimage = HTMLValueForTag('thumbimage');
-	var valueForBody = HTMLValueForTag('body');
+    var valueForThumbimage = HTMLValueForTag('thumbimage');
+    var valueForBody = HTMLValueForTag('body');
+    var valueForCaption = HTMLValueForTag('caption');
+    var valueForImage = HTMLValueForTag('image');
 
-	xml.on('endElement: NewsItem', function (d) {
-		d.thumbimage = valueForThumbimage(d.HMTL);
-		d.body = valueForBody(d.HMTL);
-		d.tags = [d.TaxonomyName];
-		// console.log(d);
-		eventStream.push(d);
-	});
+    var sources = xmlFilePaths.map(function (name){
+            return new xmlStream(
+                fs.createReadStream(
+                    __dirname + name ));
+        });
 
-	xml.on('end', function () {
-		console.log('News.listSource::end');
-		eventStream.push(null);
-	});
+    var sourcesCount = sources.length;
 
+    sources.forEach(function (source) {
+        source.on('endElement: NewsItem', function (d) {
+            d.caption = valueForCaption(d.HMTL);
+            d.thumbnail_image = valueForThumbimage(d.HMTL);
+            d.body = [d.HMTL]
+                .map(valueForBody)
+                .map(replaceBrWithP)
+                .map(ensureWrapInP)
+                .map(addPOnRelated)
+                .map(removeEmptyP)
+                .map(removeRelated)
+                [0];
+            d.featured_image = valueForCaption(d.HMTL);
+            d.tags = [d.TaxonomyName];
+            eventStream.push(d);
+        });
 
-	return eventStream;
+        source.on('end', function () {
+            sourcesCount -=1;
+            if (sourcesCount === 0) {
+                console.log('News.listSource::end');
+                eventStream.push(null);
+            }
+        });
+    });
 
-	function HTMLValueForTag (tag) {
-		return function (html) {
-			var value = '';
-			var splitStart = html.split('<' + tag + '>');
-			if (splitStart.length > 0) {
-				var splitEnd = splitStart[1].split('</' + tag + '>');
-				value = splitEnd[0];
-			}
-			return value;
-		};
-	}
+    return eventStream;
+
+    function HTMLValueForTag (tag) {
+        return function (html) {
+            var value = '';
+            var splitStart = html.split('<' + tag + '>');
+            if (splitStart.length > 1) {
+                var splitEnd = splitStart[1].split('</' + tag + '>');
+                value = splitEnd[0];
+            }
+            return value;
+        };
+    }
+
+    function ensureWrapInP (body) {
+        if (!(body.indexOf('<p>') === 0)) {
+            body = '<p>' + body;
+        }
+        if (!(body.indexOf('</p>') === (body.length - 5))) {
+            body = body + '</p>';   
+        }
+        return body;
+    }
+
+    function replaceBrWithP (body) {
+        return body.replace(/<br \/>/g, '</p><p>');
+    }
+
+    function addPOnRelated (body) {
+        // for cases where this happens
+        // </p> <em>related links:</em><br />
+        return body.replace(/<\/p> <em>/g, '</p><p><em>');
+    }
+
+    function removeEmptyP (body) {
+        var $ = cheerio.load('<div>' + body + '</div>');
+        return $('p')
+            .map(function (i, el) {
+                if ($(this).text().trim().length > 0) {
+                    return $(this);
+                }
+            })
+            .get()
+            .join(' ');
+    }
+
+    function removeRelated (body) {
+        var $ = cheerio.load('<div>' + body + '</div>');
+        
+        // everything after finding related
+        // gets filtered
+        var foundRelated = false;
+
+        return $('p')
+            .map(function (i, el) {
+
+                var html = $(this).html().toLowerCase();
+                // luckily the related links section
+                // is consistently. The first word
+                // in the p tag is "related"
+                // which is always preceeded by some
+                // element being closed. 
+                if (html.indexOf('>related') > -1) {
+                    foundRelated = true;
+                }
+                if (html.indexOf('>links') > -1) {
+                    foundRelated = true;
+                }
+
+                if (foundRelated === false) {
+                    return $(this);
+                }
+            })
+            .get()
+            .join(' ');
+    }
 };
 
 /**
@@ -78,42 +163,42 @@ News.prototype.listSource = function () {
  * @return {through.obj} Stream of objects.
  */
 News.prototype.sourceStreamToFirebaseSource = function () {
-	var self = this;
+    var self = this;
 
-	return through.obj(toFirebase);
+    return through.obj(toFirebase);
 
-	function toFirebase (row, enc, next) {
-		var stream = this;
+    function toFirebase (row, enc, next) {
+        var stream = this;
 
-		var key = self.keyFromSource(row);
-		self._firebase
-			.source
-			.child(key)
-			.once('value', onCheckComplete, onCheckError);
+        var key = self.keyFromSource(row);
+        self._firebase
+            .source
+            .child(key)
+            .once('value', onCheckComplete, onCheckError);
 
-		function onCheckComplete (snapshot) {
-			var value = snapshot.val();
-			if (value) {
-				if (value.tags.indexOf(row.tags[0]) > -1) {
-					onAddComplete();
-				} else {
-					var tags = value.tags.concat(row.tags);
+        function onCheckComplete (snapshot) {
+            var value = snapshot.val();
+            if (value) {
+                if (value.tags.indexOf(row.tags[0]) > -1) {
+                    onAddComplete();
+                } else {
+                    var tags = value.tags.concat(row.tags);
 
-					self._firebase
-						.source
-						.child(key)
-						.child('tags')
-						.set(tags, onAddComplete);
-				}
-			} else {
-				self._firebase
-					.source
-					.child(key)
-					.set(row, onAddComplete);
-			}
-		}
+                    self._firebase
+                        .source
+                        .child(key)
+                        .child('tags')
+                        .set(tags, onAddComplete);
+                }
+            } else {
+                self._firebase
+                    .source
+                    .child(key)
+                    .set(row, onAddComplete);
+            }
+        }
 
-		function onCheckError (error) {
+        function onCheckError (error) {
             console.log(error);
             onAddComplete();
         }
@@ -123,53 +208,53 @@ News.prototype.sourceStreamToFirebaseSource = function () {
             next();
         }
 
-	}
+    }
 };
 
 News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
-	wh.name = toTitleCase(src.Title);
-	wh.ektron_id = this.keyFromSource(src);
-	wh.body = formatBody(src.body);
-	wh.ektron_tags = src.tags;
+    wh.name = toTitleCase(src.Title);
+    wh.ektron_id = this.keyFromSource(src);
+    wh.body = formatBody(src.body);
+    wh.ektron_tags = src.tags;
 
-	// These carry dates that we want to maintain
-	wh.create_date = moment(src.CreatedDate).format();
-	wh.publish_date = moment(src.EditDate).format();
-	wh.last_updated = moment(src.EditDate).format();
-	wh._sort_create_date = moment(src.CreatedDate).unix();
-	wh._sort_last_updated = moment(src.EditDate).unix();
-	wh._sort_publish_date = moment(src.EditDate).unix();
-	wh.preview_url = whUtil.guid();
+    // These carry dates that we want to maintain
+    wh.create_date = moment(src.CreatedDate).format();
+    wh.publish_date = moment(src.EditDate).format();
+    wh.last_updated = moment(src.EditDate).format();
+    wh._sort_create_date = moment(src.CreatedDate).unix();
+    wh._sort_last_updated = moment(src.EditDate).unix();
+    wh._sort_publish_date = moment(src.EditDate).unix();
+    wh.preview_url = whUtil.guid();
 
-	return wh;
+    return wh;
 
-	function toTitleCase(str) {
-	    return str.replace(
-	    	/\w\S*/g,
-	    	function (txt) {
-	    		return txt
-		    			.charAt(0)
-		    			.toUpperCase() +
-	    			txt.substr(1)
-	    			   .toLowerCase();
-		});
-	}
+    function toTitleCase(str) {
+        return str.replace(
+            /\w\S*/g,
+            function (txt) {
+                return txt
+                        .charAt(0)
+                        .toUpperCase() +
+                    txt.substr(1)
+                       .toLowerCase();
+        });
+    }
 
-	function formatBody (body) {
-		body = body.replace(/<br \/>/g, '</p><p>')
-				   .replace(/<br\/>/g, '</p><p>');
+    function formatBody (body) {
+        body = body.replace(/<br \/>/g, '</p><p>')
+                   .replace(/<br\/>/g, '</p><p>');
 
-		var $ = cheerio.load('<div>' + body + '</div>');
+        var $ = cheerio.load('<div>' + body + '</div>');
 
-		// remove empty p tags
-		$('p').each(function () {
-			if ($(this).text().trim() === 0) {
-				$(this).remove();
-			}
-		});
+        // remove empty p tags
+        $('p').each(function () {
+            if ($(this).text().trim() === 0) {
+                $(this).remove();
+            }
+        });
 
-		return $.html();
-	}
+        return $.html();
+    }
 };
 
 News.prototype.relationshipsToResolve = function () {
