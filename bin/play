@@ -6,10 +6,12 @@ var util = require('../util.js');
 var Env = require('../env.js');
 
 var News = require('../sources/news/index.js')();
+var OurRISD = require('../sources/our-risd/index.js')();
 
 var tags = [];
 var count = 0;
-News.listSource();
+// News.listSource();
+OurRISD.listSource();
 	// .pipe(through.obj(log));
 
 function log (row, enc, next) {
