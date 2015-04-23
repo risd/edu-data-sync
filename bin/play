@@ -6,9 +6,28 @@ var util = require('../util.js');
 var Env = require('../env.js');
 
 var News = require('../sources/news/index.js')();
+var OurRISD = require('../sources/our-risd/index.js')();
 
 var tags = [];
-News.listSource().pipe(through.obj(add, done));
+var count = 0;
+// News.listSource();
+OurRISD.listSource();
+	// .pipe(through.obj(log));
+
+function log (row, enc, next) {
+	console.log(row);
+	this.push(row);
+	next();
+}
+
+function counter (row, enc, next) {
+	count += 1;
+	next();
+}
+
+function logend () {
+	console.log(count + ' items.');
+}
 
 function add (row, enc, next) {
 	if (tags.indexOf(row.tags[0]) === -1) {
@@ -20,3 +39,7 @@ function add (row, enc, next) {
 function done () {
 	console.log(tags);
 }
+
+// function Related () {
+// 	return through.obj()
+// }

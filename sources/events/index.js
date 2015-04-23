@@ -14,7 +14,7 @@ function Events () {
     var self = this;
 
     this.url = {
-        base: 'https://events.risd.edu/api/2/'
+        base: 'https://events.risd.edu/api/2.1/'
     };
     this.url._events = this.url.base + 'events';
     this.url.events = function (opts) {
@@ -157,6 +157,63 @@ Events.prototype.listSource = function () {
 };
 
 
+Events.prototype.sourceStreamToFirebaseSource = function () {
+    var self = this;
+
+    return through.obj(toFirebase);
+
+    function toFirebase (row, enc, next) {
+        var stream = this;
+
+        // check to see if this key
+        // has already been added
+        var key = self.keyFromSource(row);
+        self._firebase
+            .source
+            .child(key)
+            .once('value', onCheckComplete, onCheckError);
+
+        function onCheckError (error) {
+            console.log(error);
+            onAddComplete();
+        }
+
+        function onCheckComplete (snapshot) {
+            var value = snapshot.val();
+
+            // value exists add instance times
+            if (value) {
+                var instances = value.event
+                                     .event_instances
+                                     .concat(row.event
+                                                .event_instances);
+
+                self._firebase
+                    .source
+                    .child(key)
+                    .child('event')
+                    .child('event_instances')
+                    .set(instances, onAddComplete);
+
+            }
+            // value does not exist, add it
+            else {
+                self._firebase
+                    .source
+                    .child(key)
+                    .set(row, onAddComplete);
+            }
+        }
+
+        function onAddComplete () {
+            stream.push(row);
+            next();
+        }
+
+    }
+};
+
+
 Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     src = src.event;
 
@@ -165,16 +222,23 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.localist_uid = src.id;
     wh.localist_venue_uid = src.venue_id || '';
     wh.localist_featured = src.featured || false;
-    // localist_date_range_first
-    // localist_date_range_last
-    wh.localist_time_start =
-        src.event_instances[0]
-           .event_instance
-           .start || '';
-    wh.localist_time_end =
-        src.event_instances[0]
-           .event_instance
-           .end || '';
+    wh.localist_date_range_first =
+        [src.first_date].map(addTimeZone)[0];
+    wh.localist_date_range_last =
+        [src.last_date].map(addTimeZone)[0];
+    wh.localist_instances = src.event_instances
+        .map(function (d) {
+            if ((d.event_instance.all_day) ||
+                (!('end' in d.event_instance))){
+                d.event_instance.end = '';
+            }
+            return {
+                start:   d.event_instance.start,
+                end:     d.event_instance.end,
+                all_day: d.event_instance.all_day,
+                id:      d.event_instance.id
+            };
+        });
     wh.localist_url = src.url || '';
     wh.localist_photo_url = src.photo_url || '';
     wh.localist_venue_url = src.venue_url || '';
@@ -211,8 +275,8 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     function eventDateSort (d) {
         var fields = [
-            'localist_time_start',
-            'localist_time_end'
+            'localist_date_range_first',
+            'localist_date_range_last'
         ];
 
         fields.forEach(function (field) {
@@ -225,6 +289,10 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         });
 
         return d;
+    }
+
+    function addTimeZone (dateString) {
+        return dateString + 'T00:00:00-04:00';
     }
 };
 
@@ -313,4 +381,59 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     }
 
     return toResolve;
+};
+
+/**
+ * updateWebhookValueNotInSource implementation
+ * for events. If they are in WebHook & not in
+ * source, they are left alone. Since we are only
+ * looking for future events. If an event has past
+ * we keep it around for historical record.
+ *
+ * Basically a no-op stream
+ *
+ * @return {stream} through.obj transform stream
+ */
+Events.prototype.updateWebhookValueNotInSource = function () {
+    var self = this;
+    var now = moment();
+    return through.obj(updateNotInSource);
+
+    function updateNotInSource (row, enc, next) {
+        var remove = false;
+        if (row.inSource === false) {
+            var endOfLastDayStr =
+                [row.localist_date_range_last]
+                    .map(addEndOfDay)
+                    [0];
+            if (moment(endOfLastDayStr).isAfter(now)) {
+                // Not in the source, and in the future
+                // means that it was removed.
+                // if it was in the past, it means it wasn't
+                // called in our API call.
+                remove = true;
+            }
+        }
+
+        if (remove) {
+            var stream = this;
+            self._firebase
+                .webhook
+                .child(row.whKey)
+                .remove(function onComplete () {
+                    row.whKey = undefined;
+                    row.webhook = undefined;
+                    stream.push(row);
+                    next();
+                });
+        } else {
+            this.push(row);
+            next();
+        }
+    }
+
+    function addEndOfDay (dateString) {
+        return dateString.split('T')[0] +
+               'T23:59:59-04:00';
+    }
 };

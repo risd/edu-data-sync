@@ -39,14 +39,15 @@ function FirebaseToken (config) {
 
     function createToken (row, enc, next) {
         var self = this;
+        var qs = {
+            email: process.env.WH_EMAIL,
+            password: process.env.WH_PASSWORD,
+            firebase: process.env.WH_FIREBASE
+        };
+
         request(
-            authUrl, {
-                qs: {
-                    email: process.env.WH_EMAIL,
-                    password: process.env.WH_PASSWORD,
-                    firebase: process.env.WH_FIREBASE
-                }
-            },
+            authUrl,
+            { qs: qs },
             function (err, res, body) {
                 var data = JSON.parse(body);
                 self.push(data);
@@ -98,6 +99,7 @@ function FirebaseBucketForSite (config) {
                         '/' +
                         process.env.FB_SECRET +
                         '/dev');
+
         this.push(row);
         next();
     }
