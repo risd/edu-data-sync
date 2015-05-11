@@ -25,6 +25,36 @@ News.prototype.keyFromSource = function (row) {
     return row.ContentID;
 };
 
+// Used for migration
+News.prototype.feedImageUrls = function () {
+    var self = this;
+
+    return through.obj(imgurl);
+
+    function imgurl (news, enc, next) {
+        this.push({
+            id: self.keyFromSource(news),
+            type: 'featured_image',
+            ektron: prepend(news.featured_image),
+            wh: false
+        });
+        this.push({
+            id: self.keyFromSource(news),
+            type: 'thumbnail_image',
+            ektron: prepend(news.thumbnail_image),
+            wh: false
+        });
+        next();
+
+        function prepend (url) {
+            if (url.indexOf('risd.edu') === -1) {
+                url = 'http://risd.edu' + url;
+            }
+            return url;
+        }
+    }
+};
+
 News.prototype.listSource = function () {
     console.log('News.listSource');
     var self = this;
@@ -32,7 +62,8 @@ News.prototype.listSource = function () {
     var eventStream = through.obj();
 
     var xmlFilePaths =
-        ['/news2014.xml'];
+        ['/news2010.xml',
+         '/news2014.xml'];
 
     var valueForThumbimage = HTMLValueForTag('thumbimage');
     var valueForBody = HTMLValueForTag('body');
@@ -59,7 +90,7 @@ News.prototype.listSource = function () {
                 .map(removeEmptyP)
                 .map(removeRelated)
                 [0];
-            d.featured_image = valueForCaption(d.HMTL);
+            d.featured_image = valueForImage(d.HMTL);
             d.tags = [d.TaxonomyName];
             eventStream.push(d);
         });
