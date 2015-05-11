@@ -403,7 +403,7 @@ Events.prototype.updateWebhookValueNotInSource = function () {
         var remove = false;
         if (row.inSource === false) {
             var endOfLastDayStr =
-                [row.localist_date_range_last]
+                [row.webhook.localist_date_range_last]
                     .map(addEndOfDay)
                     [0];
             if (moment(endOfLastDayStr).isAfter(now)) {
