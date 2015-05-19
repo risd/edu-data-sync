@@ -25,25 +25,39 @@ News.prototype.keyFromSource = function (row) {
     return row.ContentID;
 };
 
-// Used for migration
+// Migration protocol
 News.prototype.feedImageUrls = function () {
     var self = this;
 
     return through.obj(imgurl);
 
-    function imgurl (news, enc, next) {
-        this.push({
-            id: self.keyFromSource(news),
-            type: 'featured_image',
-            ektron: prepend(news.featured_image),
-            wh: false
-        });
-        this.push({
-            id: self.keyFromSource(news),
-            type: 'thumbnail_image',
-            ektron: prepend(news.thumbnail_image),
-            wh: false
-        });
+    function imgurl (row, enc, next) {
+        // expects
+        // row.{whKey, webhook}
+        // 
+        // pushes
+        // {whKey, type, ektron, wh}
+
+        if (('featured_image' in row.webhook) &&
+            (typeof row.webhook.featured_image === 'string')) {
+            this.push({
+                whKey: row.whKey,
+                type: 'featured_image',
+                ektron: prepend(row.webhook.featured_image),
+                wh: false
+            });
+        }
+        
+        if (('thumbnail_image' in row.webhook) &&
+            (typeof row.webhook.thumbnail_image === 'string')) {
+            this.push({
+                whKey: row.whKey,
+                type: 'thumbnail_image',
+                ektron: prepend(row.webhook.thumbnail_image),
+                wh: false
+            });
+        }
+
         next();
 
         function prepend (url) {
@@ -62,8 +76,7 @@ News.prototype.listSource = function () {
     var eventStream = through.obj();
 
     var xmlFilePaths =
-        ['/news2010.xml',
-         '/news2014.xml'];
+        ['/news2013.xml'];
 
     var valueForThumbimage = HTMLValueForTag('thumbimage');
     var valueForBody = HTMLValueForTag('body');
@@ -80,7 +93,10 @@ News.prototype.listSource = function () {
 
     sources.forEach(function (source) {
         source.on('endElement: NewsItem', function (d) {
-            d.caption = valueForCaption(d.HMTL);
+            d.caption = [d.HMTL]
+                .map(valueForCaption)
+                .map(ensureWrapInP)
+                [0];
             d.thumbnail_image = valueForThumbimage(d.HMTL);
             d.body = [d.HMTL]
                 .map(valueForBody)
@@ -119,6 +135,9 @@ News.prototype.listSource = function () {
     }
 
     function ensureWrapInP (body) {
+        if (body.length === 0) {
+            return body;
+        }
         if (!(body.indexOf('<p>') === 0)) {
             body = '<p>' + body;
         }
@@ -235,6 +254,7 @@ News.prototype.sourceStreamToFirebaseSource = function () {
         }
 
         function onAddComplete () {
+            console.log('sourceStreamToFirebaseSource');
             stream.push(row);
             next();
         }
@@ -243,10 +263,30 @@ News.prototype.sourceStreamToFirebaseSource = function () {
 };
 
 News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
-    wh.name = toTitleCase(src.Title);
+    wh.name = src.Title;
+    wh.story_type = 'News';
+
+    if (src.featured_image) {
+        wh.featured_image = src.featured_image;
+    }
+
+    if (src.thumbnail_image) {
+        wh.thumbnail_image = src.thumbnail_image;
+    }
+
+    wh.story = src.body;
+
+    if (src.caption) {
+        wh.intro = src.caption;
+    }
+
     wh.ektron_id = this.keyFromSource(src);
-    wh.body = formatBody(src.body);
-    wh.ektron_tags = src.tags;
+    wh.ektron_taxonomy = src.tags
+        .map(function (d) {
+            return { tag: d };
+        });
+
+    wh.isDraft = false;
 
     // These carry dates that we want to maintain
     wh.create_date = moment(src.CreatedDate).format();
@@ -257,35 +297,10 @@ News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh._sort_publish_date = moment(src.EditDate).unix();
     wh.preview_url = whUtil.guid();
 
+    console.log('updateWebhookValueWithSourceValue');
+    console.log(wh);
+
     return wh;
-
-    function toTitleCase(str) {
-        return str.replace(
-            /\w\S*/g,
-            function (txt) {
-                return txt
-                        .charAt(0)
-                        .toUpperCase() +
-                    txt.substr(1)
-                       .toLowerCase();
-        });
-    }
-
-    function formatBody (body) {
-        body = body.replace(/<br \/>/g, '</p><p>')
-                   .replace(/<br\/>/g, '</p><p>');
-
-        var $ = cheerio.load('<div>' + body + '</div>');
-
-        // remove empty p tags
-        $('p').each(function () {
-            if ($(this).text().trim() === 0) {
-                $(this).remove();
-            }
-        });
-
-        return $.html();
-    }
 };
 
 News.prototype.relationshipsToResolve = function () {

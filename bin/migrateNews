@@ -1,67 +1,28 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
 var through = require('through2');
-var parseArgs = require('minimist');
+var request = require('request');
+var sizeOf = require('image-size');
 
 var Env = require('../env.js');
 var Firebaseref = require('../firebaseref.js');
 
-var Events = require('../sources/events/index.js');
-var Employees = require('../sources/employees/index.js');
-var Courses = require('../sources/courses/index.js');
+var News = require('../sources/news/index.js');
 
-var sourcePrototypes = [];
-
-var Report = require('../report/index.js')();
-
-// Based on arguments passed into this process
-// populate the sources that will be sync'd.
-var args = parseArgs(process.argv.slice(2));
-if (args._.indexOf('help') > -1) {
-    var usage = fs.readFileSync(
-                    __dirname +
-                    '/syncUsage.md')
-                .toString()
-                .replace(/```/g, '\n');
-    console.log(usage);
-    return;
-}
-if (args._.length === 0) {
-    sourcePrototypes.push(Events);
-    sourcePrototypes.push(Employees);
-    sourcePrototypes.push(Courses);
-} else {
-    var largs = args._
-                    .map(function (d) {
-                        return d.toLowerCase();
-                    });
-
-    if (largs.indexOf('events') > -1) {
-        sourcePrototypes.push(Events);
-    }
-    if (largs.indexOf('employees') > -1) {
-        sourcePrototypes.push(Employees);
-    }
-    if (largs.indexOf('courses') > -1) {
-        sourcePrototypes.push(Courses);
-    }
-}
+var sourcePrototypes = [News];
 
 Env();
 
 Firebaseref()
-    .pipe(AddEduSyncNodeToFirebase())
-    .pipe(Report.config())
-    .pipe(ApplySyncProtocolToSources(sourcePrototypes))
-    .pipe(GetSourcesData())
+	.pipe(AddEduSyncNodeToFirebase())
+	.pipe(ApplySyncProtocolToSources(sourcePrototypes))
+	.pipe(GetSourcesData())
     .pipe(AddSourceToWebHook())
-    .pipe(RemoveFromWebhookBasedOnSource())
-    .pipe(ResolveRelationships())
-    .pipe(ResolveReverseRelationships())
-    .pipe(Report.update())
+    // .pipe(RemoveFromWebhookBasedOnSource())
+    .pipe(Images())
+    // .pipe(ResolveRelationships())
+    // .pipe(ResolveReverseRelationships())
     .pipe(Exit());
-
 
 function AddEduSyncNodeToFirebase () {
     return through.obj(addEduSync);
@@ -191,6 +152,132 @@ function RemoveFromWebhookBasedOnSource () {
             });
         });
     }
+}
+
+function Images () {
+	return through.obj(imgs);
+
+	function imgs (sources, enc, next) {
+		console.log('Ensure images are hosted on WebHook.');
+		var stream = this;
+
+		var imgers = sources
+			.map(function (source) {
+				return source.listFirebaseWebhook()
+					.pipe(source.feedImageUrls())
+					.pipe(IncludeDimensions())
+					.pipe(UploadImage())
+					.pipe(SaveReference(source));
+			});
+
+		var imgersCount = imgers.length;
+		imgers.forEach(function (imger) {
+			imger.on('data', function () {});
+			imger.on('end', function () {
+				imgersCount -= 1;
+				if (imgersCount === 0) {
+					stream.push(sources);
+					stream.push(null);
+				}
+			});
+		});
+	}
+
+	function IncludeDimensions () {
+		return through.obj(dimensions);
+
+		function dimensions (row, enc, next) {
+			var chunks = [];
+			var stream = this;
+
+			var r = request.get(row.ektron);
+			r.on('data', function download (chunk) {
+				chunks.push(chunk);
+			});
+			r.on('end', function write () {
+				var buffer = Buffer.concat(chunks);
+				var dimensions = sizeOf(buffer);
+				row.wh = {
+					height: dimensions.height,
+					width:  dimensions.width
+				};
+
+				console.log('IncludeDimensions');
+				console.log(row);
+
+				stream.push(row);
+				next();
+			});
+		}
+	}
+
+	function UploadImage () {
+		return through.obj(upload);
+
+		function upload (row, enc, next) {
+			var stream = this;
+
+			request.post(
+				'http://server.webhook.com/upload-url/',
+				{
+					form: {
+						url: row.ektron,
+						resize_url: true,
+						token: process.env.FB_SECRET,
+						site: process.env.FB_SITENAME
+					}
+				},
+				function (err, httpResponse, body) {
+					if (err) {
+						console.log('Err in UploadImage');
+						console.log(err);
+					}
+					else {
+						body = JSON.parse(body);
+
+						row.wh.resize_url = body.resize_url;
+						row.wh.type = body.mimeType;
+						row.wh.size = body.size;
+						row.wh.url = body.url;
+
+						console.log('UploadImage');
+						console.log(row);
+						console.log(body);
+
+						stream.push(row);
+					}
+
+					next();
+				});
+		}
+	}
+
+	function SaveReference (source) {
+		return through.obj(saver);
+
+		function saver (row, enc, next) {
+			var stream = this;
+
+			source
+				._firebase
+				.webhook
+				.child(row.whKey)
+				.child(row.type)
+				.set(row.wh, onComplete);
+
+			function onComplete (error) {
+	            if (error) {
+	                throw new Error(error);
+	            }
+
+	            console.log('SaveReference');
+				console.log(row);
+
+	            stream.push(row);
+	            next();
+	        }
+		}
+	}
 }
 
 function ResolveRelationships () {

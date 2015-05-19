@@ -10,12 +10,14 @@ var OurRISD = require('../sources/our-risd/index.js')();
 
 var tags = [];
 var count = 0;
-// News.listSource();
-OurRISD.listSource();
-	// .pipe(through.obj(log));
+News.listSource()
+// OurRISD.listSource();
+	.pipe(through.obj(log));
 
 function log (row, enc, next) {
-	console.log(row);
+	if (row.Title === undefined) {
+		console.log(row);
+	}
 	this.push(row);
 	next();
 }
