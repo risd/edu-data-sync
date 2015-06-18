@@ -1,0 +1,147 @@
+#!/usr/bin/env node
+
+var through = require('through2');
+
+var Env = require('../env.js');
+var Firebaseref = require('../firebaseref.js');
+
+Env();
+
+// From this content type
+var contentType = 'departments';
+// Remove this field.
+var controlToRemove = 'fact_sheet_relationship';
+
+/* The removal occurs on both the contentType definition
+   as well as all of the individual instances of the
+   content type's data. */
+
+Firebaseref()
+    .pipe(GetContentType(contentType))
+    .pipe(RemoveContentTypeControlNamed(controlToRemove))
+    .pipe(SetContentType(contentType))
+    .pipe(GetContentTypeData(contentType))
+    .pipe(RemoveControlFromData(controlToRemove))
+    .pipe(SetContentTypeData(contentType))
+    .pipe(Exit());
+
+function GetContentType (contentType) {
+    return through.obj(getter);
+    
+    function getter (fb, enc, next) {
+        console.log('GetContentType');
+
+        var push = { fb: fb };
+        var stream = this;
+
+        fb.child('contentType')
+            .child(contentType)
+            .once('value', function (snapshot) {
+                var value = snapshot.val();
+                
+                push.contentType = value;
+                
+                console.log('GetContentType:value');
+                
+                stream.push(push);
+                next();
+            });
+    }
+}
+
+function RemoveContentTypeControlNamed (nameOfControl) {
+    return through.obj(update);
+
+    function update (row, enc, next) {
+        
+        row.contentType.controls = row
+            .contentType
+            .controls
+            .filter(function (control) {
+                if (control.name === nameOfControl) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            });
+
+        this.push(row);
+        next();
+    }
+}
+
+function SetContentType (contentType) {
+    return through.obj(setter);
+
+    function setter (row, enc, next) {
+        var stream = this;
+
+        row.fb
+            .child('contentType')
+            .child(contentType)
+            .set(row.contentType, function () {
+                stream.push({ fb: row.fb });
+                next();
+            });
+    }
+}
+
+function GetContentTypeData (contentType) {
+    return through.obj(getter);
+
+    function getter (row, enc, next) {
+        var stream = this;
+
+        row.fb
+            .child('data')
+            .child(contentType)
+            .once('value', function (snapshot) {
+                var value = snapshot.val();
+                row.data = value;
+
+                stream.push(row);
+                next();
+            });
+    }
+}
+
+function RemoveControlFromData (nameOfControl) {
+    return through.obj(rmv);
+
+    function rmv (row, enc, next) {
+        Object.keys(row.data)
+            .forEach(function (key) {
+                delete row.data[key][nameOfControl];
+            });       
+
+        this.push(row);
+        next();
+    }
+}
+
+function SetContentTypeData (contentType) {
+    return through.obj(setter);
+
+    function setter (row, enc, next) {
+        var stream = this;
+
+        row.fb
+            .child('data')
+            .child(contentType)
+            .set(row.data, function () {
+                stream.push({ fb: row.fb });
+                next();
+            });
+    }
+}
+
+function Exit () {
+    return through.obj(exit);
+
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
+}

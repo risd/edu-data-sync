@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+var fs = require('fs');
 
 var through = require('through2');
 var util = require('../util.js');
@@ -7,19 +8,24 @@ var Env = require('../env.js');
 
 var News = require('../sources/news/index.js')();
 var OurRISD = require('../sources/our-risd/index.js')();
+var Courses = require('../sources/courses/index.js')();
 
-var tags = [];
-var count = 0;
-News.listSource()
-// OurRISD.listSource();
-	.pipe(through.obj(log));
+var outputPath = __dirname + 'playout.txt';
+var output = fs.createWriteStream(outputPath);
 
-function log (row, enc, next) {
-	if (row.Title === undefined) {
-		console.log(row);
-	}
+Courses.listSource()
+	.pipe(through.obj(write, end));
+
+function write (row, enc, next) {
+	output.write('')
+	console.log(row.COURSENAME + ',' + row.COURSETERM);
 	this.push(row);
 	next();
+}
+
+function end () {
+	output.end();
+	this.push(null);
 }
 
 function counter (row, enc, next) {
