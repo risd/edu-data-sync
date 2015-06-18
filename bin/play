@@ -10,16 +10,14 @@ var News = require('../sources/news/index.js')();
 var OurRISD = require('../sources/our-risd/index.js')();
 var Courses = require('../sources/courses/index.js')();
 
-var outputPath = __dirname + 'playout.txt';
+var outputPath = __dirname + '/playout.txt';
 var output = fs.createWriteStream(outputPath);
 
 Courses.listSource()
 	.pipe(through.obj(write, end));
 
 function write (row, enc, next) {
-	output.write('')
-	console.log(row.COURSENAME + ',' + row.COURSETERM);
-	this.push(row);
+	output.write(row.COURSENAME + ',' + row.COURSETERM + '\n');
 	next();
 }
 

@@ -10,7 +10,7 @@ Env();
 // From this content type
 var contentType = 'institutionalinformation';
 // Remove this field.
-var controlToRemove = 'fact_sheet_relationship';
+var controlToRemove = 'relationship';
 
 /* The removal occurs on both the contentType definition
    as well as all of the individual instances of the
