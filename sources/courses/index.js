@@ -157,13 +157,16 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     function toTitleCase (str) {
         return str.replace(
-            /\w\S*/g,
-            function (txt) {
-                return txt.charAt(0)
-                          .toUpperCase() +
-                       txt.substr(1)
-                          .toLowerCase();
-        });
+                    /\w\S*/g,
+                    function (txt) {
+                        return txt.charAt(0)
+                                  .toUpperCase() +
+                               txt.substr(1)
+                                  .toLowerCase();
+                    }
+                )
+                .replace(/ Iii/g, ' III')
+                .replace(/ Ii/g,  ' II');
     }
 
     function formatDescription (desc) {
