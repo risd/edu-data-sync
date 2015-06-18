@@ -8,7 +8,7 @@ var Firebaseref = require('../firebaseref.js');
 Env();
 
 // From this content type
-var contentType = 'departments';
+var contentType = 'institutionalinformation';
 // Remove this field.
 var controlToRemove = 'fact_sheet_relationship';
 
