@@ -1,0 +1,46 @@
+#!/usr/bin/env node
+var fs = require('fs');
+
+var through = require('through2');
+var util = require('../util.js');
+
+var Env = require('../env.js');
+
+var News = require('../sources/news/index.js')();
+var OurRISD = require('../sources/our-risd/index.js')();
+
+News.listSource()
+	.pipe(through.obj(write, end));
+
+function write (row, enc, next) {
+	console.log(row.caption);
+	next();
+}
+
+function end () {
+	this.push(null);
+}
+
+function counter (row, enc, next) {
+	count += 1;
+	next();
+}
+
+function logend () {
+	console.log(count + ' items.');
+}
+
+function add (row, enc, next) {
+	if (tags.indexOf(row.tags[0]) === -1) {
+		tags.push(row.tags[0]);
+	}
+	next();
+}
+
+function done () {
+	console.log(tags);
+}
+
+// function Related () {
+// 	return through.obj()
+// }

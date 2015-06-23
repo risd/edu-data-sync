@@ -76,7 +76,7 @@ News.prototype.listSource = function () {
     var eventStream = through.obj();
 
     var xmlFilePaths =
-        ['/news2013.xml'];
+        ['/news2014.xml'];
 
     var valueForThumbimage = HTMLValueForTag('thumbimage');
     var valueForBody = HTMLValueForTag('body');
@@ -97,6 +97,14 @@ News.prototype.listSource = function () {
                 .map(valueForCaption)
                 .map(ensureWrapInP)
                 [0];
+            if (d.caption.length === 0) {
+                d.caption = [d.HMTL]
+                    .map(valueForBody)
+                    .map(ensureWrapInP)
+                    .map(textOf)
+                    .map(ensureWrapInP)
+                    [0];
+            }
             d.thumbnail_image = valueForThumbimage(d.HMTL);
             d.body = [d.HMTL]
                 .map(valueForBody)
@@ -198,6 +206,12 @@ News.prototype.listSource = function () {
             })
             .get()
             .join(' ');
+    }
+
+    function textOf (body) {
+        var $ = cheerio.load(body);
+        var text = $('p').text();
+        return text.split('.')[0] + '.';
     }
 };
 
@@ -328,6 +342,12 @@ News.prototype.relationshipsToResolve = function () {
         relateToContentType: 'liberalartsdepartments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_initiative',
+        relateToContentType: 'initiatives',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
     }];
 };
 
@@ -337,15 +357,51 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     var toResolve = self.relationshipsToResolve();
 
     if ('tags' in currentWHData) {
-        // what are the tags? how do they get resolved?
-        // is this just a series of relationships?
-        // related_departments
-        // related_froundation_studies
-        // related_graduate_studies
-        // 
-        // where do we want things to end up?
-        // tags are our organizational system. they should
-        // relate to a content type?
+        var departments =
+            currentWHData.ektron_taxonomy
+                .map(function (d) { return d.tag; })
+                .map(whUtil.webhookDepartmentForEktronNews)
+                .filter(function (d) { return d !== false; })
+                .map(function (d) {
+                    return { departments: d };
+                });
+
+        toResolve[0].itemsToRelate = departments;
+
+        
+        var foundation =
+            currentWHData.ektron_taxonomy
+                .filter(function (d) {
+                    return d.tag === 'Foundation Studies';
+                });
+
+        if (foundation.length === 1) {
+            toResolve[1].itemToRelate = true;
+        }
+
+
+        var liberalArtsDepartments =
+            currentWHData.ektron_taxonomy
+                .map(function (d) { return d.tag; })
+                .map(whUtil.webhookLiberalArtsDepartmentForEktronNews)
+                .filter(function (d) { return d !== false; })
+                .map(function (d) {
+                    return { liberalartsdepartments: d };
+                });
+
+        toResolve[3].itemsToRelate = liberalArtsDepartments;
+
+
+        var initiatives =
+            currentWHData.ektron_taxonomy
+                .map(function (d) { return d.tag; })
+                .map(whUtil.webhookInitiativeForEktronNews)
+                .filter(function (d) { return d !== false; })
+                .map(function (d) {
+                    return { initiatives: d };
+                });
+
+        toResolve[4].itemsToRelate = initiatives;
     }
 
     return toResolve;
