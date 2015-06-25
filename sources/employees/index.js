@@ -1,6 +1,7 @@
 var fs = require('fs');
 var through = require('through2');
 var xmlStream = require('xml-stream');
+var knox = require('knox');
 
 var whUtil = require('../whUtil.js')();
 
@@ -13,6 +14,11 @@ module.exports = Employees;
 function Employees () {
     if (!(this instanceof Employees)) return new Employees();
     var self = this;
+    this.aws = knox.createClient({
+        key: process.env.AWS_KEY,
+        secret: process.env.AWS_SECRET,
+        bucket: 'from-oit-for-edu'
+    });
 }
 
 Employees.prototype.webhookContentType = 'employees';
@@ -29,20 +35,54 @@ Employees.prototype.listSource = function () {
 
     var eventStream = through.obj();
 
-    var xml = new xmlStream(
-    	fs.createReadStream(
-    		__dirname + '/EMPLOYEE.DATA.XML'));
+    var seed = through.obj();
 
-    xml.on('endElement: EMPLOYEE', function (d) {
-    	eventStream.push(d);
-    });
+    seed.pipe(s3Stream())
+        .pipe(drainXMLResIntoStream(eventStream));
 
-    xml.on('end', function () {
-    	console.log('Employees.listSource::end');
-    	eventStream.push(null);
-    });
+    seed.push('EMPLOYEE.DATA.XML');
+    seed.push(null);
 
     return eventStream;
+
+    function s3Stream() {
+        return through.obj(s3ify);
+
+        function s3ify (path, enc, next) {
+            var stream = this;
+
+            self.aws
+                .getFile(path, function (err, res) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        stream.push(res);    
+                    }
+                    
+                    next();
+                });
+        }
+    }
+
+    function drainXMLResIntoStream (writeStream) {
+        return through.obj(drain);
+
+        function drain (res, enc, next) {
+            var stream = this;
+            var xml = new xmlStream(res, 'iso-8859-1');
+
+            xml.on('endElement: EMPLOYEE', function (d) {
+                console.log(d);
+                writeStream.push(d);
+            });
+
+            xml.on('end', function () {
+                console.log('Employees.listSource::end');
+                writeStream.push(null);
+                stream.push(null);
+            });
+        }
+    }
 };
 
 Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {

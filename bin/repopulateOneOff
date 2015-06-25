@@ -1,0 +1,483 @@
+#!/usr/bin/env node
+
+var through = require('through2');
+
+var Env = require('../env.js');
+var Firebaseref = require('../firebaseref.js');
+
+Env();
+
+// From this content type
+var contentType = 'institutionalinformation';
+// Remove this field.
+var dataToRepopulate = {
+        "_sort_create_date": 1425837060,
+        "_sort_last_updated": 1427473740,
+        "accreditation": [
+          {
+            "institution": "New England Association of Schools & Colleges"
+          },
+          {
+            "institution": "National Association of Schools of Art & Design (NASAD)"
+          },
+          {
+            "institution": "Landscape Architecture Accrediting Board (LAAB) of the American Society of Landscape Architects"
+          },
+          {
+            "institution": "National Architectural Accrediting Board"
+          },
+          {
+            "institution": "The Rhode Island Department of Elementary and Secondary Education"
+          }
+        ],
+        "address": {
+          "city": "Providence",
+          "state": "RI",
+          "street1": "2 College Street",
+          "zip": "02903"
+        },
+        "annual_operating_budget": 132.5,
+        "contactable_alumni": 23008,
+        "create_date": "2015-03-08T13:51:00-04:00",
+        "critical_reading": 627,
+        "endowment": 321.6,
+        "faqs": [
+          {
+            "answer": "<p>\n\tNo. All RISD degree programs require a commitment to full-time study. However, each year more than 4,000 people—from young children to elderly adults—enroll in Continuing Education courses at RISD. These classes generally meet in the evenings and on weekends, allowing students to learn from accomplished professionals in their fields and make use of RISD's specialized facilities when degree program studios are not in session.\n</p>",
+            "question": "Can students attend RISD part-time?"
+          },
+          {
+            "answer": "<p>\n\tYes. There are many alumni who choose to apply the critical thinking and creative problem-solving skills they learned at RISD to a wide range of other pursuits. RISD graduates have gone on to start their own businesses, to run schools and theaters, and to teach and work as policy analysts or research roboticists. Others have become chefs, doctors, lawyers, therapists, accountants, politicians and pilots, as well as engaging in many other professions.\n</p>",
+            "question": "Do any RISD graduates choose to pursue careers outside the fields of art and design?"
+          },
+          {
+            "answer": "<p>\n\tAlthough it varies a bit from year to year, on average, 95% of freshmen continue on at RISD and 90% complete their studies and receive a degree within six years. Also, it is more common to transfer to RISD from another college than it is to transfer out.\n</p>",
+            "question": "Do most students complete their degrees at RISD?"
+          },
+          {
+            "answer": "<p>\n\tYes, the <a href=\"http://precollege.risd.edu/\" title=\"Summer Pre-College Program\" target=\"_blank\">Summer Pre-College Program</a> offers 16- to 18-year-old high school students a comprehensive introduction to the experience of studying in an art school environment, which is very different from majoring in art at other colleges. For six weeks, students follow a college-level studio curriculum, live in RISD residence halls and experience campus life at an art school. The program is focused, serious and challenging; students engage in the core elements of a RISD education, from foundation drawing and design courses, to critical studies in art, to focused concentration in a choice of diverse majors.\n</p>",
+            "question": "Does RISD offer a pre-college program for high school students?"
+          },
+          {
+            "answer": "<p>\n\tYes, our non-credit certificate programs for adults – offered through <a href=\"http://ce.risd.edu/\" title=\"RISD|CE\" target=\"_blank\">RISD|CE</a> – provide a focused approach for students wishing to advance or change careers. Most certificate programs can be completed in an average of two to three years. Certificate programs are also offered to teens interested in developing their portfolios.\n</p>",
+            "question": "Does RISD offer any certificate programs?"
+          },
+          {
+            "answer": "<p>\n\tYes, students from ages 6 through 17 are invited to immerse themselves in the art-making process through <a href=\"http://ce.risd.edu/\" title=\"RISD|CE\" target=\"_blank\">RISD|CE</a>'s Young Artist Program. The program's open-ended projects and lessons encourage confidence and creativity in a fun and structured environment. Offerings include classes throughout the year, over the summer and during school vacation weeks.\n</p>",
+            "question": "Does RISD offer classes and workshops for children?"
+          },
+          {
+            "answer": "<p>\n\tYes.\n</p>\n<p>\n\tPlease visit \n\t<a href=\"http://gpp.risd.edu/\" target=\"_blank\">gpp.risd.edu</a> for a complete list of our study abroad options.\n</p>",
+            "question": "Does RISD offer study abroad options?"
+          },
+          {
+            "answer": "<p>\n\tRISD was founded during the 19th-century Industrial Revolution, when the textiles and jewelry manufacturing industries were beginning to take off in Providence. Since it was established in part to \"apply the principles of Art to the requirements of trade and manufacture,\" the prescient founders chose to incorporate the word \"design\" into the name of the school as a means of signaling its importance to economic development. But they also clearly stipulated that their educational experiment aimed both to teach students \"the practice of Art, in order that they may understand its principles, give instruction to others, or become artists\" and to educate the general public about the intrinsic value of the arts to society.\n</p>",
+            "question": "If RISD is an art school, why is it called Rhode Island School of Design?"
+          },
+          {
+            "answer": "<p>\n\tNo. Although half of our name derives from the name of the smallest state in the U.S.A., RISD is a private college with no official affiliation with the state's public colleges and universities (Rhode Island College and the University of Rhode Island).\n</p>",
+            "question": "Is RISD a state college?"
+          },
+          {
+            "answer": "<p>\n\tNo, it's not. While students graduate with a clear expertise in a specific field, RISD's approach to education goes far beyond the purely practical training associated with trade schools. RISD offers an exceptional education in the fine art and design disciplines, complemented by a wide range of liberal arts courses. After completing the first-year Foundation Studies program, undergraduates choose a major field of study and graduate with a well-rounded education that emphasizes critical thinking and creative problem-solving. Completion of a studio major demands intense hands-on making and a high level of craftsmanship, but to ground studio work in a larger cultural context, students also complete a third of the credits required for graduation in such liberal arts areas as art history, visual culture, English, philosophy and the social sciences.\n</p>",
+            "question": "Is RISD a trade school?"
+          },
+          {
+            "answer": "<p>\n\tThe cost of education is made up of direct costs (tuition, fees and room and board, depending on individual choices) and indirect costs (personal and travel expenses, books and supplies).\n</p>\n<p>\n\t<a href=\"http://www.risd.edu/admissions/student-financial-services/student-accounts/tuition-fees/\" title=\"See 2015/16 tuition and fees\">See 2015/16 tuition and fees</a>\n</p>\n<p>\n\t<a href=\"http://www.risd.edu/admissions/student-financial-services/total-cost/\" title=\"See the estimated costs of attending RISD\">See the estimated total costs of attending RISD</a>\n</p>\n<p>\n\tFor information about aid, visit our <a href=\"http://www.risd.edu/admissions/student-financial-services/\" title=\"Student Financial Services\">Student Financial Services</a> section.\n</p>",
+            "question": "What does it cost to attend RISD as a full-time student?"
+          },
+          {
+            "answer": "<p>\n\tRISD and Brown have adjacent campuses on College Hill and students at either institution may cross-register for classes at the other at no extra cost. RISD students typically turn to Brown for a broad array of foreign language and advanced science and math classes, which may be used to satisfy a portion of RISD's distribution requirements in liberal arts. Students also have access to Brown's extensive athletic facilities and can supplement activities available at RISD by attending concerts, lectures, theatrical performances and the like. In addition, the Brown-RISD Dual Degree Program enables highly motivated undergrads to earn a BFA from RISD and an AB from Brown in five years.\n</p>",
+            "question": "What is RISD’s connection to Brown University?"
+          },
+          {
+            "answer": "<p>\n\tBased on an annual survey conducted by RISD's Career Center, 96% of alumni are employed one year after graduation. An additional two percent are enrolled in a full-time educational program to pursue an advanced degree. Of the employed alumni, approximately 70% are employed in positions directly related to their major and 25 percent are employed in positions indirectly related to their major. Statistics in this annual survey tend to be similar from year to year.\n</p>",
+            "question": "What percentage of your graduates find jobs in creative fields?"
+          },
+          {
+            "answer": "<p>\n\tRISD offers bachelor's and master's degrees in 19 majors. The most common undergraduate degree is a Bachelor of Fine Arts degree (BFA), which generally requires four years of full-time study, while most graduate students earn Master of Fine Art degrees in two years (though some programs vary in length from 1+ to 3 years). RISD also offers a five-year professional baccalaureate degree, the Bachelor of Architecture, which is a qualifying degree for a license in the field of architecture.\n</p>",
+            "question": "What types of degrees does RISD offer?"
+          }
+        ],
+        "female_students": 66,
+        "freshman_acceptance_rate": 32.6,
+        "full_time": 155,
+        "governance_documents": [
+          {
+            "attachment": {
+              "url": "/webhook-uploads/1427404874911/BoT_Bylaws_Board%2520of%2520Trustees_Amended%2520October%252010%25202014.pdf"
+            },
+            "title": "Download RISD Bylaws (Amended October 10, 2014)"
+          },
+          {
+            "attachment": {
+              "url": "/webhook-uploads/1427404906115/charter.pdf"
+            },
+            "title": "Download RISD Charter"
+          },
+          {
+            "attachment": {
+              "url": "/webhook-uploads/1427404926459/RISD-Trustee-Roster-2014-15.pdf"
+            },
+            "title": " Download RISD Board of Trustees List"
+          },
+          {
+            "title": "Download RISD Conflict Policy"
+          }
+        ],
+        "graduate_acceptance_rate": 28.6,
+        "graduate_class_size": 11,
+        "graduate_student_population": 435,
+        "history": "<h3>A History of Creative Experimentation</h3>\n<p>\n\tFrom its incorporation on March 22, 1877, Rhode Island School of Design has stood out as a leader in art and design education, attracting extraordinary people who thrive in its creative culture. As one of the first colleges of its kind in the country – founded simultaneously with the RISD Museum of Art – it has always been something of a maverick.\n</p>\n<p>\n\tRISD was founded and nurtured by women – more than 40 years before women in America even gained the right to vote. In 1877, the 34 members of the Rhode Island Women's Centennial Commission voted to invest their group's surplus funding of $1,675 in founding Rhode Island School of Design. In doing so, they not only embarked on a radical experiment, but set the school's tone for challenging assumptions that continues to this day.<sub></sub>\n</p>",
+        "international_students": 10.4,
+        "last_updated": "2015-03-27T12:29:00-04:00",
+        "male_students": 34,
+        "math": 639,
+        "name": "Rhode Island School of Design",
+        "part_time": 294,
+        "past_presidents": [
+          {
+            "bio": "<p>\n\tAs a member of the Rhode Island General Assembly and the first president of RISD's board, Claudius Farnsworth was responsible for bringing the school's original application for incorporation before the state's legislative body in 1877. A graduate of Harvard College, he studied at Harvard Law School before being admitted to the Massachusetts Bar in 1844. Farnsworth practiced law in Massachusetts and Rhode Island, maintaining an office at Cole's Block in Pawtucket, RI. He also served as treasurer of Dunnell Manufacturing Co., a textiles firm engaged in calico printing, from 1859–84.\n</p>",
+            "name": "Claudius Buchanan Farnsworth",
+            "tenure": "1877–1888"
+          },
+          {
+            "bio": "<p>\n\tWhile RISD founder Helen Metcalf managed RISD on a day-to-day basis from 1878–95, Royal Taft served as what was then known as \"president\" of the board. Like his successor in this role, he also served as governor of Rhode Island for a term (1888-89), which overlapped with his position at RISD. In addition, Taft served as a director of the Rhode Island Hospital Trust during this period in his life. A businessman, he moved to Providence in 1844 to work in the office of Royal Chapin, a woolen manufacturer, and in 1851 established his own textiles manufacturing company, Bradford &amp; Taft, which he ran until 1885.\n</p>",
+            "name": "Royal Chapin Taft",
+            "portrait": {
+              "height": 241,
+              "resize_url": "http://lh3.googleusercontent.com/KBOo-3HiTERn8AJOEvR39cFToCePxkAN9Nh0CLz7mIy_T6GZ-idYjIey1GMcmkbafpfrL5D6Cdo08sZYx2hpgQG4Vbj6",
+              "url": "/webhook-uploads/1427308984031/CnBlWdUT3E-xA_2CZW6yiDXYXOU5KWzH_yHOUVboF0IDwKrtFRJQVhoibVzfwB5Ogh2uBTEXuFyieJJNh5vjJCTKtQI%3Ds1339",
+              "width": 241
+            },
+            "tenure": "1888–1890"
+          },
+          {
+            "bio": "<p>\n\tA native of New Bedford, MA, Herbert Ladd worked as a correspondent for theNew Bedford Mercury during the Civil War and entered the dry goods business in 1864 with the Boston firm of White Brown &amp; Co. Once he moved to Providence in 1871, he opened his own dry goods firm, H.W. Ladd Company, and served two one-year terms as governor – from 1889–90 and 1891–92, helping to initiate construction of the RI State House. Today, Ladd is less remembered for his years as governor and serving as \"president\" of RISD's board at a time when the school was managed by founder Helen Metcalf than for the well-loved Ladd Observatory he donated to Brown University in 1891 and for the former Ladd School in Exeter, RI, which met the needs of developmentally disabled children in the state for decades.\n</p>",
+            "name": "Herbert Warren Ladd",
+            "portrait": {
+              "height": 199,
+              "resize_url": "http://lh3.googleusercontent.com/Qvwx1I6mwbUiwSlLx6vmJemrY9s_oTsEmZ_jMO-cNcbCdqyftVcBreUcRXBRk7i_AS66zbTomteAAIltPEOwJuCK77Qv",
+              "url": "/webhook-uploads/1427309002855/UEO2IKO5fTJu8CQq-WvSgo-6pkDGp07bKSHbeRpfGhh6yvijScBM8casHnp2yIorfD4XkpqmIJW4MA5MYgvS_o-_S9-F%3Ds1339",
+              "width": 199
+            },
+            "tenure": "1891–1896"
+          },
+          {
+            "bio": "<p>\n\tAn 1868 graduate of Brown University, William Poland taught Greek and Latin as a professor of classics at Brown from 1870–92 before being named the university's first professor of art history in 1993. A sabbatical year in Greece in 1892 gave him the opportunity to deepen his appreciation for ancient Greek art, architecture and archeology. Poland later served as a director of the Providence Art Club, RISD's neighbor on College Hill, and assumed the presidency at RISD for 11 years while continuing to teach art history at Brown until his retirement in 1915. Poland House, a residence hall on the Brown campus, is named in his honor.\n</p>",
+            "name": "William Carey Poland ",
+            "portrait": {
+              "height": 369,
+              "resize_url": "http://lh3.googleusercontent.com/WO6E6A0aAq6ks1R5VXu2VQodoBjMsyjFHD_P79tJA2t0DdBqKlX9FYWvAFin_TKaeqqxl0o3j_1dzLnKcN5qnvqdW3107g",
+              "url": "/webhook-uploads/1427309019498/KO7VTLCOZzpLeXsE-UUDIu0vAD-VruOv_AGoFwk7viw92WIchpkjrLd59HM0APHYR6BqmhtlpU2oeMi5IttMR44O80Ht%3Ds1339",
+              "width": 369
+            },
+            "tenure": "1896–1907"
+          },
+          {
+            "bio": "<p>\n\tHaving served as a RISD trustee since 1885 and as vice president from 1891–1907, Isaac Bates had been involved in RISD and the museum for two decades when he assumed the top leadership position. During the Civil War he worked in his hometown post office in Blackstone, MA before moving to Providence in 1868 to work in the Comstock provision and meat packing business on Canal Street, which he subsequently bought with Louis Comstock in 1880. Like his presidential predecessor Eliza Radeke, he had a passion for American art, was an avid collector and encouraged many local artists. Bates joined other Providence collectors in acquiring major works of art for RISD and bequeathed countless paintings, prints, drawings and works of decorative art to the museum when he died tragically in 1913.\n</p>",
+            "name": "Isaac Comstock Bates",
+            "portrait": {
+              "height": 318,
+              "resize_url": "http://lh3.googleusercontent.com/d6aTKXD4eh2B_48wIxRK073-qv9GwNIAUhT1S-KAXHbSM5eEcXnDAM4wjzTxOJ3wQnz5UCP2_xlizbRGdYFR4c7-UWU",
+              "url": "/webhook-uploads/1427309081596/G1MI6ywRSVKwTj9ZbXlbfbW9FLjfvzMMYkG7spOQX2WC8zTXJtsyrKTY9Ld9plTkU41a_ecXHkMsk-kDLE4IPKI5xnYj%3Ds1339",
+              "width": 318
+            },
+            "tenure": "1907–1913"
+          },
+          {
+            "bio": "<p>\n\tEliza Radeke graduated from Vassar College in 1876, the same year she assisted her mother Helen Metcalf in preparing for the Rhode Island Women's Centennial Commission exhibition at the US Centennial Exposition in Philadelphia. A surplus from their fundraising efforts for that exhibition provided the seed funding used to found RISD a year later. After she married Dr. Gustav Radeke in 1880, she and her husband began getting involved at RISD and once she was elected to the Board of Directors in 1886, she assisted her mother on the Committee of Management, serving as chair from 1895–1931, as a member of the Museum Committee from 1893–1931 and as president from 1913–31. An avid and eclectic collector, Radeke worked closely with artists, dealers and museum directors to develop the RISD Museum's extensive collection and funded the construction of the gallery (designed by Charles Platt) that connects Pendleton House to the 1926 museum building named in her honor. In honor of their father, she and her brothers Stephen and Jesse created the Jesse Metcalf Memorial Fund in 1900 to support the acquisition of works of art for the RISD Museum.\n</p>",
+            "name": "Eliza G. Metcalf Radeke",
+            "portrait": {
+              "height": 1190,
+              "resize_url": "http://lh3.googleusercontent.com/dzJl0cbPSRH97lKgmjJiTOWJGeXBlycm0rnYWCDRexKn4esbYgxnD4JWauRzDOlmgJjxmVBkxeYiqEZplCthB8nH2J8",
+              "url": "/webhook-uploads/1427309101103/S755iuDeCcANjvUs_T7rH9te3dQP9lLNlNtVLIK-X3gDsyvmGnItjFOgh1TRW2jCrEi3SHyRtobmp5Gtjl9UOHXKjohx%3Ds1339",
+              "width": 1190
+            },
+            "tenure": "1913–1931"
+          },
+          {
+            "bio": "<p>\n\tHelen Danforth, the daughter of RISD Treasurer Stephen O. Metcalf and wife of orthopedic surgeon Murray S. Danforth, joined the RISD Museum Committee in 1927, the year after the museum opened the Radeke Building (named for her aunt, Eliza G. Radeke). In 1931 Danforth succeeded her late aunt as president of the RISD Corporation and chair of the Executive Committee, serving as president until 1947 when she became chair of the Board of Trustees, an office created that year. During her tenure, RISD earned the right to grant college degrees (as opposed to certificates) in 1932 – with the first bachelor's degrees in Art Education awarded in 1937 – and became a fully accredited college in 1949. While she served as president, RISD built the Helen Metcalf Building on College Street (1936) and the RISD Auditorium (1941). By the time Danforth retired as chair of the Board in 1965, enrollment at RISD had nearly tripled in the 34 years since she assumed her first leadership role.\n</p>",
+            "name": "Helen Metcalf Danforth ",
+            "portrait": {
+              "height": 1339,
+              "resize_url": "http://lh3.googleusercontent.com/ZJHdRAhkZVQp5VDHV9i3fIX6ybz4a4-plnnTjwjTqNZ8JPviTR6SVCliclZS4GNnu-HIc7gEiX1FZMiJj8gjsbzYnbLD",
+              "url": "/webhook-uploads/1427309118535/jBkdIcMfhkFk7ZLb2PWf5fULhldg-1mw-NCpiTgIv2GqSfgFAsDAYoY76KKLwr4ipJ9kLNVbZnuKuXTGPCjsrqOXulo%3Ds1339",
+              "width": 1339
+            },
+            "tenure": "1931–1947"
+          },
+          {
+            "bio": "<p>\n\tMax Sullivan initially came to RISD in 1944 as director of education at the RISD Museum, but was quickly appointed dean of the school in 1945 and moved up to the presidency in May 1947. His undergraduate and graduate teaching degrees from Western State Teachers College in Kalamazoo, MI and Harvard University, respectively, led to teaching positions at Cranbrook Academy, Middlesex School and the Groton School. At RISD Sullivan built on the work of Executive Vice President Royal Bailey Farnum to earn accreditation from the New England Association of Secondary Schools and Colleges in 1949 and from the National Architectural Accrediting Board in 1953. He appointed a dean of students to provide student counseling, and in concert with the New England Textile Foundation, led RISD's efforts modernize the Textiles department – in part to help stem the decline of New England's textile industry.\n</p>",
+            "name": "Max W. Sullivan",
+            "portrait": {
+              "height": 963,
+              "resize_url": "http://lh3.googleusercontent.com/aygWd79akoPoQuz6owpbcYRXlRTJbxfsI4vfW3RFcsexl2fiYNcdtI7UAC-wocI6PHUUYOHs-4acmLSgABdNfd7XorL_",
+              "url": "/webhook-uploads/1427309135362/G86XvW2aF_iSylJ_l-L38TLOzwHr3W9TakbJzVV5WPTWA-p944O6ib7A_wsB8obnoNku97S0tQyyDz8XSMgtfa7bzMnM%3Ds1339",
+              "width": 963
+            },
+            "tenure": "1947–1955"
+          },
+          {
+            "bio": "<p>\n\tA lifelong painter, John R. Frazier graduated from RISD in 1909 (Painting) and 1912 (Normal Art), returning a decade later to serve the college in various capacities from 1923 until his death in 1966. From 1912 through the late 1920s, he spent summers on Cape Cod, MA at Charles W. Hawthorne's Cape Cod School of Art in Provincetown, where he practiced his art and established his own summer school in 1930. At RISD he served as head of the Painting department and chair of Fine Arts until he was appointed president in 1955 (initially on an interim basis), a position he held until his retirement in 1962. During his tenure, Frazier instituted collegial ranks for faculty, began the movement towards a tenure system and established a system of governance based on administrative and faculty committees. He oversaw Design for a Decade, a capital campaign to fund the construction of the Waterman Street dorms (now known as the Quad) and the Metcalf Refectory (The Met) in 1959. During Frazier's tenure, the Board of Trustees approved the creation of RISD's first graduate program in 1957 and launched the European Honors Program in Rome in 1960.\n</p>",
+            "name": "John R. Frazier",
+            "portrait": {
+              "height": 641,
+              "resize_url": "http://lh3.googleusercontent.com/pgpYlZ0i6V_09Cqxyl0EpLd0ZLrG05j9z64Ys-gcczfUSf2mQ8DSAqbaU1OKperlO264Btuc0Vuspg4N-TG00chxZasl",
+              "size": 58102,
+              "type": "image/jpeg",
+              "url": "/webhook-uploads/1427309192795/frazier.jpg",
+              "width": 641
+            },
+            "tenure": "1955–1962"
+          },
+          {
+            "bio": "<p>\n\tAn author, critic, teacher and administrator, Albert Bush-Brown earned his AB, MFA and PhD degrees from Princeton and taught there and at Case Western Reserve University before moving on to the Architecture department at MIT. At RISD Bush-Brown worked with Warren Luther in restructuring the Architecture department and with Harry Callahan in expanding the Photography department. He served on the Providence City Planning Commission and helped establish the Research and Design Institute. To improve day-to-day operations at RISD, Bush-Brown created a new administrative manual and proposed a number of reforms, particularly for the financial department. Once he announced his resignation in November 1967, he left RISD at the end of the following July, continuing a successful career in government and higher education.\n</p>",
+            "name": "Albert Bush-Brown ",
+            "portrait": {
+              "height": 1339,
+              "resize_url": "http://lh3.googleusercontent.com/_QlPpbOuWGpTlqpdhkCki-dkrARCC9oLc4qQyc1RjvN0KUsnfd-dVjvIjAjhWCYNMy36YQsupcQPqHU_EmfJbQ2p6Xur6g",
+              "url": "/webhook-uploads/1427309208342/YooYXrJ6z0swVZ27c9LOpTia6KN0NTpkGEnnZfJh67Z47ynsJH0Lk2L_4uNF8YMPaqhUikA0EzjgYG2BeuVgIKLrPhRawg%3Ds1339",
+              "width": 1339
+            },
+            "tenure": "1962–1968"
+          },
+          {
+            "bio": "<p>\n\tDonald M. Lay, Jr. earned a bachelor's degree from Hofstra College and a master's degree in English from the University of Southern California. After serving as a pilot in the Naval Reserve, he taught at Yale and then worked for many years as a teacher, administrator and headmaster at various private schools. Lay came to RISD in 1965 as dean of students and served as dean of the college from 1967–76. During his brief tenure as interim president, RISD launched its first Wintersession in January 1969 and began offering the intensive six-week summer programs now known as the Pre-College and Summer Studies programs. He also hired RISD's first designated person to assist in recruiting and counseling minority students.\n</p>",
+            "name": "Donald M. Lay, Jr. ",
+            "portrait": {
+              "height": 1339,
+              "resize_url": "http://lh3.googleusercontent.com/3r9iFHTIgz2k1tRMOm_Fa0rkeAxFSk3QxpLcZkQbKn7qGgNcrb7CPuNmhVUQ_l-WI4nKIyHqTXKdK85PApO8UVuk2Ekb",
+              "url": "/webhook-uploads/1427309223612/JFWAXUzYrReGDC41kmUJQJzupI50-N5AQmFOevX5YbkUHNW9O4Rpntia6yND8fGhCrJz938t9IhxVqmPgWmuM08f7F3c%3Ds1339",
+              "width": 1339
+            },
+            "tenure": "1968–1969 (interim president)"
+          },
+          {
+            "bio": "<p>\n\tA graduate of Harvard College, Talbot Rantoul came to RISD from the Harvard Business School, working as a design director and vice president for various businesses prior to that position. At RISD he backed the renovation of Woods-Gerry House (1969–71) for use as a student gallery and offices, and led the college's Centennial Campaign, which helped fund the renovation of the Bayard Ewing Building and partial renovation of the RISD Museum. Andrews, Jacques and Rantoul, the architectural firm run by Rantoul's father, designed the RISD President's House at 132 Bowen Street, which was originally owned by RISD Treasurer Stephen O. Metcalf.\n</p>",
+            "name": "Talbot Rantoul ",
+            "portrait": {
+              "height": 1328,
+              "resize_url": "http://lh3.googleusercontent.com/cXIn1P-gvdt3rtNVfdcl1LaKsOeInRykgK-stOmo8fuBa574Uv1M3iDptVjlspKS7u1fBoBIoCUXi1KJsRg6vju8CMI",
+              "url": "/webhook-uploads/1427309237528/C-Z9Iegt_sY4QPUbh4-hQrSakYeeIKvlBd2ybeUgRyTnY5cFtQPX6ElJINpMCSheXMYzD6Bw9lmhByP-F1mDmH3HTbdP%3Ds1339",
+              "width": 1339
+            },
+            "tenure": "1969–1975"
+          },
+          {
+            "bio": "<p>\n\tA painter and professor, Lee Hall is a native of Lexington, NC who earned a BFA from the University of North Carolina and an MA and PhD from New York University. She served as dean of Visual Arts at the State University of New York/Purchase before being appointed president of RISD. During her tenure she instituted the annual President's Fellows Awards gala in New York City and experienced a tumultuous period on campus that led the faculty to vote in its first union. Hall maintained a painting studio at her farm in Lyme, CT and frequently exhibited her paintings at the Betty Parsons Gallery in NYC, where she became a partner after resigning from RISD in 1983.\n</p>",
+            "name": "Lee Hall ",
+            "portrait": {
+              "height": 199,
+              "resize_url": "http://lh3.googleusercontent.com/49-2JzOGACV2yZKS0IC0vQhiiz-w9GqqcwPcW82P3siJ4igxnjYw64GFKgPtNYOwX78J5ZFkgbiYVw-z51oLH1o-IeEW",
+              "url": "/webhook-uploads/1427309252681/MluoVCSlQfP11mTeRcYFth-z_j0jLGAQzU5hA2lKTjmV3Yi3kOHRL_DzaI-fzy8O4z42o1OSmQwoNUEMN3Zg91Qvsmc%3Ds1339",
+              "width": 211
+            },
+            "tenure": "1975–1983"
+          },
+          {
+            "bio": "<p>\n\tThomas Schutte holds an MBA from Indiana University and a PhD in Business Administration from the University of Colorado/Boulder. He has spent the majority of his career in top leadership positions at art schools, serving as president of Philadelphia College of Art from 1975–83 and as president of Pratt Institute in Brooklyn, NY since the year after leaving RISD. During his tenure, Schutte oversaw a $20-million renovation and expansion of the college's physical plant, along with the creation of an Academic Computing Center and the restructuring of finance and other administrative areas of operations.\n</p>",
+            "name": "Thomas F. Schutte ",
+            "portrait": {
+              "height": 199,
+              "resize_url": "http://lh3.googleusercontent.com/SXxy8sEYSrIpDjhs6AaETRHUpcrgKttxrX4SBGdrIxRD5xZAKamroIK-STEbW_ltT8saWr-CEkEtutDcJ_zDKFcOTquDVw",
+              "url": "/webhook-uploads/1427309273079/UikEgyJL04Xg63f-BIkb99XMDdd0Sl11DTuuesxag0ksHJ3FaJcIemwGhQa37IZhEOYNXJuh3nVQRKJbo4A3pIZoVWjwBQ%3Ds1339",
+              "width": 211
+            },
+            "tenure": "1983–1992"
+          },
+          {
+            "bio": "<p>\n\tDuring his brief presidency, RISD Trustee Louis Fazzano – a former treasurer and CFO at Imperial Knife in Providence – led negotiations for a new faculty contract, supported the adoption of a faculty code of ethics, restored the academic titles of provost and dean, and instituted a campus-wide smoke-free policy. Under his leadership RISD bought the Roitman Building at 161 South Main Street (which was renovated to house the Industrial Design department) and completed construction of the Daphne Farago Wing at the RISD Museum. In the 1980s and 1990s Fazzano and his brothers donated their extensive collection of American and British 19th- and 20th-century prints and drawings to the RISD Museum.\n</p>",
+            "name": "Louis A. Fazzano ",
+            "portrait": {
+              "height": 1331,
+              "resize_url": "http://lh3.googleusercontent.com/_rwCRnGglvXmxK1qejwBxu6MpptQGm0tGhrz2XPI7SstEeNgWy5tucF0-NUscGrq4aT2dSJUFjBYFzn-HZf9ysRZ8oA8lA",
+              "url": "/webhook-uploads/1427308953543/OfeASaRyjHu3x0DTMR3A7wdTqnvcpSkHf9U09CqLEOwFG_YOkkcvwHIcajRAtG0moawz0_2JsXOOuJ7VZ82DApD2FQs%3Ds1339",
+              "width": 1339
+            },
+            "tenure": "1992–1993 (interim president)"
+          },
+          {
+            "bio": "<p>\n\tDuring his 15-year tenure, Roger Mandle led RISD's Future by Design capital campaign, which raised a total of $105.46 million for programs and scholarships, along with construction of the Chace Center, a mixed-use facility designed by Pritzker Prize-winning architect Rafael Moneo to connect several historic buildings and provide a new entrance to the RISD Museum facing downtown Providence. Earlier in his career, Mandle served as deputy director of the National Gallery of Art, director of the Toledo [OH] Museum of Art and associate director of the Minneapolis Institute of Arts. After his presidency, Mandle worked on a complex museum project in Doha, Qatar for several years before returning to the RI area. An art historian with a PhD from Case Western Reserve University, he still teaches at RISD on occasion.\n</p>",
+            "name": "Roger Mandle ",
+            "portrait": {
+              "height": 199,
+              "resize_url": "http://lh3.googleusercontent.com/gS7RlIzQbZPXI8yusBACMyPQsyV_3nXnHN3BKJ7QFWCfU6N6fpElvqjpHyybppxWLUPCbrFuEwpD3my2l89OCftgy5ys",
+              "url": "/webhook-uploads/1427309288356/ZX6ghwoBZJw1_jn5zgkcukyWoy4_M_ZpvEcoxGA3JWKcT6cu075nl2lZtBR4uUUZBmoBDvBbyioliaESZJRKChJOqSA%3Ds1339",
+              "width": 211
+            },
+            "tenure": "1993–2008"
+          },
+          {
+            "bio": "<p>\n\tA designer and passionate advocate for the role of design in technology, John Maeda elevated RISD's reputation worldwide while strengthening its operational foundations and spearheading record-breaking fundraising for scholarships. Promoting the acronym STEAM, he led a growing effort to add art to the national agenda promoting improved STEM (science, technology, engineering and math) education, believing that art and design are poised to transform world economies in the 21st century just as science and technology did in the 20th century.\n</p>",
+            "name": "John Maeda ",
+            "portrait": {
+              "height": 199,
+              "resize_url": "http://lh3.googleusercontent.com/axf03Q9x37cAp-B5L2iQ3LUX4YLL7eA6K7Z6yCUYeqbINgs3pNedvpDz8Igc-lCZIVAQ6GEYL38CqNopzIkCGhJk2O5TIw",
+              "url": "/webhook-uploads/1427309302273/OUeqe_n4YhNC1lOorn0ll8lCX0v23xi9u5atFrYKDgxUB4JC3mGZsj-HuDUT8exVEtC2hoMU4GwUZzdnHL99HzKRiTQ7%3Ds1339",
+              "width": 211
+            },
+            "tenure": "2008–2013"
+          }
+        ],
+        "press_gallery": [
+          {
+            "caption": "A student drawing outdoors on Frazier Terrace. | photo by Jo Sittenfeld",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/u1mkfhe-LqVGNpIrFLOeXk3bRoVKV_mbAkRXgT8z5MksBBQqt9HLM6JzhCbUOjztNwdOjQUxe3FNtjcLezQyqV3XV5-FzQ",
+            "size": 211071,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469471295/RISD%2520student%2520drawing%2520outdoors(1).jpg",
+            "width": 1410
+          },
+          {
+            "caption": "An Industrial Design student demonstrates the chair she designed and built at an end-of-semester crit. | photo by David O’Connor",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/w7V0DQs33dTm5qLMPF9fEBRZUoevzZafxd9LSIqZf4TG0HkIX_gZcyqdONilE3hqg5X8DaGvpfbhRLcIaGGiOXlAY0FW",
+            "size": 160207,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469493500/RISD%2520ID%2520crit.jpg",
+            "width": 627
+          },
+          {
+            "caption": "Alumna Liz Collins 91 TX/MFA 99 created this temporary textiles installation, which draped over the Gil Franklin sculpture Daybreak on the patch of grass known as the RISD Beach. | photo by David O’Connor",
+            "height": 2336,
+            "resize_url": "http://lh3.googleusercontent.com/oH20Ie1JxZslZH6kfeThwXBlsEgH3-I4Nf45oGEpZDTGt0vCVrBJZfmiwrQbKrcZFpt2uELG3LxHAldop1mgADQbSnC1",
+            "size": 9725512,
+            "type": "application/octet-stream",
+            "url": "/webhook-uploads/1427469523793/RISDBeach(1).jpg%3Fn%3D2149",
+            "width": 3504
+          },
+          {
+            "caption": "This central campus resource serves as a hub for exploring design in nature and the natural connections between art and science, offering students hands-on access to more than 80,000 specimens along with high-end microscopes and aquatic tanks.",
+            "height": 2336,
+            "resize_url": "http://lh3.googleusercontent.com/qOfXrQujqULrB6f52ri4ZCptBX2jmLZJKyLHTYDSkkRPNSgqUhCw7GsVxSNSeg-pRE6LAyddw8dpCHfQbQE9wVoKCXJs",
+            "size": 6492701,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469545299/Edna%2520W.%2520Lawrence%2520Nature%2520Lab(1).jpg",
+            "width": 3504
+          },
+          {
+            "caption": "A former banking hall on the National Register of Historic Places, RISD’s well-used library offers a lovely example of adaptive reuse, along with a large collection of specialized holdings that support research in art, architecture and design.",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/TuzxULRK_QidaOY1G94GO-D9cLh-exHILlZfATDAkJDbRTAoKV347wLpNrXE7yRKCD7mDBkBi3UhtgKTxqq4MRGoYlsn",
+            "size": 281869,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469563119/Fleet%2520Library%2520at%2520RISD.jpg",
+            "width": 807
+          },
+          {
+            "caption": "Dutch designer Theo Jansen visiting a first-year Spatial Dynamics studio. | photo by Jo Sittenfeld",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/6UmPNEiG48fE6y_kKUOz6A9MB0DseAlKyVipFfpWnztK7_uyyL239UN8wKbOPFl8LOUzECYtxzXz5ie3AkXDxvPcYKhDQw",
+            "size": 279429,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469585764/RISD%2520Foundation%2520Studies-Spatial%2520Dynamics.jpg",
+            "width": 1410
+          },
+          {
+            "caption": "All first-year students at RISD take three studio courses that meet for 6 hours a day, three days a week: Drawing (as shown here), Design and Spatial Dynamics. | photo by Jo Sittenfeld",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/kHfAvMDMjeL4q5-bfALrOYdtRueBYvr6S6MRzUiXhhds4Nb2HE5tj1K_wyI7INh0L9oXjxKOnegxnEN104cE70p5XC0",
+            "size": 291958,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469601923/RISD%2520Foundation%2520Studies-Drawing.jpg",
+            "width": 1410
+          },
+          {
+            "caption": "Adjunct faculty member and alumnus Kent Rogowski works with Photography majors in a studio course. | photo by Jo Sittenfeld",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/BPnwnElBYB_6TdDhD723URABjNv-rZCQJP101lmMU-MSFA1XFDQimSaTZXiSivt2LBuxDtIJWyJStBKLF_7PF63BZIKJkg",
+            "size": 272769,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469625620/RISD%2520Photography%2520studio.jpg",
+            "width": 1410
+          },
+          {
+            "caption": "When the weather is nice, the patch of grass on Benefit Street between Waterman and Angell streets is a popular spot for RISD students to sit, chat, nap, relax and enjoy each other's company.",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/mE9H-qkFRGWBAOXmcvqz1bkuXv1ndYOJlAll3TJGXZ785D3cBBZFZ4AkN6XrpnWoHM7AFXqS-ErWYJRAtzkbY7xx_RII",
+            "size": 438242,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469642049/RISD%2520Beach.jpg",
+            "width": 1215
+          },
+          {
+            "caption": "The riverwalk along the Providence River connects several RISD buildings facing the downtown business district.",
+            "height": 2048,
+            "resize_url": "http://lh3.googleusercontent.com/UMS7yvbUoHuTLkKqntlVJ22fsi7NFsOevyUWV_LJAGjAz3PwFFoLCVaDtpk3ny8ufs7SA0MmlVSur3ZkXOdIFgmZShVh",
+            "size": 5993988,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469669768/RISD's%2520waterfront%2520banners.jpg",
+            "width": 3072
+          },
+          {
+            "caption": "Furniture Design majors carry various projects on their way to the studio. | David O’Connor",
+            "height": 2336,
+            "resize_url": "http://lh3.googleusercontent.com/ltDA6b56Ia1ZZSv9eQIPUXs5vCBsEWmM7314CLGStWqyr_gzWKp8q_-m4TaTnuB56Mrr9-wyvAF9LrtA_x_UR6zFDTepYQ",
+            "size": 6622171,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469685761/Students%2520carrying%2520their%2520projects%2520to%2520studio.jpg",
+            "width": 3504
+          },
+          {
+            "caption": "As RISD’s first alumna to serve as president, Rosanne Somerson 76 ID follows in the footsteps of the female founders who established both the college and the museum in 1877. | photo by Jo Sittenfeld",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/RhbRyXnK_r8N8POry4DYyPKBYZWTJSB2B9hgfIQB94YkKz3X3x06FoiVks-WsXgTpRwS_lsV2rtvstQXSaEGRHjchV2gxw",
+            "size": 206603,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469697608/RISD%2520President%2520Rosanne%2520Somerson%2520(h).jpg",
+            "width": 1410
+          },
+          {
+            "caption": "As RISD’s first alumna to serve as president, Rosanne Somerson 76 ID follows in the footsteps of the female founders who established both the college and the museum in 1877. | photo by Jo Sittenfeld\n",
+            "height": 940,
+            "resize_url": "http://lh3.googleusercontent.com/rgpraeiUHeU0c3FrVxA7zKhqNR544Y8pCQgumZyQyWswSKvgz-hvIaWL6a8GJQJ9q4VlB-eGLShHmq8MX_nn3M2xMB2a",
+            "size": 123407,
+            "type": "image/jpeg",
+            "url": "/webhook-uploads/1427469718358/RISD%2520President%2520Rosanne%2520Somerson%2520(v).jpg",
+            "width": 627
+          }
+        ],
+        "preview_url": "94c63f0b-41a8-3788-1e80-2a479ce65a75",
+        "student_to_faculty_ratio": 9.5,
+        "students_of_color": 9.2,
+        "total_alumni": 25621,
+        "total_countries": 57,
+        "transfer_acceptance_rate": 28.8,
+        "undergraduate_class_size": 16,
+        "undergraduate_retention": 94,
+        "undergraduate_student_population": 2014,
+        "writing": 632,
+        "year_founded": 1877
+      };
+
+
+Firebaseref()
+    .pipe(SetContentTypeData(contentType, dataToRepopulate))
+    .pipe(Exit());
+
+function SetContentTypeData (contentType, data) {
+    return through.obj(setter);
+
+    function setter (fb, enc, next) {
+        var stream = this;
+
+        fb.child('data')
+            .child(contentType)
+            .set(data, function () {
+                stream.push({});
+                next();
+            });
+    }
+}
+
+function Exit () {
+    return through.obj(exit);
+
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
+}

@@ -26,28 +26,82 @@ OurRISD.prototype.keyFromSource = function (row) {
 };
 
 OurRISD.prototype.listSource = function () {
-    console.log('News.listSource');
+    console.log('OurRISD.listSource');
     var self = this;
 
-    var eventStream = through.obj();
+    // Posts for tumblr
+    var postStream = through.obj();
 
-    tumblrCredentials = {
+    // Paginated requests stream
+    var offsetStream = through.obj();
+
+    var credentials = {
         consumer_key: process.env.TUMBLR_CONSUMER_KEY,
         consumer_secret: process.env.TUMBLR_CONSUMER_SECRET
     };
-    var client = tumblr.createClient(tumblrCredentials);
+    var client = tumblr.createClient(credentials);
 
-    client.blogInfo('our.risd.edu', function (err, res) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            console.log(res);
-        }
+    offsetStream.on('end', function () {
+        console.log('OurRISD.listSource::end');
+        postStream.push(null);
     });
 
+    offsetStream.pipe(RecursiveOffset(client));
 
-    return eventStream;
+    var options = {
+        limit: 20,
+        offset: 0
+    };
+
+    offsetStream.push(options);
+
+    return postStream.pipe(Formatter());
+
+    function RecursiveOffset (client) {
+        return through.obj(pg);
+
+        function pg (offsetQueryOpts, enc, next) {
+
+            client.posts('our.risd.edu', offsetQueryOpts, function (err, res) {
+                if (err) {
+                    console.log(err);
+                    offsetStream.push(null);
+                }
+                else {
+
+                    res.posts.forEach(function (p) {
+                        postStream.push(p);
+                    });
+
+                    if (res.total_posts > offsetQueryOpts.offset) {
+                        offsetQueryOpts.offset += offsetQueryOpts.limit;
+                        var newOffsetQueryOpts = {
+                            limit: offsetQueryOpts.limit,
+                            offset: offsetQueryOpts.offset +
+                                    offsetQueryOpts.limit
+                        };
+                        offsetStream.push(newOffsetQueryOpts);
+                    }
+                    else {
+                        offsetStream.push(null);
+                    }
+                }
+
+                next();
+            });
+
+        }
+    }
+
+    function Formatter () {
+        return through.obj(frmtr);
+
+        function frmtr (post, enc, next) {
+            var formatted = {};
+            this.push(formatted);
+            next();
+        }
+    }
 };
 
 OurRISD.prototype.sourceStreamToFirebaseSource = function () {

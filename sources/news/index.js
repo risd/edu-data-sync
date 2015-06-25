@@ -25,6 +25,50 @@ News.prototype.keyFromSource = function (row) {
     return row.ContentID;
 };
 
+// Migration protocol
+News.prototype.feedImageUrls = function () {
+    var self = this;
+
+    return through.obj(imgurl);
+
+    function imgurl (row, enc, next) {
+        // expects
+        // row.{whKey, webhook}
+        // 
+        // pushes
+        // {whKey, type, ektron, wh}
+
+        if (('featured_image' in row.webhook) &&
+            (typeof row.webhook.featured_image === 'string')) {
+            this.push({
+                whKey: row.whKey,
+                type: 'featured_image',
+                ektron: prepend(row.webhook.featured_image),
+                wh: false
+            });
+        }
+        
+        if (('thumbnail_image' in row.webhook) &&
+            (typeof row.webhook.thumbnail_image === 'string')) {
+            this.push({
+                whKey: row.whKey,
+                type: 'thumbnail_image',
+                ektron: prepend(row.webhook.thumbnail_image),
+                wh: false
+            });
+        }
+
+        next();
+
+        function prepend (url) {
+            if (url.indexOf('risd.edu') === -1) {
+                url = 'http://risd.edu' + url;
+            }
+            return url;
+        }
+    }
+};
+
 News.prototype.listSource = function () {
     console.log('News.listSource');
     var self = this;
@@ -49,7 +93,18 @@ News.prototype.listSource = function () {
 
     sources.forEach(function (source) {
         source.on('endElement: NewsItem', function (d) {
-            d.caption = valueForCaption(d.HMTL);
+            d.caption = [d.HMTL]
+                .map(valueForCaption)
+                .map(ensureWrapInP)
+                [0];
+            if (d.caption.length === 0) {
+                d.caption = [d.HMTL]
+                    .map(valueForBody)
+                    .map(ensureWrapInP)
+                    .map(textOf)
+                    .map(ensureWrapInP)
+                    [0];
+            }
             d.thumbnail_image = valueForThumbimage(d.HMTL);
             d.body = [d.HMTL]
                 .map(valueForBody)
@@ -59,7 +114,7 @@ News.prototype.listSource = function () {
                 .map(removeEmptyP)
                 .map(removeRelated)
                 [0];
-            d.featured_image = valueForCaption(d.HMTL);
+            d.featured_image = valueForImage(d.HMTL);
             d.tags = [d.TaxonomyName];
             eventStream.push(d);
         });
@@ -88,6 +143,9 @@ News.prototype.listSource = function () {
     }
 
     function ensureWrapInP (body) {
+        if (body.length === 0) {
+            return body;
+        }
         if (!(body.indexOf('<p>') === 0)) {
             body = '<p>' + body;
         }
@@ -148,6 +206,12 @@ News.prototype.listSource = function () {
             })
             .get()
             .join(' ');
+    }
+
+    function textOf (body) {
+        var $ = cheerio.load(body);
+        var text = $('p').text();
+        return text.split('.')[0] + '.';
     }
 };
 
@@ -212,10 +276,30 @@ News.prototype.sourceStreamToFirebaseSource = function () {
 };
 
 News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
-    wh.name = toTitleCase(src.Title);
+    wh.name = src.Title;
+    wh.story_type = 'News';
+
+    if (src.featured_image) {
+        wh.featured_image = src.featured_image;
+    }
+
+    if (src.thumbnail_image) {
+        wh.thumbnail_image = src.thumbnail_image;
+    }
+
+    wh.story = src.body;
+
+    if (src.caption) {
+        wh.intro = src.caption;
+    }
+
     wh.ektron_id = this.keyFromSource(src);
-    wh.body = formatBody(src.body);
-    wh.ektron_tags = src.tags;
+    wh.ektron_taxonomy = src.tags
+        .map(function (d) {
+            return { tag: d };
+        });
+
+    wh.isDraft = false;
 
     // These carry dates that we want to maintain
     wh.create_date = moment(src.CreatedDate).format();
@@ -226,35 +310,10 @@ News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh._sort_publish_date = moment(src.EditDate).unix();
     wh.preview_url = whUtil.guid();
 
+    console.log('updateWebhookValueWithSourceValue');
+    console.log(wh);
+
     return wh;
-
-    function toTitleCase(str) {
-        return str.replace(
-            /\w\S*/g,
-            function (txt) {
-                return txt
-                        .charAt(0)
-                        .toUpperCase() +
-                    txt.substr(1)
-                       .toLowerCase();
-        });
-    }
-
-    function formatBody (body) {
-        body = body.replace(/<br \/>/g, '</p><p>')
-                   .replace(/<br\/>/g, '</p><p>');
-
-        var $ = cheerio.load('<div>' + body + '</div>');
-
-        // remove empty p tags
-        $('p').each(function () {
-            if ($(this).text().trim() === 0) {
-                $(this).remove();
-            }
-        });
-
-        return $.html();
-    }
 };
 
 News.prototype.relationshipsToResolve = function () {
@@ -282,6 +341,12 @@ News.prototype.relationshipsToResolve = function () {
         relateToContentType: 'liberalartsdepartments',
         relateToContentTypeDataUsingKey: 'name',
         itemsToRelate: []
+    }, {
+        multipleToRelate: true,
+        relationshipKey: 'related_initiative',
+        relateToContentType: 'initiatives',
+        relateToContentTypeDataUsingKey: 'name',
+        itemsToRelate: []
     }];
 };
 
@@ -290,16 +355,52 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     var toResolve = self.relationshipsToResolve();
 
-    if ('tags' in currentWHData) {
-        // what are the tags? how do they get resolved?
-        // is this just a series of relationships?
-        // related_departments
-        // related_froundation_studies
-        // related_graduate_studies
-        // 
-        // where do we want things to end up?
-        // tags are our organizational system. they should
-        // relate to a content type?
+    if ('ektron_taxonomy' in currentWHData) {
+        var departments =
+            currentWHData.ektron_taxonomy
+                .map(function (d) { return d.tag; })
+                .map(whUtil.webhookDepartmentForEktronNews)
+                .filter(function (d) { return d !== false; })
+                .map(function (d) {
+                    return { departments: d };
+                });
+
+        toResolve[0].itemsToRelate = departments;
+
+        
+        var foundation =
+            currentWHData.ektron_taxonomy
+                .filter(function (d) {
+                    return d.tag === 'Foundation Studies';
+                });
+
+        if (foundation.length === 1) {
+            toResolve[1].itemToRelate = true;
+        }
+
+
+        var liberalArtsDepartments =
+            currentWHData.ektron_taxonomy
+                .map(function (d) { return d.tag; })
+                .map(whUtil.webhookLiberalArtsDepartmentForEktronNews)
+                .filter(function (d) { return d !== false; })
+                .map(function (d) {
+                    return { liberalartsdepartments: d };
+                });
+
+        toResolve[3].itemsToRelate = liberalArtsDepartments;
+
+
+        var initiatives =
+            currentWHData.ektron_taxonomy
+                .map(function (d) { return d.tag; })
+                .map(whUtil.webhookInitiativeForEktronNews)
+                .filter(function (d) { return d !== false; })
+                .map(function (d) {
+                    return { initiatives: d };
+                });
+
+        toResolve[4].itemsToRelate = initiatives;
     }
 
     return toResolve;
