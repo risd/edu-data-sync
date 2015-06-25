@@ -5,17 +5,19 @@ var through = require('through2');
 var util = require('../util.js');
 
 var Env = require('../env.js');
+Env();
 
 var News = require('../sources/news/index.js')();
 var OurRISD = require('../sources/our-risd/index.js')();
 var Courses = require('../sources/courses/index.js')();
+var Employees = require('../sources/employees/index.js')();
 
 // var outputPath = __dirname + '/playout.txt';
 var outputPath = __dirname + '/../sources/our-risd/sample.json';
 var output = fs.createWriteStream(outputPath);
 
-OurRISD.listSource()
-	.pipe(through.obj(write, end));
+Courses.listSource();
+	// .pipe(through.obj(write, end));
 
 function write (row, enc, next) {
 	var nljson = JSON.stringify(row) + '\n';

@@ -1,6 +1,7 @@
 var fs = require('fs');
 var through = require('through2');
 var xmlStream = require('xml-stream');
+var knox = require('knox');
 
 var whUtil = require('../whUtil.js')();
 
@@ -13,6 +14,11 @@ module.exports = Courses;
 function Courses () {
     if (!(this instanceof Courses)) return new Courses();
     var self = this;
+    this.aws = knox.createClient({
+        key: process.env.AWS_KEY,
+        secret: process.env.AWS_SECRET,
+        bucket: 'from-oit-for-edu'
+    });
 }
 
 Courses.prototype.webhookContentType = 'courses';
@@ -30,40 +36,71 @@ Courses.prototype.listSource = function () {
 
     var eventStream = through.obj();
 
-    var xml = new xmlStream(
-        fs.createReadStream(
-            __dirname + '/COURSE.DATA.XML'),
-    	'iso-8859-1');
+    var seed = through.obj();
 
-    var xmlEngl = new xmlStream(
-        fs.createReadStream(
-            __dirname + '/ENGL.COURSE.DATA.XML'),
-        'iso-8859-1');
+    seed.pipe(s3Stream())
+        .pipe(drainXMLResIntoStream(eventStream));
 
-    var sources = [xml, xmlEngl];
+    var sources = ['ENGL.COURSE.DATA.XML',
+                   'COURSE.DATA.XML'];
     var sourcesCount = sources.length;
 
-    // capture all departments per course
-
     sources.forEach(function (source) {
-        source.collect('COURSE');
-        source.on('endElement: DEPARTMENT', function (row) {
-            row.COURSE.forEach(function (d) {
-                d.departments = [row.NAME.trim()];
-                eventStream.push(d);
-            });
-        });
-
-        source.on('end', function () {
-            sourcesCount -= 1;
-            if (sourcesCount === 0) {
-                console.log('Courses.listSource::end');
-                eventStream.push(null);
-            }
-        });
+        seed.push(source);
     });
+    seed.push(null);
 
     return eventStream;
+
+    function s3Stream() {
+        return through.obj(s3ify);
+
+        function s3ify (path, enc, next) {
+            var stream = this;
+
+            self.aws
+                .getFile(path, function (err, res) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        stream.push(res);    
+                    }
+                    
+                    next();
+                });
+        }
+    }
+
+    function drainXMLResIntoStream (writeStream) {
+        return through.obj(drain);
+
+        function drain (res, enc, next) {
+            var stream = this;
+            var xml = new xmlStream(res, 'iso-8859-1');
+
+            // capture all departments per course
+            xml.collect('COURSE');
+            xml.on('endElement: DEPARTMENT', function (row) {
+                row.COURSE.forEach(function (d) {
+                    d.departments = [row.NAME.trim()];
+                    console.log(d);
+                    writeStream.push(d);
+                });
+            });
+
+            xml.on('end', function () {
+                sourcesCount -= 1;
+                if (sourcesCount === 0) {
+                    console.log('Courses.listSource::end');
+                    writeStream.push(null);
+                    stream.push(null);
+                }
+                else {
+                    next();
+                }
+            });
+        }
+    }
 };
 
 /**
