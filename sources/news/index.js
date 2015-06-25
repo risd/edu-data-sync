@@ -268,7 +268,6 @@ News.prototype.sourceStreamToFirebaseSource = function () {
         }
 
         function onAddComplete () {
-            console.log('sourceStreamToFirebaseSource');
             stream.push(row);
             next();
         }
@@ -356,7 +355,7 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     var toResolve = self.relationshipsToResolve();
 
-    if ('tags' in currentWHData) {
+    if ('ektron_taxonomy' in currentWHData) {
         var departments =
             currentWHData.ektron_taxonomy
                 .map(function (d) { return d.tag; })
