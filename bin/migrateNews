@@ -19,7 +19,7 @@ Firebaseref()
 	.pipe(GetSourcesData())
     .pipe(AddSourceToWebHook())
     // .pipe(RemoveFromWebhookBasedOnSource())
-    .pipe(Images())
+    // .pipe(Images())
     // .pipe(ResolveRelationships())
     // .pipe(ResolveReverseRelationships())
     .pipe(Exit());

@@ -76,7 +76,7 @@ News.prototype.listSource = function () {
     var eventStream = through.obj();
 
     var xmlFilePaths =
-        ['/news2014.xml'];
+        ['/news2011.xml'];
 
     var valueForThumbimage = HTMLValueForTag('thumbimage');
     var valueForBody = HTMLValueForTag('body');
@@ -93,34 +93,36 @@ News.prototype.listSource = function () {
 
     sources.forEach(function (source) {
         source.on('endElement: NewsItem', function (d) {
-            d.caption = [d.HMTL]
-                .map(valueForCaption)
-                .map(ensureWrapInP)
-                [0];
-            if (d.caption.length === 0) {
+            if (d.HMTL.length > 0) {
                 d.caption = [d.HMTL]
-                    .map(valueForBody)
-                    .map(ensureWrapInP)
-                    .map(textOf)
+                    .map(valueForCaption)
                     .map(ensureWrapInP)
                     [0];
+                if (d.caption.length === 0) {
+                    d.caption = [d.HMTL]
+                        .map(valueForBody)
+                        .map(textOf)
+                        .map(ensureWrapInP)
+                        [0];
+                }
+                d.thumbnail_image = valueForThumbimage(d.HMTL);
+                d.body = [d.HMTL]
+                    .map(valueForBody)
+                    .map(replaceBrWithP)
+                    .map(ensureWrapInP)
+                    .map(addPOnRelated)
+                    .map(removeEmptyP)
+                    .map(removeRelated)
+                    [0];
+                d.featured_image = valueForImage(d.HMTL);
+                d.tags = [d.TaxonomyName];
+
+                eventStream.push(d);
             }
-            d.thumbnail_image = valueForThumbimage(d.HMTL);
-            d.body = [d.HMTL]
-                .map(valueForBody)
-                .map(replaceBrWithP)
-                .map(ensureWrapInP)
-                .map(addPOnRelated)
-                .map(removeEmptyP)
-                .map(removeRelated)
-                [0];
-            d.featured_image = valueForImage(d.HMTL);
-            d.tags = [d.TaxonomyName];
-            eventStream.push(d);
         });
 
         source.on('end', function () {
-            sourcesCount -=1;
+            sourcesCount -= 1;
             if (sourcesCount === 0) {
                 console.log('News.listSource::end');
                 eventStream.push(null);
@@ -209,9 +211,26 @@ News.prototype.listSource = function () {
     }
 
     function textOf (body) {
-        var $ = cheerio.load(body);
-        var text = $('p').text();
-        return text.split('.')[0] + '.';
+        var $ = cheerio.load('<div>' + body + '</div>');
+        var text = $('p').first().text().split('.')[0];
+        if (text.indexOf('-- brightcove') > -1) {
+            text = '';
+            $('p')
+                .children()
+                .each(function (i, el) {
+                    if (i > 0) {
+                        if (text.length === 0) {
+                            text = $(el)
+                                .text()
+                                .split('.')[0];
+                        }
+                    }
+                });
+        }
+        if (text) {
+            text += '.';
+        }
+        return text;
     }
 };
 
@@ -279,13 +298,13 @@ News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.name = src.Title;
     wh.story_type = 'News';
 
-    if (src.featured_image) {
-        wh.featured_image = src.featured_image;
-    }
+    // if (src.featured_image) {
+    //     wh.featured_image = src.featured_image;
+    // }
 
-    if (src.thumbnail_image) {
-        wh.thumbnail_image = src.thumbnail_image;
-    }
+    // if (src.thumbnail_image) {
+    //     wh.thumbnail_image = src.thumbnail_image;
+    // }
 
     wh.story = src.body;
 
