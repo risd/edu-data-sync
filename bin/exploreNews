@@ -13,7 +13,7 @@ News.listSource()
 	.pipe(through.obj(write, end));
 
 function write (row, enc, next) {
-	console.log(row.caption);
+	// console.log(row.caption);
 	next();
 }
 

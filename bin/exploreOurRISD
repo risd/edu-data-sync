@@ -4,9 +4,6 @@ var fs = require('fs');
 var through = require('through2');
 var ndjson = require('ndjson');
 var cheerio = require('cheerio');
-var util = require('../util.js');
-
-var Env = require('../env.js');
 
 // Report();
 Format();
@@ -17,7 +14,7 @@ function Format() {
 	fs.createReadStream(
 			__dirname +
 			'/../sources/our-risd/sample.json')
-			.pipe(ndjson.parse())
+		.pipe(ndjson.parse())
 		.pipe(Formatter());
 
 	function Formatter () {
@@ -39,10 +36,20 @@ function Format() {
 	            		.first()
 	            		.attr('src');
 
-	            $('figure').first().remove();
-	            
 	            formatted.thumbnail_image =
 	            	formatted.featured_image;
+
+	            $('figure').first().remove();
+
+	            // WebHook WYSIWYG has a
+	            // data-type=image on its
+	            // inline images.
+	            $('figure img')
+	            	.each(function (i, el) {
+	            		$(this)
+	            			.parent()
+	            			.attr('data-type', 'image');
+	            	});
 	            
 	            formatted.body = $('div').html();
 
