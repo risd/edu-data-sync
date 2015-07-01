@@ -2,6 +2,7 @@ var fs = require('fs');
 var through = require('through2');
 var xmlStream = require('xml-stream');
 var knox = require('knox');
+var cheerio = require('cheerio');
 
 var whUtil = require('../whUtil.js')();
 
@@ -207,7 +208,35 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     }
 
     function formatDescription (desc) {
-        return desc;
+        return [desc]
+            .map(replaceBrWithP)
+            .map(ensureWrapInP)
+            .map(ensureValid)
+            [0];
+
+        function ensureWrapInP (body) {
+            if (body.length === 0) {
+                return body;
+            }
+            if (!(body.indexOf('<p>') === 0)) {
+                body = '<p>' + body;
+            }
+            if (!(body.indexOf('</p>') === (body.length - 5))) {
+                body = body + '</p>';   
+            }
+            return body;
+        }
+
+        function replaceBrWithP (body) {
+            return body
+                .replace(/<br>/g, '</p><p>')
+                .replace(/<BR>/g, '</p><p>');
+        }
+
+        function ensureValid (body) {
+            var $ = cheerio.load('<div class="top">' + body + '</div>');
+            return $('.top').html();
+        }
     }
 };
 
