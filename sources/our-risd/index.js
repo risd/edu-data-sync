@@ -97,7 +97,7 @@ OurRISD.prototype.listSource = function () {
         return through.obj(frmtr);
 
         function frmtr (post, enc, next) {
-            var formatted = {};
+            var formatted = post;
             this.push(formatted);
             next();
         }
