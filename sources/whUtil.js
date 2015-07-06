@@ -10,19 +10,19 @@ module.exports = function () {
             "ektronNews": "STEAM"
         }],
         forLiberalArtsDepartments: [{
-            "colleague": "LA Hist Art & Vis",
+            "colleague": "History of Art & Visual Cultur",
             "webhook": "History of Art + Visual Culture",
             "localist": "History of Art + Visual Culture",
             "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE",
             "ektronNews": "History of Art + Visual Culture"
         }, {
-            "colleague": "LA English",
+            "colleague": "English",
             "webhook": "Literary Arts + Studies",
             "localist": "Literary Arts + Studies",
             "courseCatalogue": "LITERARY ARTS AND STUDIES",
             "ektronNews": "Literary Arts + Studies"
         }, {
-            "colleague": "LA His/Phil/Soc",
+            "colleague": "History Phil Social Sciences",
             "webhook": "History, Philosophy + The Social Sciences",
             "localist": "History, Philosophy + the Social Sciences",
             "courseCatalogue": "HIST/PHIL/SO SC DEPT",
@@ -35,61 +35,61 @@ module.exports = function () {
             "courseCatalogue": "TEXTILES",
             "ektronNews": "Textiles"
         }, {
-            "colleague": "Painting Dept",
+            "colleague": "Painting",
             "webhook": "Painting",
             "localist": "Painting",
             "courseCatalogue": "PAINTING",
             "ektronNews": "Painting"
         }, {
-            "colleague": "Glass Dept",
+            "colleague": "Glass",
             "webhook": "Glass",
             "localist": "Glass",
             "courseCatalogue": "GLASS",
             "ektronNews": "Glass"
         }, {
-            "colleague": "Sculpture Dept",
+            "colleague": "Sculpture",
             "webhook": "Sculpture",
             "localist": "Sculpture",
             "courseCatalogue": "SCULPTURE",
             "ektronNews": "Sculpture"
         }, {
-            "colleague": "Printmaking Dept",
+            "colleague": "Printmaking",
             "webhook": "Printmaking",
             "localist": "Printmaking",
             "courseCatalogue": "PRINTMAKING",
             "ektronNews": "Printmaking"
         }, {
-            "colleague": "Photography Dept",
+            "colleague": "Photography",
             "webhook": "Photography",
             "localist": "Photography",
             "courseCatalogue": "PHOTOGRAPHY",
             "ektronNews": "Photography"
         }, {
-            "colleague": "Digital Media Dept",
+            "colleague": "Digital Media",
             "webhook": "Digital + Media",
             "localist": "Digital + Media",
             "courseCatalogue": "DIGITAL & MEDIA",
             "ektronNews": "Digital + Media"
         }, {
-            "colleague": "Teach Learn Art+",
+            "colleague": "Teach Learn Art + Design",
             "webhook": "Teaching + Learning in Art + Design",
             "localist": "Teaching + Learning in Art + Design",
             "courseCatalogue": "TLAD TEACHING + LEARNING",
             "ektronNews": "Teaching + Learning in Art + Design"
         }, {
-            "colleague": "Landscape Arch",
+            "colleague": "Landscape Architecture",
             "webhook": "Landscape Architecture",
             "localist": "Landscape Architecture",
             "courseCatalogue": "LANDSCAPE ARCH",
             "ektronNews": "Landscape Architecture"
         }, {
-            "colleague": "Jewelry & Metalsmith",
+            "colleague": "Jewelry & Metalsmithing",
             "webhook": "Jewelry + Metalsmithing",
             "localist": "Jewelry + Metalsmithing",
             "courseCatalogue": "JEWELRY & METAL",
             "ektronNews": "Jewelry + Metalsmithing"
         }, {
-            "colleague": "Interior Arch",
+            "colleague": "Interior Architecture",
             "webhook": "Interior Architecture",
             "localist": "Interior Architecture",
             "courseCatalogue": "INTERIOR ARCH",
@@ -113,19 +113,19 @@ module.exports = function () {
             "courseCatalogue": "FURNITURE DESIGN",
             "ektronNews": "Furniture Design"
         }, {
-            "colleague": "Film/Anim/Video",
+            "colleague": "Film/Animation/Video",
             "webhook": "Film / Animation / Video",
             "localist": "Film/Animation/Video",
             "courseCatalogue": "FILM/ANIMATION/VIDEO",
             "ektronNews": "Film-Animation-Video"
         }, {
-            "colleague": "Ceramics Dept",
+            "colleague": "Ceramics",
             "webhook": "Ceramics",
             "localist": "Ceramics",
             "courseCatalogue": "CERAMICS",
             "ektronNews": "Ceramics"
         }, {
-            "colleague": "Architecture",
+            "colleague": "Department of Architecture",
             "webhook": "Architecture",
             "localist": "Architecture",
             "courseCatalogue": "ARCHITECTURE",

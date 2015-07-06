@@ -1,0 +1,122 @@
+#!/usr/bin/env node
+var fs = require('fs');
+
+var through = require('through2');
+var util = require('../util.js');
+
+var Env = require('../env.js');
+var SyncProtocol = require('../syncProtocol.js');
+var Firebaseref = require('../firebaseref.js');
+
+Env();
+
+var Employees = require('../sources/employees/index.js')();
+
+var departmentsPath =
+	__dirname +
+	'/../sources/employees/departments.txt';
+
+Employees.listSource()
+	.pipe(pluck('DEPARTMENT'))
+	.pipe(toFile(departmentsPath));
+
+function pluck (attribute) {
+	var unique = [];
+
+	return through.obj(plck, end);
+
+	function plck (row, enc, next) {
+		if (unique.indexOf(row[attribute]) === -1) {
+			unique.push(row[attribute]);
+		}
+		next();
+	}
+
+	function end () {
+		var sorted = unique.sort(function (a, b) {
+			return b - a;
+		});
+		this.push(sorted);
+		this.push(null);
+	}
+}
+
+function toFile (path) {
+	var w = fs.createWriteStream(path);
+
+	return through.obj(write, end);
+
+	function write (row, enc, next) {
+		w.write(row.join('\n'));
+		next();
+	}
+
+	function end () {
+		w.end();
+		this.push(null);
+	}
+
+}
+
+function counter (row, enc, next) {
+	count += 1;
+	next();
+}
+
+function logend () {
+	console.log(count + ' items.');
+}
+
+function add (row, enc, next) {
+	if (tags.indexOf(row.tags[0]) === -1) {
+		tags.push(row.tags[0]);
+	}
+	next();
+}
+
+function done () {
+	console.log(tags);
+}
+
+// function Related () {
+// 	return through.obj()
+// }
+
+
+function FindUndefined () {
+	var source;
+
+	Firebaseref()
+		.pipe(through.obj(function (fb, enc, next) {
+
+			source = [News].map(configure)[0];
+			this.push(source);
+			next();
+
+			function configure (source) {
+	            SyncProtocol(source, fb);
+	            return source();
+	        }
+		}))
+		.pipe(through.obj(function (source, enc, next) {
+			var stream = this;
+
+			var data = source.listFirebaseWebhook();
+
+			data.on('data', function (d) {
+					if ((typeof d.webhook.ektron_id === 'undefined') ||
+						(typeof d.webhook.name === 'undefined')) {
+						stream.push(d);
+					}
+				});
+
+			data.on('end', function () {
+				next();
+			});
+		}))
+		.pipe(through.obj(function (row, enc, next) {
+			console.log(row);
+			this.push(row);
+			next();
+		}));
+}

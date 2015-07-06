@@ -1,5 +1,26 @@
 #!/usr/bin/env node
 
+/*
+If migrating new content, ensure that the
+`Images` stream is included in the pipeline.
+
+If migrating content that already has a home
+in webhook, then `Images` does not need to be
+included in the pipeline, as the images
+have already made their way onto webhooks image
+servers.
+
+Also, comment out the blocks for setting the image
+value in `News.updateWebhookValueWithSourceValue`
+so you don't have the url's overwriting what webhook
+objects that are getting put into those keys
+{featured_image,thumbnail_image}
+
+Same goes for relationships. They don't need to
+be resolved if you are dialing in formatting. Once
+they are made, they won't get touched.
+ */
+
 var through = require('through2');
 var request = require('request');
 var sizeOf = require('image-size');
