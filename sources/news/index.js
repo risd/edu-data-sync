@@ -80,7 +80,6 @@ News.prototype.listSource = function () {
 
     var valueForThumbimage = HTMLValueForTag('thumbimage');
     var valueForBody = HTMLValueForTag('body');
-    var valueForCaption = HTMLValueForTag('caption');
     var valueForImage = HTMLValueForTag('image');
 
     var sources = xmlFilePaths.map(function (name){
@@ -102,16 +101,10 @@ News.prototype.listSource = function () {
                     .map(removeEmptyP)
                     .map(removeRelated)
                     [0];
-                d.caption = [d.HMTL]
-                    .map(valueForCaption)
+                d.caption = [d.body]
+                    .map(textOf)
                     .map(ensureWrapInP)
                     [0];
-                if (d.caption.length === 0) {
-                    d.caption = [d.body]
-                        .map(textOf)
-                        .map(ensureWrapInP)
-                        [0];
-                }
                 d.thumbnail_image = valueForThumbimage(d.HMTL);
                 d.featured_image = valueForImage(d.HMTL);
                 d.tags = [d.TaxonomyName];
