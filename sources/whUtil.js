@@ -59,7 +59,7 @@ module.exports = function () {
             "courseCatalogue": "PRINTMAKING",
             "ektronNews": "Printmaking"
         }, {
-            "colleague": "Photography Dept",
+            "colleague": "Photography",
             "webhook": "Photography",
             "localist": "Photography",
             "courseCatalogue": "PHOTOGRAPHY",
@@ -113,7 +113,7 @@ module.exports = function () {
             "courseCatalogue": "FURNITURE DESIGN",
             "ektronNews": "Furniture Design"
         }, {
-            "colleague": "Film/Anim/Video",
+            "colleague": "Film/Animation/Video",
             "webhook": "Film / Animation / Video",
             "localist": "Film/Animation/Video",
             "courseCatalogue": "FILM/ANIMATION/VIDEO",
