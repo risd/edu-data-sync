@@ -5,20 +5,40 @@ var through = require('through2');
 var util = require('../util.js');
 
 var Env = require('../env.js');
+var SyncProtocol = require('../syncProtocol.js');
+var Firebaseref = require('../firebaseref.js');
 
-var News = require('../sources/news/index.js')();
+var News = require('../sources/news/index.js');
 var OurRISD = require('../sources/our-risd/index.js')();
 
-News.listSource()
-	.pipe(through.obj(write, end));
+Env();
 
-function write (row, enc, next) {
-	// console.log(row.caption);
-	next();
-}
+var newsSample =
+	__dirname +
+	'/../sources/news/sample.txt';
 
-function end () {
-	this.push(null);
+FindUndefined();
+
+// News.listSource()
+// 	.pipe(toFile(newsSample));
+
+
+function toFile (path) {
+	var w = fs.createWriteStream(path);
+
+	return through.obj(write, end);
+
+	function write (row, enc, next) {
+		w.write('\n\n\n\n----\n\n');
+		w.write(News.keyFromSource(row));
+		next();
+	}
+
+	function end () {
+		w.end();
+		this.push(null);
+	}
+
 }
 
 function counter (row, enc, next) {
@@ -44,3 +64,42 @@ function done () {
 // function Related () {
 // 	return through.obj()
 // }
+
+
+function FindUndefined () {
+	var source;
+
+	Firebaseref()
+		.pipe(through.obj(function (fb, enc, next) {
+
+			source = [News].map(configure)[0];
+			this.push(source);
+			next();
+
+			function configure (source) {
+	            SyncProtocol(source, fb);
+	            return source();
+	        }
+		}))
+		.pipe(through.obj(function (source, enc, next) {
+			var stream = this;
+
+			var data = source.listFirebaseWebhook();
+
+			data.on('data', function (d) {
+					if ((typeof d.webhook.ektron_id === 'undefined') ||
+						(typeof d.webhook.name === 'undefined')) {
+						stream.push(d);
+					}
+				});
+
+			data.on('end', function () {
+				next();
+			});
+		}))
+		.pipe(through.obj(function (row, enc, next) {
+			console.log(row);
+			this.push(row);
+			next();
+		}));
+}
