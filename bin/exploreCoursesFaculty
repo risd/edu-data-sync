@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+var fs = require('fs');
+
+var through = require('through2');
+var util = require('../util.js');
+
+var Env = require('../env.js');
+
+Env();
+
+var Courses = require('../sources/courses/index.js')();
+
+Courses.listSource();

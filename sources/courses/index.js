@@ -84,7 +84,9 @@ Courses.prototype.listSource = function () {
             xml.on('endElement: DEPARTMENT', function (row) {
                 row.COURSE.forEach(function (d) {
                     d.departments = [row.NAME.trim()];
-                    console.log(d);
+                    if (d.COURSESYNONYM === '16694') {
+                        console.log(d);
+                    }
                     writeStream.push(d);
                 });
             });
@@ -189,7 +191,7 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_course_term = src.COURSETERM;
     wh.colleague_course_credits = src.COURSECREDITS;
     wh.colleague_course_academic_level = src.COURSEACADEMICLEVEL;
-    wh.colleague_course_faculty_id = src.COURSEFACULTY || '';
+    wh.colleague_course_faculty_id = src.COURSEFACULTY || false;
 
     return (whUtil.whRequiredDates(wh));
 
@@ -362,10 +364,12 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
-    if ('colleague_id' in currentWHData) {
-        toResolve[4].itemsToRelate = [{
-            employees: currentWHData.colleague_id
-        }];
+    if ('colleague_course_faculty_id' in currentWHData) {
+        if (currentWHData.colleague_course_faculty_id) {
+            toResolve[4].itemsToRelate = [{
+                employees: currentWHData.colleague_course_faculty_id
+            }];
+        }
     }
 
     return toResolve;
