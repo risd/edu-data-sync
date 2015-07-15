@@ -3,6 +3,7 @@ var fs = require('fs');
 var knox = require('knox');
 var template = require('html-template');
 var moment = require('moment');
+var timezone = require('moment-timezone');
 var request = require('request');
 var through = require('through2');
 var combine = require('stream-combiner2');
@@ -85,7 +86,8 @@ Report.prototype.update = function () {
 			through.obj(pushToS3));
 
 	function toUpdate (sources, enc, next) {
-		var date = moment().format('MMMM Do YYYY, h:mm:ss a');
+		var nowOnEastCoast = timezone().tz('America/New_York');
+		var date = moment(nowOnEastCoast).format('MMMM Do YYYY, h:mm:ss a');
 
 		var keysToUpdate = {};
 

@@ -1,5 +1,6 @@
 var request = require('request');
 var moment = require('moment');
+var timezone = require('moment-timezone');
 var through = require('through2');
 
 var whUtil = require('../whUtil.js')();
@@ -226,6 +227,11 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         [src.first_date].map(addTimeZone)[0];
     wh.localist_date_range_last =
         [src.last_date].map(addTimeZone)[0];
+    
+    wh.within_date_range = isWithinDateRange(
+        wh.localist_date_range_first,
+        wh.localist_date_range_last);
+    
     wh.localist_instances = src.event_instances
         .map(function (d) {
             if ((d.event_instance.all_day) ||
@@ -293,6 +299,24 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     function addTimeZone (dateString) {
         return dateString + 'T00:00:00-04:00';
+    }
+
+    function isWithinDateRange (start, end) {
+        // The isBetween method of moment.js
+        // is not inclusive of the start and
+        // end days. Thus, start will have one
+        // day subtracted, and end will have
+        // one day added, and asking if `now`
+        // is in between will return true
+        // if `now` is between, including the
+        // start and the end day.
+        var now = timezone().tz('America/New_York');
+        var inclusiveStart = moment(start).subtract(1, 'days');
+        var inclusiveEnd = moment(end).add(1, 'days');
+        return moment(now)
+                    .isBetween(
+                        inclusiveStart,
+                        inclusiveEnd);
     }
 };
 

@@ -36,14 +36,14 @@ News.prototype.feedImageUrls = function () {
         // row.{whKey, webhook}
         // 
         // pushes
-        // {whKey, type, ektron, wh}
+        // {whKey, type, external, wh}
 
         if (('featured_image' in row.webhook) &&
             (typeof row.webhook.featured_image === 'string')) {
             this.push({
                 whKey: row.whKey,
                 type: 'featured_image',
-                ektron: prepend(row.webhook.featured_image),
+                external: prepend(row.webhook.featured_image),
                 wh: false
             });
         }
@@ -53,7 +53,7 @@ News.prototype.feedImageUrls = function () {
             this.push({
                 whKey: row.whKey,
                 type: 'thumbnail_image',
-                ektron: prepend(row.webhook.thumbnail_image),
+                external: prepend(row.webhook.thumbnail_image),
                 wh: false
             });
         }
@@ -319,7 +319,7 @@ News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     if (ektron_id) {
         wh.ektron_id = ektron_id;
     }
-    wh.ektron_taxonomy = src.tags
+    wh.external_taxonomy = src.tags
         .map(function (d) {
             return { tag: d };
         });
@@ -380,9 +380,9 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     var toResolve = self.relationshipsToResolve();
 
-    if ('ektron_taxonomy' in currentWHData) {
+    if ('external_taxonomy' in currentWHData) {
         var departments =
-            currentWHData.ektron_taxonomy
+            currentWHData.external_taxonomy
                 .map(function (d) { return d.tag; })
                 .map(whUtil.webhookDepartmentForEktronNews)
                 .filter(function (d) { return d !== false; })
@@ -394,7 +394,7 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         
         var foundation =
-            currentWHData.ektron_taxonomy
+            currentWHData.external_taxonomy
                 .filter(function (d) {
                     return d.tag === 'Foundation Studies';
                 });
@@ -404,7 +404,7 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         }
 
         var graduate =
-            currentWHData.ektron_taxonomy
+            currentWHData.external_taxonomy
                 .filter(function (d) {
                     return d.tag === 'graduate';
                 });
@@ -415,7 +415,7 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
 
         var liberalArtsDepartments =
-            currentWHData.ektron_taxonomy
+            currentWHData.external_taxonomy
                 .map(function (d) { return d.tag; })
                 .map(whUtil.webhookLiberalArtsDepartmentForEktronNews)
                 .filter(function (d) { return d !== false; })
@@ -427,7 +427,7 @@ News.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
 
         var initiatives =
-            currentWHData.ektron_taxonomy
+            currentWHData.external_taxonomy
                 .map(function (d) { return d.tag; })
                 .map(whUtil.webhookInitiativeForEktronNews)
                 .filter(function (d) { return d !== false; })
