@@ -245,7 +245,8 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                 id:      d.event_instance.id
             };
         });
-    wh.localist_url = src.url || '';
+    wh.localist_url = src.localist_url || '';
+    wh.localist_event_url = src.url || '';
     wh.localist_photo_url = src.photo_url || '';
     wh.localist_venue_url = src.venue_url || '';
     wh.localist_ticket_url = src.ticket_url || '';
