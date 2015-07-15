@@ -253,17 +253,19 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     
     wh.localist_room_number = src.room_number || '';
     wh.localist_location_name = src.location_name || '';
-    wh.localist_address = {
-        city: src.geo.city || '',
-        country: src.geo.country || '',
-        state: src.geo.state || '',
-        street1: src.geo.street || '',
-        zip: src.geo.zip || '',
-    };
-    wh.localist_location_coordinates = {
-        latitude: src.geo.latitude || '',
-        longitude: src.geo.longitude || ''
-    };
+    if (src.geo) {
+        wh.localist_address = {
+            city: src.geo.city || '',
+            country: src.geo.country || '',
+            state: src.geo.state || '',
+            street1: src.geo.street || '',
+            zip: src.geo.zip || '',
+        };
+        wh.localist_location_coordinates = {
+            latitude: src.geo.latitude || '',
+            longitude: src.geo.longitude || ''
+        };
+    }
     
     wh.localist_description_text = src.description_text || '';
     wh.localist_ticket_cost = src.ticket_cost || '';
