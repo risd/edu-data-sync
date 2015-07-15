@@ -5,61 +5,56 @@ var through = require('through2');
 var ndjson = require('ndjson');
 var cheerio = require('cheerio');
 
-var samplePath =
-	__dirname +
-	'/../sources/our-risd/sample.json';
+var whUtil = require('../sources/whUtil.js')();
 
-Capture();
+var sampleInputPath =
+		__dirname +
+		'/../sources/our-risd/sample-input.json';
+
+var sampleOutputPath =
+		__dirname +
+		'/../sources/our-risd/sample-output.json';
+
+// Capture();
 // Report();
-// Format();
+Format();
 
 function Capture () {
 	var Env = require('../env.js');
 	var OurRISD = require('../sources/our-risd/index.js')();
-	
+
 	Env();
 
 	OurRISD.listSource()
-		.pipe(toFile(samplePath));
-
-	function toFile (path) {
-		var w = fs.createWriteStream(samplePath);
-
-		return through.obj(write, end);
-
-		function write (row, enc, next) {
-			w.write(JSON.stringify(row) + '\n');
-			next();
-		}
-
-		function end () {
-			w.end();
-			this.push(null);
-		}
-	}
+		.pipe(ndjson.serialize())
+		.pipe(toFile(sampleInputPath));
 }
 
 
 // Format
 function Format() {
-	fs.createReadStream(samplePath)
+
+	fs.createReadStream(sampleInputPath)
 		.pipe(ndjson.parse())
-		.pipe(Formatter());
+		.pipe(Formatter())
+		.pipe(ndjson.serialize())
+		.pipe(toFile(sampleOutputPath));
 
 	function Formatter () {
         return through.obj(frmtr);
 
         function frmtr (post, enc, next) {
-        	var formatted = {
-        		tags: post.tags
-        	};
-
-        	var $ = cheerio.load(
-        		'<div>' +
-        		post.body +
-        		'</div>');
+        	var formatted = 
+        		[{ tags: post.tags }]
+	        		.map(addWHDates(post.date))
+	        		[0];
 
             if (post.type === 'text') {
+            	var $ = cheerio.load(
+	        		'<div>' +
+	        		post.body +
+	        		'</div>');
+
             	formatted.featured_image =
             		$('figure img')
 	            		.first()
@@ -77,7 +72,11 @@ function Format() {
 	            	.each(function (i, el) {
 	            		$(this)
 	            			.parent()
-	            			.attr('data-type', 'image');
+	            			.attr('data-type', 'image')
+	            			.attr('data-orig-width', null)
+	            			.attr('data-orig-height', null)
+	            			.attr('class', null)
+	            			.append('<figcaption></figcaption>');
 	            	});
 	            
 	            formatted.body = $('div').html();
@@ -92,14 +91,117 @@ function Format() {
         		formatted.name = post.title;
 
             }
-            else if (post.type === 'photo') {}
+            else if (post.type === 'photo') {
+
+            	var $body = cheerio.load('<div id="capture"></div>');
+
+            	post.photos.forEach(function (d, i) {
+            		if (i === 0) {
+            			formatted.featured_image = d.original_size.url;
+            			formatted.thumbnail_image = formatted.featured_image;
+            		}
+            		else {
+            			var img = [
+            				'<figure ',
+            					'data-type="image"',
+        					'>',
+	            				'<img',
+		            				'src="' + d.original_size.url + '"',
+	            				'/>',
+	            				'<figcaption>',
+		            				(d.caption ? d.caption : ''),
+	            				'</figcaption>',
+            				'</figure>',
+            			];
+
+            			$body('#capture').append(img.join(' '));
+            		}
+            	});
+
+            	formatted.body = $body('#capture').html();
+
+            	formatted.name = [post.caption]
+            		.map(firstSentence)
+            		.map(firstNWords(6))
+            		[0];
+
+            	formatted.intro = firstSentence(post.caption);
+            }
         	else if (post.type === 'audio') {}
-    		else if (post.type === 'video') {}
+    		else if (post.type === 'video') {
+
+    			formatted.featured_image = post.thumbnail_url;
+    			formatted.thumbnail_image = post.thumbnail_url;
+
+    			formatted.body = post.player
+    				.sort(function (a, b) {
+    					return a.width - b.width;
+    				})
+    				.filter(function (d, i, arr) {
+    					return i === (arr.length - 1);
+    				})
+    				.map(function (d) {
+    					return d.embed_code;
+    				})
+    				[0];
+
+    			formatted.name = [post.caption]
+    				.map(firstSentence)
+    				.map(firstNWords(6))
+    				[0];
+
+    			formatted.intro = firstSentence(post.caption);
+    		}
     		else if (post.type === 'link') {}
 
-			console.log(formatted);
-            this.push(formatted);
+    		if ('body' in formatted) {
+    			this.push(formatted);
+    		}
             next();
+
+            function addWHDates (date) {
+            	var moment = require('moment');
+
+            	return function (p) {
+            		var f = moment(date).format();
+            		
+            		p.create_date  = f;
+	            	p.publish_date = f;
+	            	p.last_updated = f;
+
+	            	var u = moment(date).unix();
+
+	            	p._sort_create_date  = u;
+	            	p._sort_last_updated = u;
+	            	p._sort_publish_date = u;
+
+	            	p.preview_url = whUtil.guid();
+
+	            	return p;
+            	};
+            }
+
+            function firstSentence (html) {
+            	var $ = cheerio.load(
+            		'<div id="capture">' +
+            		html +
+            		'</div>');
+
+            	return $('p')
+            		.first()
+            		.text()
+            		.split('.')[0];
+            }
+
+            function firstNWords (n) {
+            	return function (str) {
+            		return str.split(' ')
+            			.filter(function (d, i) {
+            				return i < (n-1);
+            			})
+            			.join(' ');
+            	}
+            }
         }
     }
 }
@@ -110,7 +212,7 @@ function Report () {
 	var types = {};
 	var count = 0;
 
-	fs.createReadStream(samplePath)
+	fs.createReadStream(sampleInputPath)
 		.pipe(ndjson.parse())
 		.on('data', function (d) {
 			d.tags.forEach(function (tag) {
@@ -138,3 +240,18 @@ function Report () {
 		});
 }
 
+function toFile (path) {
+	var w = fs.createWriteStream(path);
+
+	return through.obj(write, end);
+
+	function write (line, enc, next) {
+		w.write(line);
+		next();
+	}
+
+	function end () {
+		w.end();
+		this.push(null);
+	}
+}

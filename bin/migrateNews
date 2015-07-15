@@ -211,7 +211,7 @@ function Images () {
 			var chunks = [];
 			var stream = this;
 
-			var r = request.get(row.ektron);
+			var r = request.get(row.external);
 			r.on('data', function download (chunk) {
 				chunks.push(chunk);
 			});
@@ -242,7 +242,7 @@ function Images () {
 				'http://server.webhook.com/upload-url/',
 				{
 					form: {
-						url: row.ektron,
+						url: row.external,
 						resize_url: true,
 						token: process.env.FB_SECRET,
 						site: process.env.FB_SITENAME

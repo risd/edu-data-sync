@@ -1,0 +1,456 @@
+#!/usr/bin/env node
+
+/*
+If migrating new content, ensure that the
+`Images` stream is included in the pipeline.
+
+If migrating content that already has a home
+in webhook, then `Images` does not need to be
+included in the pipeline, as the images
+have already made their way onto webhooks image
+servers.
+
+Also, comment out the blocks for setting the image
+value in `News.updateWebhookValueWithSourceValue`
+so you don't have the url's overwriting what webhook
+objects that are getting put into those keys
+{featured_image,thumbnail_image}
+
+Same goes for relationships. They don't need to
+be resolved if you are dialing in formatting. Once
+they are made, they won't get touched.
+ */
+
+var through = require('through2');
+var request = require('request');
+var sizeOf = require('image-size');
+var clone = require('clone');
+
+var Env = require('../env.js');
+var Firebaseref = require('../firebaseref.js');
+
+var OurRISD = require('../sources/our-risd/index.js');
+
+var sourcePrototypes = [OurRISD];
+
+Env();
+
+Firebaseref()
+	.pipe(AddEduSyncNodeToFirebase())
+	.pipe(ApplySyncProtocolToSources(sourcePrototypes))
+	.pipe(GetSourcesData())
+    .pipe(AddSourceToWebHook())
+    // .pipe(RemoveFromWebhookBasedOnSource())
+    .pipe(Images())
+    // .pipe(ResolveRelationships())
+    // .pipe(ResolveReverseRelationships())
+    .pipe(Exit());
+
+function AddEduSyncNodeToFirebase () {
+    return through.obj(addEduSync);
+
+    function addEduSync (fb, enc, next) {
+        console.log('Add eduSync to Firebase.');
+
+        var stream = this;
+
+        fb.child('eduSync')
+          .set({}, onComplete);
+
+        function onComplete (error) {
+            if (error) {
+                throw new Error(error);
+            }
+            stream.push(fb);
+            stream.push(null);
+        }
+    }
+}
+
+function ApplySyncProtocolToSources (sourcePrototypes) {
+    var SyncProtocol = require('../syncProtocol.js');
+
+    return through.obj(fbref);
+
+    function fbref (fb, enc, next) {
+        console.log('Applying sync protocol to sources.');
+
+        var sources = sourcePrototypes.map(configure);
+        this.push(sources);
+        this.push(null);
+
+        function configure (source) {
+            SyncProtocol(source, fb);
+            return source();
+        }
+    }
+}
+
+function GetSourcesData () {
+    return through.obj(getSourceData);
+
+    function getSourceData (sources, enc, next) {
+        var m =
+            'Get all data from sources & put into firebase.';
+        console.log(m);
+
+        var stream = this;
+        var getters = sources
+            .map(function (source) {
+                return source.listSource()
+                    .pipe(source.sourceStreamToFirebaseSource());
+            });
+
+        var getterCount = getters.length;
+        getters.forEach(function (getter) {
+            getter.on('data', function () {});
+            getter.on('end', function checkDone () {
+                getterCount -= 1;
+                if (getterCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function AddSourceToWebHook () {
+    return through.obj(addSource);
+
+    function addSource (sources, enc, next) {
+        console.log('Add source data to webhook data.');
+
+        var stream = this;
+        var adders = sources
+            .map(function (source) {
+                return source.listFirebaseSource()
+                    .pipe(source.addSourceToWebhook());
+            });
+
+        var addersCount = adders.length;
+        adders.forEach(function (adder) {
+            adder.on('data', function () {});
+            adder.on('end', function checkDone () {
+                addersCount -= 1;
+                if (addersCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function RemoveFromWebhookBasedOnSource () {
+    /**
+     * List the webhook and source values
+     * if the webhook value is not in the
+     * source values, invoke the model's
+     * `webhookValueNotInSource`
+     */
+    return through.obj(remove);
+
+    function remove (sources, enc, next) {
+        console.log('Remove from WebHook based on source.');
+        var stream = this;
+
+        var removers = sources
+            .map(function (source) {
+                return source.listFirebaseWebhook()
+                    .pipe(source.addInSourceBool())
+                    .pipe(source.updateWebhookValueNotInSource());
+            });
+
+        var removersCount = removers.length;
+        removers.forEach(function (remover) {
+            remover.on('data', function () {});
+            remover.on('end', function () {
+                removersCount -= 1;
+                if (removersCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function Images () {
+    var cheerio = require('cheerio');
+
+	return through.obj(imgs);
+
+	function imgs (sources, enc, next) {
+		console.log('Ensure images are hosted on WebHook.');
+		var stream = this;
+
+		var imgers = sources
+			.map(function (source) {
+				return source.listFirebaseWebhook()
+					.pipe(source.feedImageUrls())
+					.pipe(IncludeDimensions())
+					.pipe(UploadImage())
+					.pipe(SaveReference(source));
+			});
+
+		var imgersCount = imgers.length;
+		imgers.forEach(function (imger) {
+			imger.on('data', function () {});
+			imger.on('end', function () {
+				imgersCount -= 1;
+				if (imgersCount === 0) {
+					stream.push(sources);
+					stream.push(null);
+				}
+			});
+		});
+	}
+
+	function IncludeDimensions () {
+
+		return through.obj(dimensions);
+
+		function dimensions (row, enc, next) {
+			var chunks = [];
+			var stream = this;
+
+            if (row.external.indexOf('http') === 0) {
+                // There is a single url to
+                // gobble up and save
+                var r = request.get(row.external);
+                r.on('data', function download (chunk) {
+                    chunks.push(chunk);
+                });
+                r.on('end', function write () {
+                    var buffer = Buffer.concat(chunks);
+                    var dimensions = sizeOf(buffer);
+                    row.wh = {
+                        height: dimensions.height,
+                        width:  dimensions.width
+                    };
+
+                    stream.push(row);
+                    next();
+                });
+            }
+            else {
+                // There is a body to be investigated
+                // which does not require getting
+                // dimensions. And if we did need them
+                // the Tumblr data has it.
+                stream.push(row);
+                next();
+            }
+		}
+	}
+
+	function UploadImage () {
+        var imageServerURL = 'http://server.webhook.com/upload-url/';
+        
+        function form (url) {
+            return {
+                url: url,
+                resize_url: true,
+                token: process.env.FB_SECRET,
+                site: process.env.FB_SITENAME
+            };
+        }
+
+		return through.obj(upload);
+
+		function upload (row, enc, next) {
+			var stream = this;
+
+            if (row.external.indexOf('http') === 0) {
+                // A single image to upload
+                request.post(
+                    imageServerURL,
+                    { form: form(row.external) },
+                    function (err, httpResponse, body) {
+                        if (err) {
+                            console.log('Err in UploadImage');
+                            console.log(err);
+                        }
+                        else {
+                            body = JSON.parse(body);
+
+                            row.wh.resize_url = body.resize_url;
+                            row.wh.type = body.mimeType;
+                            row.wh.size = body.size;
+                            row.wh.url = body.url;
+
+                            console.log('UploadImage');
+                            console.log(row);
+                            console.log(body);
+
+                            stream.push(row);
+                        }
+
+                        next();
+                    });
+            }
+            else {
+                // A series of images to replace in
+                // the body, row.webhook.external
+                var toUpload = [];
+
+                var $ = cheero.load(row.webhook.external);
+                $('figure img')
+                    .each(function (i, el) {
+                        toUpload.push($(el).attr('src'));
+                    });
+
+                var toUploadCount = toUpload.length;
+
+                toUpload.forEach(function (imageUrl) {
+                    request.post(
+                        imageServerURL,
+                        { form: form(imageUrl) },
+                        function (err, httpResponse, body) {
+                            if (err) {
+                                console.log('Err in UploadImage');
+                                console.log(err);
+                            }
+                            else {
+                                body = JSON.parse(body);
+
+                                $('figure')
+                                    .each(function (i, el) {
+                                        if ($(el)
+                                                .find('img')
+                                                .attr('src') === imageUrl) {
+                                            
+                                            $(el)
+                                                .find('img')
+                                                .remove();
+
+                                            var webhookImage = [
+                                                    '<a href="' + body.url + '">',
+                                                    '<img',
+                                                        'data-resize-src="' + body.resize_url + '"',
+                                                        'src="' + (body.resize_url + '=s1200') + '"',
+                                                        '/>',
+                                                    '</a>'
+                                                ].join(' ');
+
+                                            $(el).prepend(webhookImage);
+                                        }
+                                    });
+                                
+                                toUploadCount = toUploadCount - 1;
+                                
+                                if (toUploadCount === 0) {
+                                    row.wh = $.html();
+                                    stream.push(row);
+                                    next();
+                                }
+
+                            }
+                        });
+                });
+            }
+		}
+	}
+
+	function SaveReference (source) {
+		return through.obj(saver);
+
+		function saver (row, enc, next) {
+			var stream = this;
+
+			source
+				._firebase
+				.webhook
+				.child(row.whKey)
+				.child(row.type)
+				.set(row.wh, onComplete);
+
+			function onComplete (error) {
+	            if (error) {
+	                throw new Error(error);
+	            }
+
+	            console.log('SaveReference');
+				console.log(row);
+
+	            stream.push(row);
+	            next();
+	        }
+		}
+	}
+}
+
+function ResolveRelationships () {
+    return through.obj(relationships);
+
+    function relationships (sources, enc, next) {
+        console.log('Resolve Relationships.');
+
+        var stream = this;
+
+        var resolvers = sources
+            .map(function (source) {
+                return source.rrListWebhookWithRelationshipsToResolve()
+                    .pipe(source.rrGetRelatedData())
+                    .pipe(source.rrResetRelated())
+                    .pipe(source.rrEnsureReverseRootNode())
+                    .pipe(source.rrEnsureReverseContenTypeNode())
+                    .pipe(source.rrEnsureReverseContentTypeValueNode())
+                    .pipe(source.rrEnsureReverseKeyNode())
+                    .pipe(source.rrPopulateRelated())
+                    .pipe(source.rrSaveReverse())
+                    .pipe(source.rrSaveCurrent());
+            });
+
+        var resolversCount = resolvers.length;
+        resolvers.forEach(function (resolver) {
+            resolver.on('data', function () {});
+            resolver.on('end', function () {
+                resolversCount -= 1;
+                if (resolversCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function ResolveReverseRelationships () {
+    return through.obj(reverse);
+
+    function reverse (sources, enc, next) {
+        var stream = this;
+
+        var resolvers = sources
+            .map(function (source) {
+                return source.rrrListRelationshipsToResolve()
+                    .pipe(source.rrrAddData())
+                    .pipe(source.rrrFormatData())
+                    .pipe(source.rrrSave());
+            });
+
+        var resolversCount = resolvers.length;
+        resolvers.forEach(function (resolver) {
+            resolver.on('data', function () {});
+            resolver.on('end', function () {
+                resolversCount -= 1;
+                if (resolversCount === 0) {
+                    stream.push(sources);
+                    stream.push(null);
+                }
+            });
+        });
+    }
+}
+
+function Exit () {
+    return through.obj(exit);
+
+    function exit (row, enc, next) {
+        console.log('Done!');
+        this.push(null);
+        process.exit();
+    }
+}
