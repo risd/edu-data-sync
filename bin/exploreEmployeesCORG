@@ -17,8 +17,7 @@ var writePath =
 	'/../sources/employees/corg_field_values.txt';
 
 Employees.listSourceLocal()
-	.pipe(Counter())
-	.pipe(pluck('CORG'))
+	.pipe(pluckMultiple('CORG', '; '))
 	.pipe(toFile(writePath));
 
 function pluck (attribute) {
@@ -41,6 +40,34 @@ function pluck (attribute) {
 		this.push(sorted);
 		this.push(null);
 	}
+}
+
+function pluckMultiple (attribute, delimiter) {
+	var unique = [];
+
+	return through.obj(plck, end);
+
+	function plck (row, enc, next) {
+		if (attribute in row) {
+			var check_include = row[attribute].split(delimiter);
+			check_include.forEach(check);
+
+			function check (d) {
+				if (unique.indexOf(d) === -1) {
+					unique.push(d);
+				}
+			}
+		}
+		next();
+	}
+
+	function end () {
+		var sorted = unique.sort(function (a, b) {
+			return b - a;
+		});
+		this.push(sorted);
+		this.push(null);
+	}	
 }
 
 function toFile (path) {

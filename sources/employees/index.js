@@ -91,12 +91,13 @@ Employees.prototype.listSourceLocal = function () {
 
     var eventStream = through.obj();
 
-    var xml = new xmlStream(
-        fs.createReadStream(
-            __dirname + '/EMPLOYEE.DATA.CORG.XML'));
+    var file = fs.createReadStream(
+                        __dirname +
+                        '/EMPLOYEE.DATA.CORG.XML');
+
+    var xml = new xmlStream(file, 'iso-8859-1');
 
     xml.on('endElement: EMPLOYEE', function (d) {
-        console.log(d);
         eventStream.push(d);
     });
 
