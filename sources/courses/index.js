@@ -84,9 +84,6 @@ Courses.prototype.listSource = function () {
             xml.on('endElement: DEPARTMENT', function (row) {
                 row.COURSE.forEach(function (d) {
                     d.departments = [row.NAME.trim()];
-                    if (d.COURSESYNONYM === '16694') {
-                        console.log(d);
-                    }
                     writeStream.push(d);
                 });
             });

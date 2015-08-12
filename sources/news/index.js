@@ -75,8 +75,10 @@ News.prototype.listSource = function () {
 
     var eventStream = through.obj();
 
+    // 2015 url for latest posts
+    // http://stage.risd.edu/ContentExport/News/news2015.xml
     var xmlFilePaths =
-        ['/news2014.xml'];
+        ['/news2015.xml'];
 
     var valueForThumbimage = HTMLValueForTag('thumbimage');
     var valueForBody = HTMLValueForTag('body');
@@ -300,13 +302,13 @@ News.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.story_type = 'News';
 
     // Comment me out if you aren't uploading images.
-    // if (src.featured_image) {
-    //     wh.featured_image = src.featured_image;
-    // }
+    if (src.featured_image) {
+        wh.featured_image = src.featured_image;
+    }
 
-    // if (src.thumbnail_image) {
-    //     wh.thumbnail_image = src.thumbnail_image;
-    // }
+    if (src.thumbnail_image) {
+        wh.thumbnail_image = src.thumbnail_image;
+    }
     // End: comment me out if you aren't uploading images.
 
     wh.story = src.body;

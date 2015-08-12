@@ -10,4 +10,39 @@ Env();
 
 var Courses = require('../sources/courses/index.js')();
 
-Courses.listSource();
+Courses.listSource()
+	.pipe(pluck('departments'))
+	.pipe(loggify());
+
+
+function pluck (attribute) {
+	var unique = [];
+
+	return through.obj(plck, end);
+
+	function plck (row, enc, next) {
+		if ((attribute in row) &&
+			(unique.indexOf(row[attribute]) === -1)) {
+			unique.push(row[attribute]);
+		}
+		next();
+	}
+
+	function end () {
+		var sorted = unique.sort(function (a, b) {
+			return b - a;
+		});
+		this.push(sorted);
+		this.push(null);
+	}
+}
+
+function loggify () {
+	return through.obj(log);
+
+	function log ( row, enc, next ) {
+		console.log(row);
+		// this.push(row);
+		next();
+	}
+}

@@ -85,6 +85,34 @@ Employees.prototype.listSource = function () {
     }
 };
 
+Employees.prototype.listSourceLocal = function () {
+    console.log('Employees.listSourceLocal');
+    var self = this;
+
+    var eventStream = through.obj();
+
+    var file = fs.createReadStream(
+                        __dirname +
+                        '/EMPLOYEE.DATA.XML');
+
+    var xml = new xmlStream(file, 'iso-8859-1');
+
+    xml.on('endElement: EMPLOYEE', function (d) {
+        eventStream.push(d);
+    });
+
+    xml.on('error', function (e) {
+        console.log(e);
+    });
+
+    xml.on('end', function () {
+        console.log('Employees.listSource::end');
+        eventStream.push(null);
+    });
+
+    return eventStream;
+};
+
 Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 	wh.name = src.PREFERREDNAME;
     wh.colleague_id = src.ID;
