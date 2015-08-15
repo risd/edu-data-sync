@@ -73,6 +73,7 @@ Employees.prototype.listSource = function () {
 
             xml.on('endElement: EMPLOYEE', function (d) {
                 console.log(d);
+                d.corg = c.corg.split('; ');
                 writeStream.push(d);
             });
 
@@ -128,6 +129,11 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     	src.INSTITUTIONSATTENDED;
 
     wh.colleague_status = true;
+
+    wh.colleague_organizations = src.corg
+        .map(function (d) {
+            return { name: d };
+        });
 
     return (whUtil.whRequiredDates(wh));
 };
