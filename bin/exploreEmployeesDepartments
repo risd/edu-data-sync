@@ -16,9 +16,40 @@ var departmentsPath =
 	__dirname +
 	'/../sources/employees/departments.txt';
 
+var corgPath =
+	__dirname +
+	'/../sources/employees/corg_field_values.txt';
+
 Employees.listSource()
-	.pipe(pluck('DEPARTMENT'))
-	.pipe(toFile(departmentsPath));
+	.pipe(pluck('CORG'))
+	// .pipe(splitPluck('CORG', '; '))
+	.pipe(toFile(corgPath));
+
+function splitPluck (attribute, delimeter) {
+	var unique = [];
+
+	return through.obj(spltplck,end);
+
+	function spltplck (row, enc, next) {
+		row[attribute]
+			.split(delimeter)
+			.filter(function inUnique (d) {
+				return unique.indexOf(d) === -1;
+			})
+			.forEach(function (d) {
+				unique.push(d);
+			});
+		next();
+	}
+
+	function end () {
+		var sorted = unique.sort(function (a, b) {
+			return b - a;
+		});
+		this.push(sorted);
+		this.push(null);
+	}
+}
 
 function pluck (attribute) {
 	var unique = [];

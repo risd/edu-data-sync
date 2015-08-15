@@ -1044,6 +1044,8 @@ function rrrListRelationshipsToResolve () {
         .forEach(function (toResolve) {
             var row = {};
             row.toResolve = toResolve;
+            console.log('rrr to Resolve');
+            console.log(toResolve);
             stream.push(row);
         });
     
@@ -1212,6 +1214,8 @@ function rrrSave () {
         }
 
         function done () {
+            console.log('rrr resolved');
+            console.log(toSave);
             stream.push(toSave);
             next();
         }
