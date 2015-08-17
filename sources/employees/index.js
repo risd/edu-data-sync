@@ -73,7 +73,7 @@ Employees.prototype.listSource = function () {
 
             xml.on('endElement: EMPLOYEE', function (d) {
                 console.log(d);
-                d.corg = c.corg.split('; ');
+                d.corg = d.CORG.split('; ');
                 writeStream.push(d);
             });
 

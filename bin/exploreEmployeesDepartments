@@ -21,8 +21,8 @@ var corgPath =
 	'/../sources/employees/corg_field_values.txt';
 
 Employees.listSource()
-	.pipe(pluck('CORG'))
-	// .pipe(splitPluck('CORG', '; '))
+	// .pipe(pluck('CORG'))
+	.pipe(splitPluck('CORG', '; '))
 	.pipe(toFile(corgPath));
 
 function splitPluck (attribute, delimeter) {
