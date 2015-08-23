@@ -345,7 +345,7 @@ Events.prototype.relationshipsToResolve = function () {
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
-        relateToContentType: 'foundationstudies',
+        relateToContentType: 'experimentalandfoundationstudies',
         itemToRelate: false
     }, {
         multipleToRelate: false,
