@@ -231,6 +231,8 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.within_date_range = isWithinDateRange(
         wh.localist_date_range_first,
         wh.localist_date_range_last);
+
+    wh.upcoming = isUpcoming(wh.localist_date_range_last);
     
     wh.localist_instances = src.event_instances
         .map(function (d) {
@@ -317,14 +319,15 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     }
 
     function isWithinDateRange (start, end) {
-        // The isBetween method of moment.js
-        // is not inclusive of the start and
-        // end days. Thus, start will have one
-        // day subtracted, and end will have
-        // one day added, and asking if `now`
-        // is in between will return true
-        // if `now` is between, including the
-        // start and the end day.
+        /* The isBetween method of moment.js
+           is not inclusive of the start and
+           end days. Thus, start will have one
+           day subtracted, and end will have
+           one day added, and asking if `now`
+           is in between will return true
+           if `now` is between, including the
+           start and the end day.
+       */
         var now = timezone().tz('America/New_York');
         var inclusiveStart = moment(start).subtract(1, 'days');
         var inclusiveEnd = moment(end).add(1, 'days');
@@ -332,6 +335,15 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                     .isBetween(
                         inclusiveStart,
                         inclusiveEnd);
+    }
+
+    function isUpcoming (end) {
+        var now = timezone().tz('America/New_York');
+        var beginningOfDay = now
+            .set('hour', 0)
+            .set('minute', 0)
+            .set('second', 0);
+        return moment(beginningOfDay).isBefore(end);
     }
 };
 
