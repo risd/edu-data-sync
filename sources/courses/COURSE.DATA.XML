@@ -126,7 +126,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0004080</COURSEFACULTY>
+   <COURSEFACULTY>0177244</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16699</COURSESYNONYM>
@@ -557,7 +557,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1506005</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17035</COURSESYNONYM>
@@ -577,7 +577,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1374623</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17037</COURSESYNONYM>
@@ -657,7 +657,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1365784</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17053</COURSESYNONYM>
@@ -1388,7 +1388,7 @@
    <COURSESYNONYM>16975</COURSESYNONYM>
    <COURSENAME>CER-4103-01</COURSENAME>
    <COURSETITLE>SLIPCAST CERAMIC OBJECT</COURSETITLE>
-   <COURSEDESC>In this class we will utilize an industrial approach and integrate it with a fine art sensibility. Students will learn how to make molds and prototypes; produce porcelain casting slip; strategies in casting; traditional and non-traditional surface applications. Course projects will focus on non-functional concepts, and a site-specific final project.&lt;BR&gt; Many tools are supplied, however,students are required to purchase a tool kit to supplement those already on hand. &lt;i&gt;Major requirement&lt;BR&gt; &lt;/i&gt;</COURSEDESC>
+   <COURSEDESC>In this class we will utilize an industrial approach and integrate it with a fine art sensibility. Students will learn how to make molds and prototypes; produce porcelain casting slip; strategies in casting; traditional and non-traditional surface applications. Course projects will focus on non-functional concepts, and a site-specific final project.&lt;BR&gt; Many tools are supplied, however,students are required to purchase a tool kit to supplement those already on hand. &lt;br&gt; &lt;i&gt;Ceramics major requirement&lt;BR&gt; &lt;/i&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -1800,6 +1800,7 @@
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1358004</COURSEFACULTY>
    <COURSEFACULTY>1500119</COURSEFACULTY>
+   <COURSEFACULTY>1133674</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16394</COURSESYNONYM>
@@ -1830,7 +1831,7 @@
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1358004</COURSEFACULTY>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1500119</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20287</COURSESYNONYM>
@@ -1840,7 +1841,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1358004</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>21476</COURSESYNONYM>
@@ -1850,7 +1851,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1358004</COURSEFACULTY>
+   <COURSEFACULTY>1500119</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16382</COURSESYNONYM>
@@ -1860,7 +1861,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1358004</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16383</COURSESYNONYM>
@@ -1870,7 +1871,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1358004</COURSEFACULTY>
+   <COURSEFACULTY>1500119</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16384</COURSESYNONYM>
@@ -1991,6 +1992,7 @@
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1165532</COURSEFACULTY>
+   <COURSEFACULTY>1485086</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>21787</COURSESYNONYM>
@@ -2041,7 +2043,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1500119</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>23037</COURSESYNONYM>
@@ -2051,6 +2053,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>0853742</COURSEFACULTY>
    <COURSEFACULTY>0623289</COURSEFACULTY>
   </COURSE>
 </DEPARTMENT>
@@ -2279,7 +2282,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505755</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>15855</COURSESYNONYM>
@@ -2369,7 +2372,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505755</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>15870</COURSESYNONYM>
@@ -2499,7 +2502,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505755</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>15882</COURSESYNONYM>
@@ -2529,7 +2532,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>0445034</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>15885</COURSESYNONYM>
@@ -2589,7 +2592,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505755</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17370</COURSESYNONYM>
@@ -2651,7 +2654,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505755</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17259</COURSESYNONYM>
@@ -2781,7 +2784,7 @@
    <COURSETERM>2016WS</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505755</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>22216</COURSESYNONYM>
@@ -2856,7 +2859,7 @@
   </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
- <NAME>FOUNDATION STUDIES</NAME>
+ <NAME>Experimental and Foundation</NAME>
   <COURSE>
    <COURSESYNONYM>13985</COURSESYNONYM>
    <COURSENAME>FOUND-1001-01</COURSENAME>
@@ -3235,7 +3238,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0496365</COURSEFACULTY>
+   <COURSEFACULTY>1433209</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>14022</COURSESYNONYM>
@@ -3275,7 +3278,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1433209</COURSEFACULTY>
+   <COURSEFACULTY>0496365</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>14026</COURSESYNONYM>
@@ -3465,7 +3468,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0990838</COURSEFACULTY>
+   <COURSEFACULTY>0027735</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>19661</COURSESYNONYM>
@@ -4562,7 +4565,7 @@
    <COURSETERM>2016WS</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1136130</COURSEFACULTY>
+   <COURSEFACULTY>0623289</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17911</COURSESYNONYM>
@@ -4918,16 +4921,6 @@
    <COURSEFACULTY>0000899</COURSEFACULTY>
   </COURSE>
   <COURSE>
-   <COURSESYNONYM>16369</COURSESYNONYM>
-   <COURSENAME>GLASS-436G-01</COURSENAME>
-   <COURSETITLE>GRAD GLASS II DEGREE PROGRAM WORKSHOP</COURSETITLE>
-   <COURSEDESC>All Glass junior, senior and graduate degree program students meet together to engage both practical and theoretical issues of a glass career through: field trips, technical demonstrations, visitor presentations, and direct exchange with visiting professionals from relevant disciplines through student/professional collaborations, artist residencies, individual consultations, critique, and organized group discussion. Class will require reading, written papers such as visiting artist reviews, and prepared student presentations.&lt;BR&gt; &lt;i&gt;Graduate major requirement, Glass majors only&lt;BR&gt; Must also register for GLASS 432G&lt;br&gt; Registration by Glass department, course not available via web registration. First- year grads register for GLASS 435G (Fall) and GLASS 436G (Spring). Second-year grads register for GLASS 437G (Fall) and GLASS 438G (Spring)&lt;/i&gt;</COURSEDESC>
-   <COURSETERM>2016SP</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
-   <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0000899</COURSEFACULTY>
-  </COURSE>
-  <COURSE>
    <COURSESYNONYM>16370</COURSESYNONYM>
    <COURSENAME>GLASS-438G-01</COURSENAME>
    <COURSETITLE>GRAD GLASS IV DEGREE PROGRAM WORKSHOP</COURSETITLE>
@@ -5077,6 +5070,16 @@
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0015984</COURSEFACULTY>
    <COURSEFACULTY>0923677</COURSEFACULTY>
+  </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23191</COURSESYNONYM>
+   <COURSENAME>GLASS-436G-01</COURSENAME>
+   <COURSETITLE>GRAD GLASS II DEGREE PROGRAM WORKSHOP</COURSETITLE>
+   <COURSEDESC>All Glass junior, senior and graduate degree program students meet together to engage both practical and theoretical issues of a glass career through: field trips, technical demonstrations, visitor presentations, and direct exchange with visiting professionals from relevant disciplines through student/professional collaborations, artist residencies, individual consultations, critique, and organized group discussion. Class will require reading, written papers such as visiting artist reviews, and prepared student presentations.&lt;BR&gt; &lt;i&gt;Graduate major requirement, Glass majors only&lt;BR&gt; Must also register for GLASS 432G&lt;br&gt; Registration by Glass department, course not available via web registration. First- year grads register for GLASS 435G (Fall) and GLASS 436G (Spring). Second-year grads register for GLASS 437G (Fall) and GLASS 438G (Spring)&lt;/i&gt;</COURSEDESC>
+   <COURSETERM>2016SP</COURSETERM>
+   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>0000899</COURSEFACULTY>
   </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
@@ -5297,7 +5300,7 @@
    <COURSETITLE>PUBLIC(ATION)S SPRING</COURSETITLE>
    <COURSEDESC>In the past decade or so, dozens of new forums featuring writing by artists and designers have emerged (think Design Observer, Dot Dot Dot, Triple Canopy, Cabinet, F.R. David, Mousse, Creative Time Reports, and Journal for Artistic Research, to name a few), and whether by cause or effect, artists and designers are contributing to cultural discourse like never before.  This year-long course invites grads from all disciplines to explore and practice writing, editing, and producing for publics and publications.  The course takes place over the entire year, meeting biweekly in Fall and Spring and once in Wintersession, and comprises two concurrent parts:   &lt;BR&gt; 1) A literature review of some of the above publications (and others, collectively determined), including visits with some of their editors and writers, culminating in individual annotated bibliographies and an article submission;   &lt;BR&gt; 2) The class will become the staff of the newly revived "RISD Grad Book"-envisioning, commissioning, editing, writing for, and (pending graphic design expertise among the class) designing this annual view into RISD's graduate education, in both print and online forms.   &lt;BR&gt; Throughout, we will write, with a focus on developing an audience, a purpose, a voice, and a relationship between art and design practice and writing, as well as an ability to navigate page and screen and the text-image-sound affordances of digital media.  All forms of writing-scholarly, journalistic, critical, experimental, electronic, image- or design-driven, or hybrid-are welcome.  The course combines guest lectures, seminar-style discussions of readings, workshop-style discussions of student writings, presentations of annotated bibliographies and submissions, hands-on editorial work, peer review, and intensive one-on-one feedback from the instructors.  Upon completing the course, students will demonstrate knowledge of available publications and platforms, awareness of who their audiences/publics are, and wide-ranging skills applicable to a variety of writing contexts.  &lt;BR&gt; &lt;I&gt; Note: course meets bi-weekly (every other Friday) in Fall 2015 and Spring 2016 on FRIDAYS, 1:10-4:10pm and on one full day in Wintersession 2016. Fall schedule: September 18; October 2, 16, 30; November 13, and December 4, 2015. &lt;/I&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSECREDITS>1.50</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0844462</COURSEFACULTY>
    <COURSEFACULTY>0517667</COURSEFACULTY>
@@ -5379,7 +5382,7 @@
    <COURSETITLE>PUBLIC(ATION)S SPRING</COURSETITLE>
    <COURSEDESC>In the past decade or so, dozens of new forums featuring writing by artists and designers have emerged (think Design Observer, Dot Dot Dot, Triple Canopy, Cabinet, F.R. David, Mousse, Creative Time Reports, and Journal for Artistic Research, to name a few), and whether by cause or effect, artists and designers are contributing to cultural discourse like never before.  This year-long course invites grads from all disciplines to explore and practice writing, editing, and producing for publics and publications.  The course takes place over the entire year, meeting biweekly in Fall and Spring and once in Wintersession, and comprises two concurrent parts:   &lt;BR&gt; 1) A literature review of some of the above publications (and others, collectively determined), including visits with some of their editors and writers, culminating in individual annotated bibliographies and an article submission;   &lt;BR&gt; 2) The class will become the staff of the newly revived "RISD Grad Book"-envisioning, commissioning, editing, writing for, and (pending graphic design expertise among the class) designing this annual view into RISD's graduate education, in both print and online forms.   &lt;BR&gt; Throughout, we will write, with a focus on developing an audience, a purpose, a voice, and a relationship between art and design practice and writing, as well as an ability to navigate page and screen and the text-image-sound affordances of digital media.  All forms of writing-scholarly, journalistic, critical, experimental, electronic, image- or design-driven, or hybrid-are welcome.  The course combines guest lectures, seminar-style discussions of readings, workshop-style discussions of student writings, presentations of annotated bibliographies and submissions, hands-on editorial work, peer review, and intensive one-on-one feedback from the instructors.  Upon completing the course, students will demonstrate knowledge of available publications and platforms, awareness of who their audiences/publics are, and wide-ranging skills applicable to a variety of writing contexts.  &lt;BR&gt; &lt;I&gt; Note: course meets bi-weekly (every other Friday) in Fall 2015 and Spring 2016 on FRIDAYS, 1:10-4:10pm and on one full day in Wintersession 2016. Fall schedule: September 18; October 2, 16, 30; November 13, and December 4, 2015. &lt;/I&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSECREDITS>1.50</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0844462</COURSEFACULTY>
    <COURSEFACULTY>0517667</COURSEFACULTY>
@@ -5486,7 +5489,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>1.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1427930</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20872</COURSESYNONYM>
@@ -5496,7 +5499,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>1.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1427930</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20873</COURSESYNONYM>
@@ -5506,7 +5509,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>1.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1427930</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20848</COURSESYNONYM>
@@ -5546,7 +5549,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1180203</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16525</COURSESYNONYM>
@@ -5958,7 +5961,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0792138</COURSEFACULTY>
+   <COURSEFACULTY>0623289</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20853</COURSESYNONYM>
@@ -6357,7 +6360,7 @@
    <COURSESYNONYM>22525</COURSESYNONYM>
    <COURSENAME>GRAPH-W320-01</COURSENAME>
    <COURSETITLE>GRADUATE OPEN RESEARCH</COURSETITLE>
-   <COURSEDESC>This course is for  graduate students in graphic design to work independently on research or preparatory work that may applies to their graduate thesis. The instructor serves an advisory role in all projects. Students must submit a written proposal for work planned and criteria for evaluation. Course meetings are arranged individually, or with the group as needed.&lt;BR&gt; &lt;I&gt;Open to Graphic Design majors&lt;br&gt; Registration by Graphic Design department, course not available via web registration. &lt;/I&gt;</COURSEDESC>
+   <COURSEDESC>This course is for  graduate students in graphic design to work independently on research or preparatory work that may apply to their graduate thesis. The instructor serves an advisory role in all projects. Students must submit a written proposal for work planned and criteria for evaluation. Course meetings are arranged individually, or with the group as needed.&lt;BR&gt; &lt;I&gt;Open to Graphic Design majors&lt;br&gt; Registration by Graphic Design department, course not available via web registration. &lt;/I&gt;</COURSEDESC>
    <COURSETERM>2016WS</COURSETERM>
    <COURSECREDITS></COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
@@ -6903,7 +6906,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1365344</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20710</COURSESYNONYM>
@@ -7005,7 +7008,7 @@
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0154064</COURSEFACULTY>
    <COURSEFACULTY>1498826</COURSEFACULTY>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505861</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>22397</COURSESYNONYM>
@@ -7592,7 +7595,7 @@
    <COURSESYNONYM>22584</COURSESYNONYM>
    <COURSENAME>HAVC-H404-01</COURSENAME>
    <COURSETITLE>SEM: ART SCHOOL HISTORIES</COURSETITLE>
-   <COURSEDESC>This seminar-co-taught by a member of RISD's Department of History of Art and Visual Culture and the Director of Education at the RISD Museum--offers students opportunities to think historically and critically about the institution we're all part of: art school. We will explore its origins, practices, values, politics, and poetics as well as the relevance of its past for the future.&lt;BR&gt; &lt;I&gt;Sophomore and Above&lt;/i&gt;</COURSEDESC>
+   <COURSEDESC>This seminar-co-taught by a member of RISD's Department of History of Art and Visual Culture and the Director of Education at the RISD Museum--offers students opportunities to think historically and critically about the institution we're all part of: art school. We will explore its origins, practices, values, politics, and poetics as well as the relevance of its past for the future.&lt;BR&gt; &lt;I&gt;Junior and Above&lt;/i&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -7739,6 +7742,16 @@
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1036378</COURSEFACULTY>
   </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23177</COURSESYNONYM>
+   <COURSENAME>HAVC-H101-26</COURSENAME>
+   <COURSETITLE>HISTORY OF ART &amp; VISUAL CULTURE 1</COURSETITLE>
+   <COURSEDESC>This is a required course to introduce students to fundamental works of art and design from diverse cultures and chronological periods. It will use basic art historical methods of formal, stylistic, and iconographical analysis in the study of these works thereby providing students with the tools necessary for critical looking and analysis essential for the education of artists and designers.  Emphasis will be placed on the relation between artifacts and culture, with the assumption that the production of works of art and design is a form of cultural knowledge, as well as on the cultural conception of the role of the artist and designer, on various techniques and materials, and on the social context of the works discussed.&lt;BR&gt; &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HAVC-H101.&lt;br&gt; Attention transfers and upperclassmen: Please register into HAVC-H101-23, 24, or 25 if you have not yet completed this first-year graduation requirement. All other H101 sections are for freshmen only. &lt;/i&gt;</COURSEDESC>
+   <COURSETERM>2015FA</COURSETERM>
+   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>1365344</COURSEFACULTY>
+  </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
  <NAME>HIST/PHIL/SO SC DEPT</NAME>
@@ -7787,7 +7800,7 @@
    <COURSESYNONYM>16741</COURSESYNONYM>
    <COURSENAME>HPSS-S101-01</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -7797,7 +7810,7 @@
    <COURSESYNONYM>16742</COURSESYNONYM>
    <COURSENAME>HPSS-S101-02</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8258,7 +8271,7 @@
    <COURSESYNONYM>16786</COURSESYNONYM>
    <COURSENAME>HPSS-S101-01</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8268,7 +8281,7 @@
    <COURSESYNONYM>16787</COURSESYNONYM>
    <COURSENAME>HPSS-S101-02</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8278,7 +8291,7 @@
    <COURSESYNONYM>16788</COURSESYNONYM>
    <COURSENAME>HPSS-S101-03</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8288,7 +8301,7 @@
    <COURSESYNONYM>16789</COURSESYNONYM>
    <COURSENAME>HPSS-S101-04</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8298,7 +8311,7 @@
    <COURSESYNONYM>16790</COURSESYNONYM>
    <COURSENAME>HPSS-S101-05</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8308,7 +8321,7 @@
    <COURSESYNONYM>16791</COURSESYNONYM>
    <COURSENAME>HPSS-S101-06</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8318,7 +8331,7 @@
    <COURSESYNONYM>16792</COURSESYNONYM>
    <COURSENAME>HPSS-S101-07</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8328,7 +8341,7 @@
    <COURSESYNONYM>16793</COURSESYNONYM>
    <COURSENAME>HPSS-S101-08</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8338,7 +8351,7 @@
    <COURSESYNONYM>16794</COURSESYNONYM>
    <COURSENAME>HPSS-S101-09</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8348,7 +8361,7 @@
    <COURSESYNONYM>16795</COURSESYNONYM>
    <COURSENAME>HPSS-S101-10</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8358,7 +8371,7 @@
    <COURSESYNONYM>16796</COURSESYNONYM>
    <COURSENAME>HPSS-S101-11</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8368,7 +8381,7 @@
    <COURSESYNONYM>16797</COURSESYNONYM>
    <COURSENAME>HPSS-S101-12</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8378,7 +8391,7 @@
    <COURSESYNONYM>16798</COURSESYNONYM>
    <COURSENAME>HPSS-S101-13</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8388,7 +8401,7 @@
    <COURSESYNONYM>16799</COURSESYNONYM>
    <COURSENAME>HPSS-S101-14</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8398,7 +8411,7 @@
    <COURSESYNONYM>16800</COURSESYNONYM>
    <COURSENAME>HPSS-S101-15</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8408,7 +8421,7 @@
    <COURSESYNONYM>16801</COURSESYNONYM>
    <COURSENAME>HPSS-S101-16</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8418,7 +8431,7 @@
    <COURSESYNONYM>16802</COURSESYNONYM>
    <COURSENAME>HPSS-S101-17</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8428,7 +8441,7 @@
    <COURSESYNONYM>16803</COURSESYNONYM>
    <COURSENAME>HPSS-S101-18</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8438,7 +8451,7 @@
    <COURSESYNONYM>16804</COURSESYNONYM>
    <COURSENAME>HPSS-S101-19</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8448,7 +8461,7 @@
    <COURSESYNONYM>16805</COURSESYNONYM>
    <COURSENAME>HPSS-S101-20</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8458,7 +8471,7 @@
    <COURSESYNONYM>18449</COURSESYNONYM>
    <COURSENAME>HPSS-S101-21</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8468,7 +8481,7 @@
    <COURSESYNONYM>18457</COURSESYNONYM>
    <COURSENAME>HPSS-S101-22</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8478,7 +8491,7 @@
    <COURSESYNONYM>18458</COURSESYNONYM>
    <COURSENAME>HPSS-S101-23</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -8759,7 +8772,7 @@
    <COURSESYNONYM>23048</COURSESYNONYM>
    <COURSENAME>HPSS-S101-24</COURSENAME>
    <COURSETITLE>TOPICS: HISTORY, PHILOSOPHY, &amp; THE SOCIAL SCIENCES</COURSETITLE>
-   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; NOTE: S101-16 FOR TRANSFERS AND UPPERCLASSMEN ONLY &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
+   <COURSEDESC>Topics in History, Philospohy, and the Social Sciences is an introductory course in which students are encouraged to develop the skills in critical thinking, reading, and writing that are common to the disciplines represented in the Department of History, Philosophy, and the Social Sciences (HPSS). Sections focus on the topics typically addressed within the department's disciplines; through discussion about key texts and issues, students are introduced to important disciplinary methodologies and controversies. All sections have frequent writing assignments, which, combined with substantial feedback from HPSS faculty, afford students the opportunity to develop the strategies and techniques of effective writing.  &lt;br&gt;  &lt;i&gt;Required for graduation for all undergraduates, including transfers. There are no waivers for HPSS-S101 except for transfer students who have taken an equivalent college course. &lt;br&gt; Freshmen registration instructors and course descriptions can be found on the Registrar website: www.risd.edu/registrar  &lt;/i&gt;&lt;br&gt;</COURSEDESC>
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
@@ -9751,7 +9764,7 @@
    <COURSETERM>2016WS</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1437763</COURSEFACULTY>
+   <COURSEFACULTY>1437556</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>18453</COURSESYNONYM>
@@ -10160,7 +10173,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1482576</COURSEFACULTY>
+   <COURSEFACULTY>0960636</COURSEFACULTY>
   </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
@@ -10174,7 +10187,6 @@
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0258287</COURSEFACULTY>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20611</COURSESYNONYM>
@@ -10305,17 +10317,6 @@
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1350047</COURSEFACULTY>
-  </COURSE>
-  <COURSE>
-   <COURSESYNONYM>20629</COURSESYNONYM>
-   <COURSENAME>ILLUS-3504-01</COURSENAME>
-   <COURSETITLE>THE ENTREPRENEUR</COURSETITLE>
-   <COURSEDESC>This course combines the business of art and design, transforming the creative impulse to a marketable deliverable. This elective course, open to both Illustration and Graphic Design majors, is co-taught over one full day in a collaborative environment, combining the studio experience with business basics: marketing and branding as an essential part of the creative process.&lt;br&gt;  This class encourages students to think beyond the confines of traditional markets, working collaboratively toward the goal of employing inventive thinking in the workplace with the goal of an independently owned and operated enterprise.&lt;br&gt; A fundamental objective of this class is for students to understand a basic business vocabulary, to explore how design-driven business and creative studio thinking overlap,  and to understand how creative skills can be used to identify and execute business opportunities.&lt;br&gt;   Students will be introduced to business concepts through lectures, case studies, assignments and class discussion. Assignments will work off the classroom pedagogy and topics covered will be business models, marketing, finance, and strategy as they relate to studio activity.&lt;br&gt; &lt;i&gt;Major elective; 9 seats are available to Graphic Design majors, please contact the Illustration Department to register.  &lt;br&gt; &lt;/i&gt;</COURSEDESC>
-   <COURSETERM>2015FA</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
-   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0008554</COURSEFACULTY>
-   <COURSEFACULTY>1023272</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>20630</COURSESYNONYM>
@@ -11667,6 +11668,46 @@
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0884441</COURSEFACULTY>
   </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23051</COURSESYNONYM>
+   <COURSENAME>LAEL-LE30-02</COURSENAME>
+   <COURSETITLE>HISTORY OF ILLUSTRATION</COURSETITLE>
+   <COURSEDESC>This course surveys the history of western illustration from illuminated  manuscripts through approximately 2000 AD. The work shown is culled from a vast cache of artistic production for its power to convey ideas and ideals, report and editorialize events or serve as an enhancement to literature. We consider how evolving technologies in printing and communication have influenced artistic processes, shaped aesthetics and facilitated the distribution of illustration. We study Illustration's role in reflecting and influencing culture, and its variable relationship to fine art. Each session includes a lecture to which students respond with a critical brief to be handed in upon exiting the class. Additionally there are weekly readings, 2 tests, and one long and one short research paper. There is no textbook for this class. However, students will be able to access study images and readings through Artstor and on RISD Digication.&lt;BR&gt;&lt;I&gt; Course Level: Sophomore, required and restricted to Illustration majors&lt;br&gt;  Fee: TBD &lt;/I&gt;</COURSEDESC>
+   <COURSETERM>2015FA</COURSETERM>
+   <COURSECREDITS></COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>0001165</COURSEFACULTY>
+  </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23052</COURSESYNONYM>
+   <COURSENAME>LAEL-LE30-02</COURSENAME>
+   <COURSETITLE>HISTORY OF ILLUSTRATION</COURSETITLE>
+   <COURSEDESC>This course surveys the history of western illustration from illuminated  manuscripts through approximately 2000 AD. The work shown is culled from a vast cache of artistic production for its power to convey ideas and ideals, report and editorialize events or serve as an enhancement to literature. We consider how evolving technologies in printing and communication have influenced artistic processes, shaped aesthetics and facilitated the distribution of illustration. We study Illustration's role in reflecting and influencing culture, and its variable relationship to fine art. Each session includes a lecture to which students respond with a critical brief to be handed in upon exiting the class. Additionally there are weekly readings, 2 tests, and one long and one short research paper. There is no textbook for this class. However, students will be able to access study images and readings through Artstor and on RISD Digication.&lt;BR&gt;&lt;I&gt; Course Level: Sophomore, required and restricted to Illustration majors&lt;br&gt;  Fee: TBD &lt;/I&gt;</COURSEDESC>
+   <COURSETERM>2016SP</COURSETERM>
+   <COURSECREDITS></COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>0623289</COURSEFACULTY>
+  </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23053</COURSESYNONYM>
+   <COURSENAME>ILLUS-3508-01</COURSENAME>
+   <COURSETITLE>ENTREPRENEURSHIP STUDIO FOR ILLUSTRATION</COURSETITLE>
+   <COURSEDESC>This course will allow students to understand, celebrate, and employ their creative processes in a collaborative studio environment that helps them understand how their artwork becomes commercially viable and the value of design thinking in wider field. The course combines the experiential work of a studio with the conceptual learning of business basics: business models, customer understanding, finance, marketing and branding, elements that are essential parts of the creative process that drives design forward.  &lt;BR&gt; This class encourages students to harness creative thinking, take it off the page and put it to new use. In the studio students will work collaboratively toward the goal of employing inventive thinking in the workplace, be it thinking entrepreneurially within a job environment and/or eventually develop an independently owned and operated enterprise. &lt;BR&gt; A fundamental objective of this class is for students to put to use, in the studio, basic business vocabulary, to explore how design vocabulary and design thinking overlap, complement and enhance business vocabulary, and to understand how creative skills can be used to identify and execute business opportunities.  Students will be introduced to basic business concepts through the co-requisite course, Entrepreneurial Concepts and Principles  (NMEL-3508) Studio assignments spring from the classroom pedagogy. &lt;BR&gt; &lt;i&gt; Illustration elective &lt;br&gt; Open to juniors and above &lt;/i&gt;</COURSEDESC>
+   <COURSETERM>2015FA</COURSETERM>
+   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>0008554</COURSEFACULTY>
+  </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23054</COURSESYNONYM>
+   <COURSENAME>NME-3508-01</COURSENAME>
+   <COURSETITLE>ENTREPRENEURIAL CONCEPTS AND PRINCIPLES</COURSETITLE>
+   <COURSEDESC>Entrepreneurship, the imagining, building and sustaining of a socially impactful organization, is a creative art. Beyond self-awareness and purpose, entrepreneurial success requires insights from the humanities and social sciences as well as knowledge from the physical sciences; and the premise of this lecture course is that designers and artists are uniquely gifted with critical entrepreneurial qualities. This course will allow students to better understand how and where their skills and perspectives fit into the world of entrepreneurship and business through interdisciplinary study.&lt;BR&gt;  The objective of this course is for students to understand basic business vocabulary and how the processes and sensibilities of creative expression complement and enhance entrepreneurial thinking and processes. The goal is for students to understand how creative expression can be used to identify and execute business opportunities.  &lt;BR&gt; The course will use case studies, business articles and recent books on business to highlight this thinking.   Students will be introduced to basic business concepts through lectures, analysis of case studies, written assignments and class discussion. Homework assignments will work to reinforce and expand the classroom pedagogy. Topics covered will be business models, marketing, finance, and strategy. &lt;BR&gt;  &lt;i&gt; Illustration juniors and above &lt;br&gt;  As a co-requisite class, the concepts and frameworks above will be applied in Entrepreneurship Studio for Illustration (ILLUS- 3508) through a series of art and design projects. &lt;/i&gt; &lt;br&gt;</COURSEDESC>
+   <COURSETERM>2015FA</COURSETERM>
+   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>1023272</COURSEFACULTY>
+  </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
  <NAME>INTERIOR ARCH </NAME>
@@ -11736,7 +11777,7 @@
    <COURSETITLE>ADVANCED COMPUTING: DIGITAL FABRICATION</COURSETITLE>
    <COURSEDESC>This 4 week workshop will engage desktop making tools to foster familiarity with digital fabrication in the design of the Interior environment. The student will explore the generation of new tectonic forms through abstract geometrical principles. Components of interior architecture will be modeled and fabricated with rapid prototyping and CNC machines. The course will meet during crit week at the end of the semester. &lt;br&gt; Software requirements: Rhino V5.0(Windows) and Grasshopper plug-in. &lt;br&gt; &lt;i&gt; Major elective: BFA,MDes, MA &lt;br&gt; Prerequisite: Take 3 credits from courses INTAR-2331, INTAR-2377, or INTAR-2356 &lt;br&gt; INTAR majors only &lt;/i&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSECREDITS>1.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1168507</COURSEFACULTY>
   </COURSE>
@@ -12269,7 +12310,7 @@
    <COURSETITLE>ADVANCED COMPUTING: DIGITAL FABRICATION</COURSETITLE>
    <COURSEDESC>This 4 week workshop will engage desktop making tools to foster familiarity with digital fabrication in the design of the Interior environment. The student will explore the generation of new tectonic forms through abstract geometrical principles. Components of interior architecture will be modeled and fabricated with rapid prototyping and CNC machines. The course will meet during crit week at the end of the semester. &lt;br&gt; Software requirements: Rhino V5.0(Windows) and Grasshopper plug-in. &lt;br&gt; &lt;i&gt; Major elective: BFA,MDes, MA &lt;br&gt; Prerequisite: Take 3 credits from courses INTAR-2331, INTAR-2377, or INTAR-2356 &lt;br&gt; INTAR majors only &lt;/i&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSECREDITS>1.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1168507</COURSEFACULTY>
   </COURSE>
@@ -12279,7 +12320,7 @@
    <COURSETITLE>ADVANCED COMPUTING: DIGITAL FABRICATION</COURSETITLE>
    <COURSEDESC>This 4 week workshop will engage desktop making tools to foster familiarity with digital fabrication in the design of the Interior environment. The student will explore the generation of new tectonic forms through abstract geometrical principles. Components of interior architecture will be modeled and fabricated with rapid prototyping and CNC machines. The course will meet during crit week at the end of the semester. &lt;br&gt; Software requirements: Rhino V5.0(Windows) and Grasshopper plug-in. &lt;br&gt; &lt;i&gt; Major elective: BFA,MDes, MA &lt;br&gt; Prerequisite: Take 3 credits from courses INTAR-2331, INTAR-2377, or INTAR-2356 &lt;br&gt; INTAR majors only &lt;/i&gt;</COURSEDESC>
    <COURSETERM>2015FA</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSECREDITS>1.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1168507</COURSEFACULTY>
   </COURSE>
@@ -13916,6 +13957,16 @@
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>0185166</COURSEFACULTY>
   </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23189</COURSESYNONYM>
+   <COURSENAME>LAS-E101-29</COURSENAME>
+   <COURSETITLE>LITERATURE SEM: DESIGN IN WORDS</COURSETITLE>
+   <COURSEDESC>An introduction to literary study that helps students develop the skills necessary for college-level reading, writing, research and critical thinking. Through exposure to a variety of literary forms and genres, historical periods and critical approaches, students are taught how to read closely, argue effectively and develop a strong writing voice. The course is reading and writing intensive and organized around weekly assignments.&lt;br&gt; Required for graduation for all undergraduates, including transfers. There are no waivers for LAS-E101 except for transfer students who have taken an equivalent college course.&lt;BR&gt; &lt;i&gt; For the Fall term, freshmen are pre-registered into this course. &lt;br&gt;Attention sophomores and above: Please register into LAS-E101-28 if you have not yet completed this first-year graduation requirement. All other E101 sections are for freshmen only.&lt;BR&gt;&lt;/I&gt;</COURSEDESC>
+   <COURSETERM>2015FA</COURSETERM>
+   <COURSECREDITS>3.00</COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>1358715</COURSEFACULTY>
+  </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
  <NAME>LANDSCAPE ARCH</NAME>
@@ -13927,7 +13978,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>1177972</COURSEFACULTY>
+   <COURSEFACULTY>0465465</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17094</COURSESYNONYM>
@@ -14030,7 +14081,7 @@
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1052373</COURSEFACULTY>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1505740</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>17103</COURSESYNONYM>
@@ -14404,7 +14455,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>0751392</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>22690</COURSESYNONYM>
@@ -15102,7 +15153,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>0083488</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>22652</COURSESYNONYM>
@@ -16578,6 +16629,16 @@
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
    <COURSEFACULTY>1487780</COURSEFACULTY>
   </COURSE>
+  <COURSE>
+   <COURSESYNONYM>23188</COURSESYNONYM>
+   <COURSENAME>NMSE-8960-01</COURSENAME>
+   <COURSETITLE>PROFESSIONAL INTERNSHIP</COURSETITLE>
+   <COURSEDESC>The professional Internship provides valuable exposure to a professional setting, enabling students to better establish a career path and define practical aspirations. Internship proposals are carefully vetted to determine legitimacy and must meet the contact hour requirements listed in the RISD Course Announcement.&lt;br&gt;</COURSEDESC>
+   <COURSETERM>2015FA</COURSETERM>
+   <COURSECREDITS></COURSECREDITS>
+   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
+   <COURSEFACULTY>1052467</COURSEFACULTY>
+  </COURSE>
 </DEPARTMENT>
 <DEPARTMENT>
  <NAME>TEXTILES</NAME>
@@ -16719,7 +16780,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>9.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1169827</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>16277</COURSESYNONYM>
@@ -16810,7 +16871,7 @@
    <COURSETERM>2015FA</COURSETERM>
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>GR</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0027499</COURSEFACULTY>
+   <COURSEFACULTY>0602884</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>21934</COURSESYNONYM>
@@ -17149,17 +17210,7 @@
    <COURSETERM>2016WS</COURSETERM>
    <COURSECREDITS>6.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
-  </COURSE>
-  <COURSE>
-   <COURSESYNONYM>22352</COURSESYNONYM>
-   <COURSENAME>TEXT-4808-02</COURSENAME>
-   <COURSETITLE>DESIGN FOR DIGITALLY PRINTED FABRICS</COURSETITLE>
-   <COURSEDESC>This intensive course moves from concept to design development and then onto digitally printed fabrics.  Students start by creating presentation boards for color, pattern, and application in order to establish direction in their work.  With Adobe Photoshop serving as the primary tool, the traditional techniques of drawing, painting, and collage are integrated with new design technology. Class instruction will lead students through the Adobe software in the development of design for extensive experimentation on the Textile Department's Mimaki fabric printer.  Students will be encouraged to go beyond the boundaries of traditional textile design to meet the possibilities of this exciting technology.&lt;BR&gt; Estimated Material Cost: $50.00</COURSEDESC>
-   <COURSETERM>2016WS</COURSETERM>
-   <COURSECREDITS>3.00</COURSECREDITS>
-   <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>0003133</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>22353</COURSESYNONYM>
@@ -17259,7 +17310,7 @@
    <COURSETERM>2016SP</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>0395437</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>22653</COURSESYNONYM>
@@ -17309,7 +17360,7 @@
    <COURSETERM>2016WS</COURSETERM>
    <COURSECREDITS>3.00</COURSECREDITS>
    <COURSEACADEMICLEVEL>UG</COURSEACADEMICLEVEL>
-   <COURSEFACULTY>0623289</COURSEFACULTY>
+   <COURSEFACULTY>1506053</COURSEFACULTY>
   </COURSE>
   <COURSE>
    <COURSESYNONYM>23025</COURSESYNONYM>
