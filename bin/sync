@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var through = require('through2');
+var pump = require('pump');
 var parseArgs = require('minimist');
 
 var Env = require('../env.js');
@@ -69,8 +70,6 @@ function AddEduSyncNodeToFirebase () {
     function addEduSync (fb, enc, next) {
         console.log('Add eduSync to Firebase.');
 
-        var stream = this;
-
         fb.child('eduSync')
           .set({}, onComplete);
 
@@ -78,8 +77,7 @@ function AddEduSyncNodeToFirebase () {
             if (error) {
                 throw new Error(error);
             }
-            stream.push(fb);
-            stream.push(null);
+            next(null, fb);
         }
     }
 }
@@ -92,9 +90,15 @@ function ApplySyncProtocolToSources (sourcePrototypes) {
     function fbref (fb, enc, next) {
         console.log('Applying sync protocol to sources.');
 
+        // PICKUP
+        // have this push out individual source
+        // prototypes.
+        // have the following streams, expect a single
+        // prototype, that will use pump() to pipe
+        // together the functions for each one
+        // that way errors can propogate
         var sources = sourcePrototypes.map(configure);
-        this.push(sources);
-        this.push(null);
+        next(null, sources);
 
         function configure (source) {
             SyncProtocol(source, fb);
@@ -119,16 +123,23 @@ function GetSourcesData () {
             });
 
         var getterCount = getters.length;
-        getters.forEach(function (getter) {
-            getter.on('data', function () {});
-            getter.on('end', function checkDone () {
-                getterCount -= 1;
-                if (getterCount === 0) {
-                    stream.push(sources);
-                    stream.push(null);
-                }
+        if (getterCount === 0) {
+            next(null, sources);
+        }
+        else {
+            getters.forEach(function (getter) {
+                getter.on('data', function () {});
+                getter.on('error', function (err) {
+                    next(null, []);
+                });
+                getter.on('end', function checkDone () {
+                    getterCount -= 1;
+                    if (getterCount === 0) {
+                        next(null, sources);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -146,16 +157,23 @@ function AddSourceToWebHook () {
             });
 
         var addersCount = adders.length;
-        adders.forEach(function (adder) {
-            adder.on('data', function () {});
-            adder.on('end', function checkDone () {
-                addersCount -= 1;
-                if (addersCount === 0) {
-                    stream.push(sources);
-                    stream.push(null);
-                }
+        if (addersCount === 0) {
+            next(null, sources);
+        }
+        else {
+            adders.forEach(function (adder) {
+                adder.on('data', function () {});
+                adder.on('error', function () {
+                    next(null, []);
+                });
+                adder.on('end', function checkDone () {
+                    addersCount -= 1;
+                    if (addersCount === 0) {
+                        next(null, sources);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -180,16 +198,20 @@ function RemoveFromWebhookBasedOnSource () {
             });
 
         var removersCount = removers.length;
-        removers.forEach(function (remover) {
-            remover.on('data', function () {});
-            remover.on('end', function () {
-                removersCount -= 1;
-                if (removersCount === 0) {
-                    stream.push(sources);
-                    stream.push(null);
-                }
+        if (removersCount === 0) {
+            next(null, []);
+        }
+        else {
+            removers.forEach(function (remover) {
+                remover.on('data', function () {});
+                remover.on('end', function () {
+                    removersCount -= 1;
+                    if (removersCount === 0) {
+                        next(null, sources);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -216,16 +238,20 @@ function ResolveRelationships () {
             });
 
         var resolversCount = resolvers.length;
-        resolvers.forEach(function (resolver) {
-            resolver.on('data', function () {});
-            resolver.on('end', function () {
-                resolversCount -= 1;
-                if (resolversCount === 0) {
-                    stream.push(sources);
-                    stream.push(null);
-                }
+        if (resolversCount === 0) {
+            next(null, sources);
+        }
+        else {
+            resolvers.forEach(function (resolver) {
+                resolver.on('data', function () {});
+                resolver.on('end', function () {
+                    resolversCount -= 1;
+                    if (resolversCount === 0) {
+                        next(null, sources);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -244,16 +270,20 @@ function ResolveReverseRelationships () {
             });
 
         var resolversCount = resolvers.length;
-        resolvers.forEach(function (resolver) {
-            resolver.on('data', function () {});
-            resolver.on('end', function () {
-                resolversCount -= 1;
-                if (resolversCount === 0) {
-                    stream.push(sources);
-                    stream.push(null);
-                }
+        if (resolversCount === 0) {
+            next(null, sources);
+        }
+        else {
+            resolvers.forEach(function (resolver) {
+                resolver.on('data', function () {});
+                resolver.on('end', function () {
+                    resolversCount -= 1;
+                    if (resolversCount === 0) {
+                        next(null, sources);
+                    }
+                });
             });
-        });
+        }
     }
 }
 
@@ -261,8 +291,7 @@ function Exit () {
     return through.obj(exit);
 
     function exit (row, enc, next) {
-        console.log('Done!');
-        this.push(null);
+        next(null);
         process.exit();
     }
 }

@@ -71,6 +71,10 @@ Employees.prototype.listSource = function () {
             var stream = this;
             var xml = new xmlStream(res, 'iso-8859-1');
 
+            xml.on('error', function (err) {
+                next(err, null);
+            });
+
             xml.on('endElement: EMPLOYEE', function (d) {
                 console.log(d);
                 d.corg = c.corg.split('; ');
