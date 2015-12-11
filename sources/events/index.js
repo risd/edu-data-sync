@@ -207,7 +207,6 @@ Events.prototype.sourceStreamToFirebaseSource = function () {
         }
 
         function onAddComplete () {
-            stream.push(row);
             next();
         }
 
@@ -234,6 +233,9 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     wh.upcoming = isUpcoming(wh.localist_date_range_last);
     
+
+    wh.upcoming = isUpcoming(wh.localist_date_range_last);
+
     wh.localist_instances = src.event_instances
         .map(function (d) {
             if ((d.event_instance.all_day) ||
@@ -474,11 +476,9 @@ Events.prototype.updateWebhookValueNotInSource = function () {
                 .remove(function onComplete () {
                     row.whKey = undefined;
                     row.webhook = undefined;
-                    stream.push(row);
                     next();
                 });
         } else {
-            this.push(row);
             next();
         }
     }
