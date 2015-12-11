@@ -125,8 +125,7 @@ function listFirebaseWebhook () {
     }
 
     function onError (error) {
-        console.log('listFirebaseWebhook');
-        console.log(error);
+        stream.emit('error', error);
     }
 }
 
@@ -157,8 +156,7 @@ function listFirebaseSource () {
     }
 
     function onError (error) {
-        console.log('listFirebaseSource');
-        console.log(error);   
+        stream.emit('error', error);
     }
 }
 
@@ -238,8 +236,7 @@ function addSourceToWebhook () {
         }
 
         function onError (error) {
-            console.log('addSourceToWebhook');
-            console.log(error);
+            next(new Error(error));
         }
     }
 
@@ -266,10 +263,9 @@ function addSourceToWebhook () {
 
         function onComplete (error) {
             if (error) {
-                throw new Error(error);
+                stream.emit('error', error);
             }
             row.webhook = value;
-            stream.push(row);
             next();
         }
     }
@@ -289,7 +285,6 @@ function sourceStreamToFirebaseSource () {
             .set(row, onComplete);
 
         function onComplete () {
-            stream.push(row);
             next();
         }
     }
@@ -339,8 +334,7 @@ function addInSourceBool () {
         }
 
         function onError (error) {
-            console.log('addInSourceBool');
-            console.log(error);
+            next(error);
         }
 
         function findKeyInSrcDataAndMark () {
@@ -388,11 +382,9 @@ function updateWebhookValueNotInSource () {
                 .remove(function onComplete () {
                     row.whKey = undefined;
                     row.webhook = undefined;
-                    stream.push(row);
                     next();
                 });
         } else {
-            this.push(row);
             next();
         }
     }
@@ -447,8 +439,7 @@ function rrListWebhookWithRelationshipsToResolve () {
     }
 
     function onError (error) {
-        console.log('listFirebaseWebhook');
-        console.log(error);
+        eventStream.emit('error', error);
     }
 }
 
@@ -1025,7 +1016,6 @@ function rrSaveCurrent () {
                     console.log('\n\nSave current::end');
                     console.log(self.webhookContentType);
                     console.log(row.toResolve.relationshipKey);
-                    stream.push(row);
                     next();
                 });
     }
@@ -1216,7 +1206,6 @@ function rrrSave () {
         function done () {
             console.log('rrr resolved');
             console.log(toSave);
-            stream.push(toSave);
             next();
         }
     }

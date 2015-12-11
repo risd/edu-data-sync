@@ -54,7 +54,7 @@ Employees.prototype.listSource = function () {
             self.aws
                 .getFile(path, function (err, res) {
                     if (err) {
-                        console.error(err);
+                        stream.emit('error', err);
                     } else {
                         stream.push(res);    
                     }
@@ -72,12 +72,10 @@ Employees.prototype.listSource = function () {
             var xml = new xmlStream(res, 'iso-8859-1');
 
             xml.on('error', function (err) {
-                next(err, null);
+                writeStream.emit('error', err);
             });
 
             xml.on('endElement: EMPLOYEE', function (d) {
-                console.log(d);
-                d.corg = c.corg.split('; ');
                 writeStream.push(d);
             });
 
@@ -107,7 +105,7 @@ Employees.prototype.listSourceLocal = function () {
     });
 
     xml.on('error', function (e) {
-        console.log(e);
+        eventStream.emit('error', e);
     });
 
     xml.on('end', function () {
@@ -134,9 +132,13 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     wh.colleague_status = true;
 
-    wh.colleague_organizations = src.corg
-        .map(function (d) {
-            return { name: d };
+    wh.colleague_organizations = src.CORG
+        .split('; ')
+        .filter(function (org) {
+            return org.length > 0;
+        })
+        .map(function (org) {
+            return { name: org };
         });
 
     return (whUtil.whRequiredDates(wh));
@@ -152,7 +154,7 @@ Employees.prototype.relationshipsToResolve = function () {
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
-        relateToContentType: 'foundationstudies',
+        relateToContentType: 'experimentalandfoundationstudies',
         itemToRelate: false
     }, {
         multipleToRelate: false,

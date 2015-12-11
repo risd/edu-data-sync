@@ -85,15 +85,15 @@ Report.prototype.update = function () {
 			through.obj(writeHTML),
 			through.obj(pushToS3));
 
-	function toUpdate (sources, enc, next) {
+	function toUpdate (source, enc, next) {
 		var nowOnEastCoast = timezone().tz('America/New_York');
 		var date = moment(nowOnEastCoast).format('MMMM Do YYYY, h:mm:ss a');
 
 		var keysToUpdate = {};
-
-		sources.forEach(function (source) {
-			keysToUpdate[source.webhookContentType] = date;
-		});
+		keysToUpdate[source.webhookContentType] = {
+			date: date,
+			errors: source.errors
+		};
 
 		this.push(keysToUpdate);
 		this.push(null);
@@ -124,17 +124,37 @@ Report.prototype.update = function () {
 				if (value) {
 					Object.keys(value)
 						.forEach(function (key) {
-							var sortDate = moment(
-									value[key],
-									'MMMM Do YYYY, h:mm:ss a'
-								)
-								.valueOf();
+							var v = {
+								contentType: key
+							};
+							if (typeof value[key] === 'string') {
+								v.date = value[key];
+								v.sortDate = moment(
+										v.date,
+										'MMMM Do YYYY, h:mm:ss a'
+									)
+									.valueOf();
+								v.errors = '';
+							}
+							else {
+								v.date = value[key].date;
+								if ('errors' in value[key]) {
+									v.errors = value[key].errors
+										.map(function (d) {
+											return '<li>' + d + '</li>';
+										});
+								}
+								else {
+									v.errors = '';
+								}
 
-							toWrite.push({
-								contentType: key,
-								date: value[key],
-								sortDate: sortDate
-							});
+								v.sortDate = moment(
+										v.date,
+										'MMMM Do YYYY, h:mm:ss a'
+									)
+									.valueOf();
+							}
+							toWrite.push(v);
 						});
 				}
 				stream.push(toWrite);
@@ -157,7 +177,8 @@ Report.prototype.update = function () {
 		sortedToWrite.forEach(function (entry) {
 			self.sources.write({
 				'[key=contentType]': entry.contentType,
-				'[key=date]': entry.date
+				'[key=date]': entry.date,
+				'[key=errors]': entry.errors
 			});
 		});
 

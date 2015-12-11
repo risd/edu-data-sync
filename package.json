@@ -17,6 +17,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "sync": "./bin/sync",
     "sync-events": "./bin/sync events",
     "sync-employees": "./bin/sync employees",
     "sync-courses": "./bin/sync courses",
