@@ -135,7 +135,7 @@ function GetSourcesData () {
           .push(stepError);
 
         if (err instanceof Error) {
-          source.push(err);
+          source.errors.push(err);
         }
       }
       next(null, source);
@@ -169,7 +169,7 @@ function AddSourceToWebhook () {
           .push(stepError);
 
         if (err instanceof Error) {
-          source.push(err);
+          source.errors.push(err);
         }
       }
       next(null, source);
@@ -211,7 +211,7 @@ function RemoveFromWebhookBasedOnSource () {
           .push(stepError);
 
         if (err instanceof Error) {
-          source.push(err);
+          source.errors.push(err);
         }
       }
       next(null, source);
@@ -261,7 +261,7 @@ function ResolveRelationships () {
           .push(stepError);
 
         if (err instanceof Error) {
-          source.push(err);
+          source.errors.push(err);
         }
       }
       next(null, source);
@@ -299,7 +299,7 @@ function ResolveReverseRelationships () {
           .push(stepError);
 
         if (err instanceof Error) {
-          source.push(err);
+          source.errors.push(err);
         }
       }
       next(null, source);
