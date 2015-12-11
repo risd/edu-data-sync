@@ -131,33 +131,23 @@ Report.prototype.update = function () {
 							var v = {
 								contentType: key
 							};
-							if (typeof value[key] === 'string') {
-								v.date = value[key];
-								v.sortDate = moment(
-										v.date,
-										'MMMM Do YYYY, h:mm:ss a'
-									)
-									.valueOf();
-								v.errors = '';
+							v.date = value[key].date;
+							if ('errors' in value[key]) {
+								v.errors = value[key].errors
+									.map(function (d) {
+										return '<li>' + d.message + '</li>';
+									});
 							}
 							else {
-								v.date = value[key].date;
-								if ('errors' in value[key]) {
-									v.errors = value[key].errors
-										.map(function (d) {
-											return '<li>' + d.message + '</li>';
-										});
-								}
-								else {
-									v.errors = '';
-								}
-
-								v.sortDate = moment(
-										v.date,
-										'MMMM Do YYYY, h:mm:ss a'
-									)
-									.valueOf();
+								v.errors = '';
 							}
+
+							v.sortDate = moment(
+									v.date,
+									'MMMM Do YYYY, h:mm:ss a'
+								)
+								.valueOf();
+
 							toWrite.push(v);
 						});
 				}
