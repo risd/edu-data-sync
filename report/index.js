@@ -23,6 +23,10 @@ function Report () {
     var self = this;
     this.html = template();
     this.sources = this.html.template('source');
+    this.templateStream = function () {
+    	return fs.createReadStream(
+    		__dirname + '/template.html');
+    };
 }
 
 /**
@@ -85,15 +89,15 @@ Report.prototype.update = function () {
 			through.obj(writeHTML),
 			through.obj(pushToS3));
 
-	function toUpdate (sources, enc, next) {
+	function toUpdate (source, enc, next) {
 		var nowOnEastCoast = timezone().tz('America/New_York');
 		var date = moment(nowOnEastCoast).format('MMMM Do YYYY, h:mm:ss a');
 
 		var keysToUpdate = {};
-
-		sources.forEach(function (source) {
-			keysToUpdate[source.webhookContentType] = date;
-		});
+		keysToUpdate[source.webhookContentType] = {
+			date: date,
+			errors: source.errors
+		};
 
 		this.push(keysToUpdate);
 		this.push(null);
@@ -124,17 +128,27 @@ Report.prototype.update = function () {
 				if (value) {
 					Object.keys(value)
 						.forEach(function (key) {
-							var sortDate = moment(
-									value[key],
+							var v = {
+								contentType: key
+							};
+							v.date = value[key].date;
+							if ('errors' in value[key]) {
+								v.errors = value[key].errors
+									.map(function (d) {
+										return '<li>' + d.message + '</li>';
+									});
+							}
+							else {
+								v.errors = '';
+							}
+
+							v.sortDate = moment(
+									v.date,
 									'MMMM Do YYYY, h:mm:ss a'
 								)
 								.valueOf();
 
-							toWrite.push({
-								contentType: key,
-								date: value[key],
-								sortDate: sortDate
-							});
+							toWrite.push(v);
 						});
 				}
 				stream.push(toWrite);
@@ -150,14 +164,15 @@ Report.prototype.update = function () {
 				return b.sortDate - a.sortDate;
 			});
 
-		fs.createReadStream(__dirname + '/template.html')
+		self.templateStream()
 			.pipe(self.html)
 			.pipe(through(capture, push));
 
 		sortedToWrite.forEach(function (entry) {
 			self.sources.write({
 				'[key=contentType]': entry.contentType,
-				'[key=date]': entry.date
+				'[key=date]': entry.date,
+				'[key=errors]': entry.errors
 			});
 		});
 
@@ -170,6 +185,7 @@ Report.prototype.update = function () {
 		function push () {
 			stream.push(htmlToWrite);
 			stream.push(null);
+			this.push(null);
 		}
 	}
 

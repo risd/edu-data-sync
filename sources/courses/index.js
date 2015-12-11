@@ -62,7 +62,7 @@ Courses.prototype.listSource = function () {
             self.aws
                 .getFile(path, function (err, res) {
                     if (err) {
-                        console.error(err);
+                        stream.emit('error', err);
                     } else {
                         stream.push(res);    
                     }
@@ -81,6 +81,9 @@ Courses.prototype.listSource = function () {
 
             // capture all departments per course
             xml.collect('COURSE');
+            xml.on('error', function (err) {
+                writeStream.emit('error', err);
+            });
             xml.on('endElement: DEPARTMENT', function (row) {
                 row.COURSE.forEach(function (d) {
                     d.departments = [row.NAME.trim()];
@@ -164,12 +167,11 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
         }
 
         function onCheckError (error) {
-            console.log(error);
+            stream.emit('error', error);
             onAddComplete();
         }
 
         function onAddComplete () {
-            stream.push(row);
             next();
         }
     }
@@ -278,7 +280,7 @@ Courses.prototype.relationshipsToResolve = function () {
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
-        relateToContentType: 'foundationstudies',
+        relateToContentType: 'experimentalandfoundationstudies',
         itemToRelate: false
     }, {
         multipleToRelate: false,

@@ -19,272 +19,292 @@ var Report = require('../report/index.js')();
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
 var args = parseArgs(process.argv.slice(2));
-if (args._.indexOf('help') > -1) {
-    var usage = fs.readFileSync(
-                    __dirname +
-                    '/syncUsage.md')
-                .toString()
-                .replace(/```/g, '\n');
-    console.log(usage);
-    return;
+if ((args._.indexOf('help') > -1) ||
+    (args._.length === 0)) {
+  var usage = fs.readFileSync(
+                  __dirname +
+                  '/syncUsage.md')
+              .toString()
+              .replace(/```/g, '\n');
+  console.log(usage);
+  return;
 }
-if (args._.length === 0) {
-    sourcePrototypes.push(Events);
-    sourcePrototypes.push(Employees);
-    sourcePrototypes.push(Courses);
-} else {
-    var largs = args._
-                    .map(function (d) {
-                        return d.toLowerCase();
-                    });
+else {
+  var largs = args._
+                  .map(function (d) {
+                      return d.toLowerCase();
+                  });
 
-    if (largs.indexOf('events') > -1) {
-        sourcePrototypes.push(Events);
-    }
-    if (largs.indexOf('employees') > -1) {
-        sourcePrototypes.push(Employees);
-    }
-    if (largs.indexOf('courses') > -1) {
-        sourcePrototypes.push(Courses);
-    }
+  if (largs.indexOf('events') > -1) {
+    sourcePrototypes.push(Events);
+  }
+  if (largs.indexOf('employees') > -1) {
+    sourcePrototypes.push(Employees);
+  }
+  if (largs.indexOf('courses') > -1) {
+    sourcePrototypes.push(Courses);
+  }
 }
 
 Env();
 
 Firebaseref()
-    .pipe(AddEduSyncNodeToFirebase())
-    .pipe(Report.config())
-    .pipe(ApplySyncProtocolToSources(sourcePrototypes))
-    .pipe(GetSourcesData())
-    .pipe(AddSourceToWebHook())
-    .pipe(RemoveFromWebhookBasedOnSource())
-    .pipe(ResolveRelationships())
-    .pipe(ResolveReverseRelationships())
-    .pipe(Report.update())
-    .pipe(Exit());
+  .pipe(AddEduSyncNodeToFirebase())
+  .pipe(Report.config())
+  .pipe(ApplySyncProtocolToSources(sourcePrototypes))
+  .pipe(GetSourcesData())
+  .pipe(AddSourceToWebhook())
+  .pipe(RemoveFromWebhookBasedOnSource())
+  .pipe(ResolveRelationships())
+  .pipe(ResolveReverseRelationships())
+  .pipe(Report.update())
+  .pipe(Exit());
 
 
 function AddEduSyncNodeToFirebase () {
-    return through.obj(addEduSync);
+  return through.obj(addEduSync);
 
-    function addEduSync (fb, enc, next) {
-        console.log('Add eduSync to Firebase.');
+  function addEduSync (fb, enc, next) {
+    console.log('Add eduSync to Firebase.');
 
-        fb.child('eduSync')
-          .set({}, onComplete);
+    fb.child('eduSync')
+      .set({}, onComplete);
 
-        function onComplete (error) {
-            if (error) {
-                throw new Error(error);
-            }
-            next(null, fb);
-        }
+    function onComplete (error) {
+      if (error) {
+        throw new Error(error);
+      }
+      next(null, fb);
     }
+  }
 }
 
 function ApplySyncProtocolToSources (sourcePrototypes) {
-    var SyncProtocol = require('../syncProtocol.js');
+  var SyncProtocol = require('../syncProtocol.js');
 
-    return through.obj(fbref);
+  return through.obj(fbref);
 
-    function fbref (fb, enc, next) {
-        console.log('Applying sync protocol to sources.');
+  function fbref (fb, enc, next) {
+    console.log('Applying sync protocol to sources.');
 
-        // PICKUP
-        // have this push out individual source
-        // prototypes.
-        // have the following streams, expect a single
-        // prototype, that will use pump() to pipe
-        // together the functions for each one
-        // that way errors can propogate
-        var sources = sourcePrototypes.map(configure);
-        next(null, sources);
+    var stream = this;
 
-        function configure (source) {
-            SyncProtocol(source, fb);
-            return source();
-        }
+    sourcePrototypes
+      .map(configure)
+      .forEach(pushInto(stream));
+
+    next();
+
+    function configure (source) {
+      SyncProtocol(source, fb);
+      return source();
     }
+    function pushInto (stream) {
+      return function pusher (source) {
+        stream.push(source);
+      };
+    }
+  }
 }
 
 function GetSourcesData () {
-    return through.obj(getSourceData);
+  return through.obj(getSourceData);
 
-    function getSourceData (sources, enc, next) {
-        var m =
-            'Get all data from sources & put into firebase.';
-        console.log(m);
+  function getSourceData (source, enc, next) {
+    console.log(
+      'Get all data from source & put into firebase.');
 
-        var stream = this;
-        var getters = sources
-            .map(function (source) {
-                return source.listSource()
-                    .pipe(source.sourceStreamToFirebaseSource());
-            });
+    source.errors = [];
 
-        var getterCount = getters.length;
-        if (getterCount === 0) {
-            next(null, sources);
-        }
-        else {
-            getters.forEach(function (getter) {
-                getter.on('data', function () {});
-                getter.on('error', function (err) {
-                    next(null, []);
-                });
-                getter.on('end', function checkDone () {
-                    getterCount -= 1;
-                    if (getterCount === 0) {
-                        next(null, sources);
-                    }
-                });
-            });
-        }
+    if (('listSource' in source) &&
+        ('sourceStreamToFirebaseSource' in source)) {
+
+      pump(
+        source.listSource(),
+        source.sourceStreamToFirebaseSource(),
+        end);
     }
+    else {
+      end(true);
+    }
+
+    function end (err) {
+      var stepError = new Error('Could not get source data.');
+      if (err) {
+        source.errors
+          .push(stepError);
+
+        if (err instanceof Error) {
+          source.errors.push(err);
+        }
+      }
+      next(null, source);
+    }
+  }
 }
 
-function AddSourceToWebHook () {
-    return through.obj(addSource);
+function AddSourceToWebhook () {
+  return through.obj(addSource);
 
-    function addSource (sources, enc, next) {
-        console.log('Add source data to webhook data.');
+  function addSource (source, enc, next) {
+    console.log('Add source data to webhook data.');
 
-        var stream = this;
-        var adders = sources
-            .map(function (source) {
-                return source.listFirebaseSource()
-                    .pipe(source.addSourceToWebhook());
-            });
-
-        var addersCount = adders.length;
-        if (addersCount === 0) {
-            next(null, sources);
-        }
-        else {
-            adders.forEach(function (adder) {
-                adder.on('data', function () {});
-                adder.on('error', function () {
-                    next(null, []);
-                });
-                adder.on('end', function checkDone () {
-                    addersCount -= 1;
-                    if (addersCount === 0) {
-                        next(null, sources);
-                    }
-                });
-            });
-        }
+    if ((source.errors.length === 0) &&
+        ('listFirebaseSource' in source) &&
+        ('addSourceToWebhook' in source)) {
+      pump(
+        source.listFirebaseSource(),
+        source.addSourceToWebhook(),
+        end);
     }
+    else {
+      end(true);
+    }
+
+    function end (err) {
+      var stepError = new Error(
+        'Could not add source data to webhook data');
+      if (err) {
+        source.errors
+          .push(stepError);
+
+        if (err instanceof Error) {
+          source.errors.push(err);
+        }
+      }
+      next(null, source);
+    }
+  }
 }
 
 function RemoveFromWebhookBasedOnSource () {
-    /**
-     * List the webhook and source values
-     * if the webhook value is not in the
-     * source values, invoke the model's
-     * `webhookValueNotInSource`
-     */
-    return through.obj(remove);
+  /**
+   * List the webhook and source values
+   * if the webhook value is not in the
+   * source values, invoke the model's
+   * `webhookValueNotInSource`
+   */
+  return through.obj(remove);
 
-    function remove (sources, enc, next) {
-        console.log('Remove from WebHook based on source.');
-        var stream = this;
-
-        var removers = sources
-            .map(function (source) {
-                return source.listFirebaseWebhook()
-                    .pipe(source.addInSourceBool())
-                    .pipe(source.updateWebhookValueNotInSource());
-            });
-
-        var removersCount = removers.length;
-        if (removersCount === 0) {
-            next(null, []);
-        }
-        else {
-            removers.forEach(function (remover) {
-                remover.on('data', function () {});
-                remover.on('end', function () {
-                    removersCount -= 1;
-                    if (removersCount === 0) {
-                        next(null, sources);
-                    }
-                });
-            });
-        }
+  function remove (source, enc, next) {
+    console.log('Remove from WebHook based on source.');
+    
+    if ((source.errors.length === 0) &&
+        ('listFirebaseWebhook' in source) &&
+        ('addInSourceBool' in source) &&
+        ('updateWebhookValueNotInSource' in source)) {
+      pump(
+        source.listFirebaseWebhook(),
+        source.addInSourceBool(),
+        source.updateWebhookValueNotInSource(),
+        end);
     }
+    else {
+      end(true);
+    }
+
+    function end (err) {
+      var stepError = new Error(
+        'Could not remove from webhook based on source.');
+      if (err) {
+        source.errors
+          .push(stepError);
+
+        if (err instanceof Error) {
+          source.errors.push(err);
+        }
+      }
+      next(null, source);
+    }
+  }
 }
 
 function ResolveRelationships () {
-    return through.obj(relationships);
+  return through.obj(relationships);
 
-    function relationships (sources, enc, next) {
-        console.log('Resolve Relationships.');
+  function relationships (source, enc, next) {
+    console.log('Resolve Relationships.');
 
-        var stream = this;
-
-        var resolvers = sources
-            .map(function (source) {
-                return source.rrListWebhookWithRelationshipsToResolve()
-                    .pipe(source.rrGetRelatedData())
-                    .pipe(source.rrResetRelated())
-                    .pipe(source.rrEnsureReverseRootNode())
-                    .pipe(source.rrEnsureReverseContenTypeNode())
-                    .pipe(source.rrEnsureReverseContentTypeValueNode())
-                    .pipe(source.rrEnsureReverseKeyNode())
-                    .pipe(source.rrPopulateRelated())
-                    .pipe(source.rrSaveReverse())
-                    .pipe(source.rrSaveCurrent());
-            });
-
-        var resolversCount = resolvers.length;
-        if (resolversCount === 0) {
-            next(null, sources);
-        }
-        else {
-            resolvers.forEach(function (resolver) {
-                resolver.on('data', function () {});
-                resolver.on('end', function () {
-                    resolversCount -= 1;
-                    if (resolversCount === 0) {
-                        next(null, sources);
-                    }
-                });
-            });
-        }
+    if ((source.errors.length === 0) &&
+        ('rrListWebhookWithRelationshipsToResolve' in source) &&
+        ('rrGetRelatedData' in source) &&
+        ('rrResetRelated' in source) &&
+        ('rrEnsureReverseRootNode' in source) &&
+        ('rrEnsureReverseContenTypeNode' in source) &&
+        ('rrEnsureReverseContentTypeValueNode' in source) &&
+        ('rrEnsureReverseKeyNode' in source) &&
+        ('rrPopulateRelated' in source) &&
+        ('rrSaveReverse' in source) &&
+        ('rrSaveCurrent' in source)) {
+      pump(
+        source.rrListWebhookWithRelationshipsToResolve(),
+        source.rrGetRelatedData(),
+        source.rrResetRelated(),
+        source.rrEnsureReverseRootNode(),
+        source.rrEnsureReverseContenTypeNode(),
+        source.rrEnsureReverseContentTypeValueNode(),
+        source.rrEnsureReverseKeyNode(),
+        source.rrPopulateRelated(),
+        source.rrSaveReverse(),
+        source.rrSaveCurrent(),
+        end);
     }
+    else {
+      end(true);
+    }
+
+    function end (err) {
+      var stepError = new Error(
+        'Could not resovle relationships.');
+      if (err) {
+        source.errors
+          .push(stepError);
+
+        if (err instanceof Error) {
+          source.errors.push(err);
+        }
+      }
+      next(null, source);
+    }
+  }
 }
 
 function ResolveReverseRelationships () {
-    return through.obj(reverse);
+  return through.obj(reverse);
 
-    function reverse (sources, enc, next) {
-        var stream = this;
+  function reverse (source, enc, next) {
 
-        var resolvers = sources
-            .map(function (source) {
-                return source.rrrListRelationshipsToResolve()
-                    .pipe(source.rrrAddData())
-                    .pipe(source.rrrFormatData())
-                    .pipe(source.rrrSave());
-            });
-
-        var resolversCount = resolvers.length;
-        if (resolversCount === 0) {
-            next(null, sources);
-        }
-        else {
-            resolvers.forEach(function (resolver) {
-                resolver.on('data', function () {});
-                resolver.on('end', function () {
-                    resolversCount -= 1;
-                    if (resolversCount === 0) {
-                        next(null, sources);
-                    }
-                });
-            });
-        }
+    if ((source.errors.length === 0) &&
+        ('rrrListRelationshipsToResolve' in source) &&
+        ('rrrAddData' in source) &&
+        ('rrrFormatData' in source) &&
+        ('rrrSave' in source)) {
+      pump(
+        source.rrrListRelationshipsToResolve(),
+        source.rrrAddData(),
+        source.rrrFormatData(),
+        source.rrrSave(),
+        end);
     }
+    else {
+      end(true);
+    }
+
+
+    function end (err) {
+      var stepError = new Error(
+        'Could not resovle relationships.');
+      if (err) {
+        source.errors
+          .push(stepError);
+
+        if (err instanceof Error) {
+          source.errors.push(err);
+        }
+      }
+      next(null, source);
+    }
+  }
 }
 
 function Exit () {

@@ -23,7 +23,7 @@ module.exports = function () {
             "ektronNews": "Literary Arts + Studies"
         }, {
             "colleague": "History Phil Social Sciences",
-            "webhook": "History, Philosophy + The Social Sciences",
+            "webhook": "History, Philosophy + the Social Sciences",
             "localist": "History, Philosophy + the Social Sciences",
             "courseCatalogue": "HIST/PHIL/SO SC DEPT",
             "ektronNews": "History, Philosophy + the Social Sciences"

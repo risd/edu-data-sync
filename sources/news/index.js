@@ -353,7 +353,7 @@ News.prototype.relationshipsToResolve = function () {
     }, {
         multipleToRelate: false,
         relationshipKey: 'related_foundation_studies',
-        relateToContentType: 'foundationstudies',
+        relateToContentType: 'experimentalandfoundationstudies',
         // relateToContentTypeDataUsingKey: 'name',
         itemToRelate: false
     }, {
