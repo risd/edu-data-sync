@@ -8,8 +8,8 @@
     "url": "git://github.com/risd/edu-data-sync.git"
   },
   "engines": {
-    "node": "0.10.x",
-    "npm": "2.7.x"
+    "node": "0.12.x",
+    "npm": "2.12.x"
   },
   "bin": {
     "sync": "./bin/sync",
