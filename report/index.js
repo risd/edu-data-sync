@@ -23,6 +23,10 @@ function Report () {
     var self = this;
     this.html = template();
     this.sources = this.html.template('source');
+    this.templateStream = function () {
+    	return fs.createReadStream(
+    		__dirname + '/template.html');
+    };
 }
 
 /**
@@ -141,7 +145,7 @@ Report.prototype.update = function () {
 								if ('errors' in value[key]) {
 									v.errors = value[key].errors
 										.map(function (d) {
-											return '<li>' + d + '</li>';
+											return '<li>' + d.message + '</li>';
 										});
 								}
 								else {
@@ -170,7 +174,7 @@ Report.prototype.update = function () {
 				return b.sortDate - a.sortDate;
 			});
 
-		fs.createReadStream(__dirname + '/template.html')
+		self.templateStream()
 			.pipe(self.html)
 			.pipe(through(capture, push));
 
@@ -191,6 +195,7 @@ Report.prototype.update = function () {
 		function push () {
 			stream.push(htmlToWrite);
 			stream.push(null);
+			this.push(null);
 		}
 	}
 
