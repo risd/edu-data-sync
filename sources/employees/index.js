@@ -254,11 +254,9 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
                 .webhook
                 .child(row.whKey)
                 .set(row.webhook, function () {
-                    stream.push(row);
                     next();
                 });
         } else {
-            this.push(row);
             next();
         }
     }

@@ -172,7 +172,6 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
         }
 
         function onAddComplete () {
-            stream.push(row);
             next();
         }
     }
