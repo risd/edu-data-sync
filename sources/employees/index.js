@@ -88,15 +88,13 @@ Employees.prototype.listSource = function () {
     }
 };
 
-Employees.prototype.listSourceLocal = function () {
+Employees.prototype.listSourceLocal = function (path) {
     console.log('Employees.listSourceLocal');
     var self = this;
 
     var eventStream = through.obj();
 
-    var file = fs.createReadStream(
-                        __dirname +
-                        '/EMPLOYEE.DATA.XML');
+    var file = fs.createReadStream(path);
 
     var xml = new xmlStream(file, 'iso-8859-1');
 
@@ -123,6 +121,127 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     	first: src.FIRSTNAME,
     	last: src.LASTNAME
     };
+
+    var firstInPreferred = (src.FIRSTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.FIRSTNAME) : -1;
+    var middleInPreferred = (src.MIDDLENAME.length > 0) ? src.PREFERREDNAME.indexOf(src.MIDDLENAME) : -1;
+    var lastInPreferred = (src.LASTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.LASTNAME) : -1;
+
+    if ((firstInPreferred > -1) &&
+        (lastInPreferred > -1)) {
+        // names are correct
+    } else if (
+        (firstInPreferred > -1) &&
+        (middleInPreferred > -1) &&
+        (lastInPreferred === -1)) {
+        if (firstInPreferred === 0) {
+            wh.colleague_person.last = src.PREFERREDNAME
+                .slice(
+                    middleInPreferred,
+                    src.PREFERREDNAME.length)
+                .trim();
+        }
+        else {
+            /* we can't reliably set first/last */
+        }
+    } else if (
+        (firstInPreferred === -1) &&
+        (middleInPreferred > -1) &&
+        (lastInPreferred > -1)) {
+        if ((middleInPreferred === 0) &&
+            (lastInPreferred + src.LASTNAME.length) === src.PREFERREDNAME.length) {
+            wh.colleague_person.first = src.PREFERREDNAME
+                .slice(
+                    0,
+                    middleInPreferred)
+                .trim();
+        }
+        else {
+            /* we can't reliably set first/last */
+        }
+    } else if (
+        (firstInPreferred > -1) &&
+        (middleInPreferred === -1) &&
+        (lastInPreferred === -1)) {
+        if (firstInPreferred === 0) {
+            wh.colleague_person = {
+                first: src.FIRSTNAME,
+                last: src.PREFERREDNAME
+                    .slice(
+                        src.FIRSTNAME.length,
+                        src.PREFERREDNAME.length)
+                    .trim()
+            }
+        }
+        else if ((firstInPreferred + src.FIRSTNAME.length) === src.PREFERREDNAME.length) {
+            wh.colleague_person = {
+                first: src.PREFERREDNAME
+                    .slice(
+                        0,
+                        src.FIRSTNAME.length)
+                    .trim(),
+                last: src.FIRSTNAME
+            }
+        }
+        else {
+            /* we can't reliably set first/last */
+        }
+    } else if (
+        (firstInPreferred === -1) &&
+        (middleInPreferred > -1) &&
+        (lastInPreferred === -1)) {
+        if (middleInPreferred === 0) {
+            wh.colleague_person = {
+                first: src.MIDDLENAME,
+                last: src.PREFERREDNAME
+                    .slice(
+                        src.MIDDLENAME.length,
+                        src.PREFERREDNAME.length)
+                    .trim()
+            }
+        }
+        else if ((middleInPreferred + src.MIDDLENAME.length) === src.PREFERREDNAME.length) {
+            wh.colleague_person = {
+                first: src.PREFERREDNAME
+                    .slice(
+                        0,
+                        middleInPreferred),
+                last: src.PREFERREDNAME
+                    .slice(
+                        middleInPreferred,
+                        src.PREFERREDNAME.length)
+                    .trim()
+            }   
+        }
+        else {
+            /* we can't reliably set first/last */
+        }
+    } else if (
+        (firstInPreferred === -1) &&
+        (middleInPreferred === -1) &&
+        (lastInPreferred > -1)) {
+        if ((src.PREFERREDNAME.length - src.LASTNAME.length) === lastInPreferred) {
+            wh.colleague_person.first = src.PREFERREDNAME
+                .slice(
+                    0,
+                    lastInPreferred)
+                .trim()
+        }
+        else if (lastInPreferred === 0) {
+            wh.colleague_person = {
+                first: src.LASTNAME,
+                last: src.PREFERREDNAME
+                    .slice(
+                        src.LASTNAME.length,
+                        src.PREFERREDNAME.length)m
+            }
+        }
+        else {
+            /* we can't reliably set first/last */
+        }
+    }
+
+
+
     wh.colleague_email = src.EMAIL;
     wh.colleague_phone_number = src.PHONE;
     wh.colleague_title = src.TITLE;
