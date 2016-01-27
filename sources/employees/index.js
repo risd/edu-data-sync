@@ -232,7 +232,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                 last: src.PREFERREDNAME
                     .slice(
                         src.LASTNAME.length,
-                        src.PREFERREDNAME.length)m
+                        src.PREFERREDNAME.length)
             }
         }
         else {
