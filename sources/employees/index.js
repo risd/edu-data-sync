@@ -152,7 +152,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             wh.colleague_person.first = src.PREFERREDNAME
                 .slice(
                     0,
-                    middleInPreferred)
+                    src.MIDDLENAME.length)
                 .trim();
         }
         else {
