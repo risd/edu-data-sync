@@ -142,6 +142,16 @@ module.exports = function () {
             "localist": "Apparel Design",
             "courseCatalogue": "APPAREL DESIGN",
             "ektronNews": "Apparel Design"
+        }],
+        forFoundationStudies: [{
+            "colleague": "Division of Foundation Studies",
+            "courseCatalogue": "Experimental and Foundation",
+            "webhook": "Experimental and Foundation Studies"
+        }],
+        forGraduateStudies: [{
+            "colleague": "Graduate Studies",
+            "courseCatalogue": "GRADUATE STUDIES",
+            "webhook": "Graduate Studies"
         }]
     };
 
@@ -192,7 +202,8 @@ module.exports = function () {
         webhookInitiativeForEktronNews:
             forMapUsingKeyFindWebhookValue(
                 'forInitiatives',
-                'ektronNews')
+                'ektronNews'),
+        webhookValueForCombinedMap: forCombinedMapFindWebhookValue
     };
 
     function forMapUsingKeyFindWebhookValue (mapName, compareKey) {
@@ -217,6 +228,30 @@ module.exports = function () {
                 return webhookDepartment;
             }
         };
+    }
+
+    function forCombinedMapFindWebhookValue(compareKey) {
+        var combined = [].concat(
+            maps.forLiberalArtsDepartments,
+            maps.forDepartments,
+            maps.forFoundationStudies,
+            maps.forGraduateStudies)
+        return function withValue (compareValue) {
+            var f = combined
+                .filter(function (d) {
+                    d[compareKey] === compareValue;
+                })
+                .map(function (d) {
+                    return d.webhook;
+                });
+
+            if (f.length === 0) {
+                return false;
+            } else {
+                var webhookDepartment = f[0];
+                return webhookDepartment;
+            }
+        }
     }
 };
 
