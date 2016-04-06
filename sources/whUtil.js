@@ -203,7 +203,7 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forInitiatives',
                 'ektronNews'),
-        webhookValueForCombinedMap: forCombinedMapFindWebhookValue
+        valueForCombinedMap: valueForCombinedMap
     };
 
     function forMapUsingKeyFindWebhookValue (mapName, compareKey) {
@@ -230,19 +230,23 @@ module.exports = function () {
         };
     }
 
-    function forCombinedMapFindWebhookValue(compareKey) {
+    function valueForCombinedMap (compareKey, returnKey) {
+        if (returnKey === undefined) {
+            returnKey = 'webhook';
+        }
         var combined = [].concat(
             maps.forLiberalArtsDepartments,
             maps.forDepartments,
             maps.forFoundationStudies,
-            maps.forGraduateStudies)
+            maps.forGraduateStudies);
+
         return function withValue (compareValue) {
             var f = combined
                 .filter(function (d) {
-                    d[compareKey] === compareValue;
+                    return d[compareKey] === compareValue;
                 })
                 .map(function (d) {
-                    return d.webhook;
+                    return d[returnKey];
                 });
 
             if (f.length === 0) {

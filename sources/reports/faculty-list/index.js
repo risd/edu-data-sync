@@ -9,7 +9,13 @@ var whUtil = require('../../whUtil.js')();
 var Courses = require('../../courses/index.js')();
 var Employee = require('../../employees/index.js')();
 
-Employee.listSource()
+var listEmployees = Employee.listSource();
+
+listEmployees.on('error', function (err) {
+  console.log(err);
+});
+
+listEmployees
   .pipe(formatEmployees())
   .on('data', function (e) {
     Courses.listSource()
@@ -35,7 +41,10 @@ function report () {
           return 0;
         })
         .forEach(function (e_id, i) {
-          r += row[department][e_id].first + ' ' + row[department][e_id].last + '\n'
+          r += row[department][e_id].first + ' ' +
+               row[department][e_id].last +
+               (row[department][e_id].sabbatical ? '*' : '') +
+               '\n'
         });
       r += '\n';
 
@@ -50,7 +59,16 @@ function formatEmployees () {
 
   return through.obj(function onwrite (row, enc, next) {
     var s = Employee.updateWebhookValueWithSourceValue({}, row);
-    data[Employee.keyFromWebhook(s)] = s.colleague_person;
+    
+    // Add sabbatical status & department
+    var status = { sabbatical: false, department: s.colleague_department };
+    s.colleague_organizations.forEach(function (org) {
+      if (org.name.toLowerCase() === 'sabbatical') {
+        status.sabbatical = true;
+      }
+    });
+
+    data[Employee.keyFromWebhook(s)] = extend(s.colleague_person, status);
     next();
   },
   function onend () {
@@ -60,7 +78,30 @@ function formatEmployees () {
 }
 
 function formatCourses (employees) {
+  
   var departments = {};
+
+  // Add sabbatical employees
+  Object.keys(employees)
+    .forEach(function (e_id, i) {
+      if (employees[e_id].sabbatical) {
+        var department = [employees[e_id].department]
+          .map(whUtil.valueForCombinedMap('colleague', 'courseCatalogue'))
+          .filter(function (d) { return d !== false; });
+
+        if (department.length === 1) {
+          department = department[0];
+          if (!(department in departments)) {
+            departments[department] = {};
+          }
+
+          if (!(e_id in departments[department])) {
+            departments[department][e_id] = employees[e_id];
+          }
+        }
+      }
+    });
+
   return through.obj(function onwrite (row, enc, next) {
     var s = Courses.updateWebhookValueWithSourceValue({}, row);
     // Is the faculty who is teaching the class in
@@ -89,4 +130,9 @@ function formatCourses (employees) {
     this.push(departments);
     this.push(null);
   });
+}
+
+function extend (dest, src) {
+  for (var key in src) dest[key] = src[key];
+  return dest;
 }

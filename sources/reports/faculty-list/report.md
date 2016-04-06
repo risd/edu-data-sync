@@ -1,128 +1,4 @@
-HIST/PHIL/SO SC DEPT, 40
----
-Maria Aliberti Lubertazzi
-Karen Carr
-Amy Chew
-Marie Cieri
-Gail Cohee
-Peter Dean
-Richard Enser
-Bonnie Epstein Silverman
-David Fitzsimons
-Laurel Flinn
-Claudia Ford
-Lindsay French
-Jonathan Gentry
-Gerald Glaser
-Jason Grear
-Peter Hocking
-Jennifer Horan
-Nick Jainschigg
-Winifred Lambrecht
-John Lauermann
-Hope Leeson
-Thomas McKeeff
-Gail Mohanty
-Stephen Ott
-Maura Pavalow
-Jeffrey Poland
-Jennifer Prewitt-Freilino
-Andrew Robarts
-Tom Roberts
-Yuriko Saito
-Andrew Savchenko
-Norah Schneider
-Oscar Sosa Lopez
-Lucy Spelman
-Donald Thornton
-Barbara Von Eckardt
-Jonathan Weinberg
-Victoria Weston
-Damian White
-James Yess
-
-HISTORY OF ART&VISUAL CULTURE, 34
----
-Fatemeh Abbas Zadeh
-Eric Anderson
-Mary Bergstein
-Bolaji Campbell
-Hannah Carlson
-Michelle Charest
-Robert Emlen
-Sarah Ganz Blythe
-Marcin Gizycki
-Charlotte Hamlin
-Yoko Hara
-Daniel Harkett
-Kathryn Howley
-Mallica Kumbera Landrus
-Winifred Lambrecht
-Matthew Landrus
-Jung Joon Lee
-Dalia Linssen
-Leora Maltz-Leca
-Roger Mandle
-Hollis Mickey
-Ijlal Muzaffar
-Maurizia Natali
-Peter Nulton
-Jeremy Powell
-Pascale Rihouet
-Suzanne Scanlan
-Rachel Silberstein
-Bo Smith
-Agnieszka Taborska
-Esther Thyssen
-Elena Varshavskaya
-Susan Ward
-Jonathan Weinberg
-
-LA ELECTIVE DEPT, 4
----
-Jennifer Bissonnette
-Thomas McKeeff
-Greta Methot
-Steven Subotnick
-
-LITERARY ARTS AND STUDIES, 34
----
-Patricia Barbeito
-Iain Bernhoft
-Elizabeth Brogden
-Douglas Brown
-Mairead Byrne
-Karen Carr
-Elinor Celuzza
-Elaine Craghead
-Philip Eil
-Ann Ferrante
-Mike Fink
-Claudia Ford
-Avishek Ganguly
-David Gillespie
-Gitahi Gititi
-Sandy Gourlay
-Alexia Kosmider
-Joon Lee
-Michael Litwack
-Nina Markov
-Gloria-Jean Masciarotte
-Nicole Merola
-Greta Methot
-Sarah Osment
-Taylor Polites
-April Prince
-Matthew Purdy
-Zenon Raabe
-Mark Sherman
-Brian Sousa
-Fred Sullivan
-Susan Vander Closter
-Barbara Von Eckardt
-Shannon Zellars-Strohl
-
-INTERIOR ARCH, 33
+INTERIOR ARCH, 34
 ---
 Koh  Sun Kyu Koh
 Mary-Ann Agresti
@@ -130,6 +6,7 @@ Ernesto Aparicio
 Faith Baum
 Michael Beaman
 Jonathan Bell
+Markus Berger*
 Kylie Bodiya
 Lee Boroson
 Justin Cook
@@ -158,18 +35,233 @@ Emily Vogler
 Liliane Wong
 Peter Yeadon
 
-ILLUSTRATION, 60
+APPAREL DESIGN, 15
+---
+Catherine Andreozzi*
+Maha Barsom
+Maria Canada
+Hannah Carlson
+Anne Marika Chasse
+Meg DeCubellis
+Neil Gilks
+Kathleen Grevers
+Donna Gustavsen
+Hanna Hohenberg
+Bunky Hurter
+Jeung-Hwa Park
+Philip Sawyer
+Adam Smith
+Gwen Van Den Eijnde
+
+PAINTING, 36
+---
+Mickey Ackerman
+John Adimando
+Kevin Arnold
+Debra Balken
+Dike Blair
+Tony Bragg
+Manuel Cirauqui
+Dennis Congdon
+Angela Dufresne
+Gabriel Feld
+David Frazer
+Jackie Gendel
+Judy Glantzman-Leib
+Christopher Ho
+Ken Horii
+Holly Hughes
+Robert Hult
+Charles Jackson
+Mary Jones
+Bill Miller
+Jerry Mischak
+Stacy Mohammed
+Maurizia Natali
+Bayne Peterson
+Dushan Petrovich
+Andrew Raftery
+Karen Schiff
+Duane Slick*
+Martin Smick
+James Stanley
+Gwen Strahle
+Craig Taylor
+Peter Wilson
+Samuel Yates
+Deborah Zlotsky
+Kevin Zucker
+
+Experimental and Foundation, 56
+---
+Mickey Ackerman
+Luis Alonso
+Maralie Armstrong
+Jonathan Bonner*
+Alejandro Borsani
+Mimi Cabell
+Bruce Chao
+Dawn Clements
+Deborah Coolidge
+Alba Corrado
+Forrest Curl
+Benjamin Degen
+Lee Dejasu
+Yizhak Elyashiv
+Nicholas Evans-Cato
+Carl Fasano
+Kai Franz
+Gail Fredell
+Paula Gaetano-Adi
+Paddy Ginther
+Judy Glantzman-Leib
+Amy Goodwin
+Shawn Greenlee
+Graham Guerra
+Nade Haley
+Leslie Hirst
+Emma Hogarth
+Elinore Hollinshead
+Martie Holmer
+Ken Horii
+Robert Hult
+Gareth Jones
+Nikki Juen
+Michael Lamar
+Victor Lara
+Carol Lasch
+Eleanor Lazarek
+Daniel Lefcourt
+Judith Maloney
+Mark Milloff
+Tom Mills*
+Todd Moore
+Geoff Mullen
+Bill Newkirk*
+Norman Paris*
+Stefanie Pender
+James Peters
+Rachel Rosenkrantz
+Masha Ryskin
+David Scanavino
+Colgate Searle
+Sheida Soleimani
+Gwen Strahle
+Jonathan Sylvia
+Pamela Unwin-Barkley*
+Deborah Zlotsky
+
+HISTORY OF ART&VISUAL CULTURE, 35
+---
+Fatemeh Abbas Zadeh
+Eric Anderson
+Mary Bergstein
+Bolaji Campbell
+Hannah Carlson
+Michelle Charest
+Paola Dematte*
+Robert Emlen
+Sarah Ganz Blythe
+Marcin Gizycki*
+Charlotte Hamlin
+Yoko Hara
+Daniel Harkett
+Kathryn Howley
+Mallica Kumbera Landrus
+Winifred Lambrecht
+Matthew Landrus
+Jung Joon Lee
+Dalia Linssen
+Leora Maltz-Leca
+Roger Mandle
+Hollis Mickey
+Ijlal Muzaffar
+Maurizia Natali
+Peter Nulton
+Jeremy Powell
+Pascale Rihouet
+Suzanne Scanlan
+Rachel Silberstein
+Bo Smith
+Agnieszka Taborska
+Esther Thyssen
+Elena Varshavskaya
+Susan Ward
+Jonathan Weinberg
+
+HIST/PHIL/SO SC DEPT, 43
+---
+Maria Aliberti Lubertazzi
+Karen Carr
+Amy Chew
+Marie Cieri
+Gail Cohee
+Scott Cook*
+Peter Dean
+Richard Enser
+Bonnie Epstein Silverman
+David Fitzsimons
+Laurel Flinn
+Claudia Ford
+Lindsay French
+Jonathan Gentry
+Gerald Glaser
+Jason Grear
+Peter Hocking
+Jennifer Horan
+Nick Jainschigg
+Donald Keefer*
+Winifred Lambrecht
+John Lauermann
+Hope Leeson
+Thomas McKeeff
+Gail Mohanty
+Stephen Ott
+Maura Pavalow
+Jeffrey Poland
+Jennifer Prewitt-Freilino
+Andrew Robarts
+Tom Roberts
+Yuriko Saito
+Andrew Savchenko
+Norah Schneider
+Oscar Sosa Lopez
+Lucy Spelman
+Jane Szurek*
+Donald Thornton
+Barbara Von Eckardt
+Jonathan Weinberg
+Victoria Weston
+Damian White
+James Yess
+
+GLASS, 9
+---
+Rachel Berwick
+Bruce Chao
+Niels Cosman
+Denise Markonish
+Stefanie Pender
+Jocelyne Prince
+Alexander Rosenberg
+Christopher Taylor*
+Adrianne Tharp
+
+ILLUSTRATION, 63
 ---
 Carissa Abitabilo
 Mickey Ackerman
 Rafael Attias
 Jason Beene
 Mary Jane Begin
+Jean Blackburn*
 Robert Brinkerhoff
 Jason Brockert
 Calef Brown
+Trent Burleson*
 Christopher Buzelli
 Susan Doyle
+Bill Drew*
 Fritz Drury
 Shanth Enjeti
 Nicholas Evans-Cato
@@ -221,58 +313,68 @@ Randy Willier
 Agnieszka Woznicka
 JooHee Yoon
 
-APPAREL DESIGN, 14
+GRAPHIC DESIGN, 51
 ---
-Maha Barsom
-Maria Canada
-Hannah Carlson
-Anne Marika Chasse
-Meg DeCubellis
-Neil Gilks
-Kathleen Grevers
-Donna Gustavsen
-Hanna Hohenberg
-Bunky Hurter
-Jeung-Hwa Park
-Philip Sawyer
-Adam Smith
-Gwen Van Den Eijnde
+Mickey Ackerman
+Ernesto Aparicio
+Rafael Attias
+Mary Banas
+Micah Barrett
+Jason Beene
+Michelle Bowers
+John Caserta
+Suzi Cozzens
+Forrest Curl
+Janet Fairbairn
+Megan Feehan
+Gabriel Feld
+Laura Forde
+Dinah Fried
+Robert Giampietro
+Dylan Greif
+Jiminie Ha
+Lara Henderson
+Cyrus Highsmith
+Lucinda Hitchcock
+Bethany Johns
+Brian Kane
+Mark Laughlin
+Andrew Leclair
+Richard Lipton
+Carl Lostritto
+Joe Marianek
+Jacek Mrowczyk
+Christopher Novello
+Hammett Nurosi
+Aki Nurosi*
+Thomas Ockerse
+Ronald Pearl
+Patti Phillips
+Claudia Rebola
+Richard Rose
+Emily Rye
+Doug Scott
+Benjamin Shaykin
+Christopher Sleboda
+Andrew Sloat
+Bryn Smith
+Paul Soulellis
+Christopher Swift
+Christian Swinehart
+Clement Valla
+Ryan Waller
+Tom Wedell
+Franz Werner
+Anne West
 
-LANDSCAPE ARCH, 25
----
-Adam Anderson
-Kellie Connelly
-Jade Cummings
-Nicola De Pace
-Michelle De Tarnowsky
-Lauren Elachi
-Adrian Flores
-Kathryn Foley
-Scheri Fultineer
-Nadine Gerdts
-Stephen Hamwey
-Andrew Hartness
-Lili Hermann
-Theodore Hoerr
-Eamonn Hutton
-Richard Johnson
-Sae-Hyun Kim
-Eric Kramer
-Mary Lydecker
-Laura Marett
-Suzanne Mathew
-Nicholas Pouder
-Colgate Searle
-Emily Vogler
-Tao Zhang
-
-FILM/ANIMATION/VIDEO, 31
+FILM/ANIMATION/VIDEO, 32
 ---
 Carissa Abitabilo
 Mickey Ackerman
 Alexandra Anthony
 Alfred Chin
 Gabriel Feld
+Andrew Freiband*
 Yolande Harris
 Alex Hart
 Ben Hirt
@@ -300,69 +402,36 @@ Agnieszka Woznicka
 Julie Zammarchi
 David Zapatka
 
-Experimental and Foundation, 53
+SCULPTURE, 18
 ---
 Mickey Ackerman
-Luis Alonso
-Maralie Armstrong
-Jonathan Bonner
-Alejandro Borsani
-Mimi Cabell
-Bruce Chao
-Dawn Clements
-Deborah Coolidge
-Alba Corrado
-Forrest Curl
-Benjamin Degen
-Lee Dejasu
-Yizhak Elyashiv
-Nicholas Evans-Cato
-Carl Fasano
-Kai Franz
-Gail Fredell
-Paula Gaetano-Adi
-Paddy Ginther
-Judy Glantzman-Leib
-Amy Goodwin
-Shawn Greenlee
-Graham Guerra
-Nade Haley
-Leslie Hirst
-Emma Hogarth
-Elinore Hollinshead
-Martie Holmer
-Ken Horii
-Robert Hult
-Gareth Jones
-Nikki Juen
-Michael Lamar
-Victor Lara
-Carol Lasch
-Eleanor Lazarek
-Daniel Lefcourt
-Judith Maloney
-Mark Milloff
-Todd Moore
-Geoff Mullen
-Stefanie Pender
-James Peters
-Rachel Rosenkrantz
-Masha Ryskin
-David Scanavino
-Colgate Searle
-Sheida Soleimani
-Gwen Strahle
-Jonathan Sylvia
-Pamela Unwin-Barkley
-Deborah Zlotsky
+Paul Badger
+Taylor Baldwin
+Douglas Borkman
+Lee Boroson
+Maria Canada
+Gabriel Feld
+Jennifer Joy
+Benjamin Jurgensen
+David Katz
+Lane Myer
+Heidi Neilson
+Samantha Pasapane
+Christopher Sancomb
+Ethan Silverman
+Barbara Smith
+Dean Snyder*
+Jane South
 
-ARCHITECTURE, 38
+ARCHITECTURE, 40
 ---
 Mickey Ackerman
+Silvia Acosta*
 Marie Adams
 Emanuel Admassu
 Ian Baldwin
 Christopher Bardt
+Jim Barnes*
 Hansy Barraza
 Stuart Blazer
 Gerald Bodziak
@@ -397,10 +466,109 @@ Nicholas Winton
 Jason Wood
 Dongwoo Yim
 
+PHOTOGRAPHY, 23
+---
+Deborah Artman
+Lindsey Beal
+Jesse Burke
+Matthew Clowney
+Christian Dailey
+Jenny Edwards
+Kelly Egan
+Ann Fessler*
+Andrew Goodman
+Henry Horenstein
+Jung Joon Lee
+Jennifer Liese
+Dalia Linssen
+Kent Rogowski
+Thaddeus Russell
+Jo Sittenfeld
+Steven Smith
+Karolina Sobecka
+Sheida Soleimani
+Anna Strickland
+Eva Sutton
+Brian Ulrich
+Sheri Wills Schettino
+
+LITERARY ARTS AND STUDIES, 35
+---
+Patricia Barbeito
+Iain Bernhoft
+Elizabeth Brogden
+Douglas Brown
+Mairead Byrne
+Karen Carr
+Elinor Celuzza
+Elaine Craghead
+Philip Eil
+Ann Ferrante
+Mike Fink
+Claudia Ford
+Avishek Ganguly
+David Gillespie
+Gitahi Gititi
+Sandy Gourlay
+Jonathan Highfield*
+Alexia Kosmider
+Joon Lee
+Michael Litwack
+Nina Markov
+Gloria-Jean Masciarotte
+Nicole Merola
+Greta Methot
+Sarah Osment
+Taylor Polites
+April Prince
+Matthew Purdy
+Zenon Raabe
+Mark Sherman
+Brian Sousa
+Fred Sullivan
+Susan Vander Closter
+Barbara Von Eckardt
+Shannon Zellars-Strohl
+
+LA ELECTIVE DEPT, 4
+---
+Jennifer Bissonnette
+Thomas McKeeff
+Greta Methot
+Steven Subotnick
+
+LANDSCAPE ARCH, 25
+---
+Adam Anderson
+Kellie Connelly
+Jade Cummings
+Nicola De Pace
+Michelle De Tarnowsky
+Lauren Elachi
+Adrian Flores
+Kathryn Foley
+Scheri Fultineer
+Nadine Gerdts
+Stephen Hamwey
+Andrew Hartness
+Lili Hermann
+Theodore Hoerr
+Eamonn Hutton
+Richard Johnson
+Sae-Hyun Kim
+Eric Kramer
+Mary Lydecker
+Laura Marett
+Suzanne Mathew
+Nicholas Pouder
+Colgate Searle
+Emily Vogler
+Tao Zhang
+
 FURNITURE DESIGN, 22
 ---
 Ben Blanc
-Jonathan Bonner
+Jonathan Bonner*
 Dale Broholm
 Jim Cole
 Emily Cornell Du Houx
@@ -491,31 +659,6 @@ Franz Werner
 Christopher Woebken
 Tracy Zaslow
 
-PHOTOGRAPHY, 22
----
-Deborah Artman
-Lindsey Beal
-Jesse Burke
-Matthew Clowney
-Christian Dailey
-Jenny Edwards
-Kelly Egan
-Andrew Goodman
-Henry Horenstein
-Jung Joon Lee
-Jennifer Liese
-Dalia Linssen
-Kent Rogowski
-Thaddeus Russell
-Jo Sittenfeld
-Steven Smith
-Karolina Sobecka
-Sheida Soleimani
-Anna Strickland
-Eva Sutton
-Brian Ulrich
-Sheri Wills Schettino
-
 TEXTILES, 23
 ---
 Jessica Asjes
@@ -600,17 +743,6 @@ FINE ARTS DIVISION, 1
 ---
 Stefanie Pender
 
-GLASS, 8
----
-Rachel Berwick
-Bruce Chao
-Niels Cosman
-Denise Markonish
-Stefanie Pender
-Jocelyne Prince
-Alexander Rosenberg
-Adrianne Tharp
-
 GRADUATE STUDIES, 16
 ---
 Debra Balken
@@ -630,59 +762,6 @@ Peter Yeadon
 Thomas Zummer
 Janet Zweig
 
-GRAPHIC DESIGN, 50
----
-Mickey Ackerman
-Ernesto Aparicio
-Rafael Attias
-Mary Banas
-Micah Barrett
-Jason Beene
-Michelle Bowers
-John Caserta
-Suzi Cozzens
-Forrest Curl
-Janet Fairbairn
-Megan Feehan
-Gabriel Feld
-Laura Forde
-Dinah Fried
-Robert Giampietro
-Dylan Greif
-Jiminie Ha
-Lara Henderson
-Cyrus Highsmith
-Lucinda Hitchcock
-Bethany Johns
-Brian Kane
-Mark Laughlin
-Andrew Leclair
-Richard Lipton
-Carl Lostritto
-Joe Marianek
-Jacek Mrowczyk
-Christopher Novello
-Hammett Nurosi
-Thomas Ockerse
-Ronald Pearl
-Patti Phillips
-Claudia Rebola
-Richard Rose
-Emily Rye
-Doug Scott
-Benjamin Shaykin
-Christopher Sleboda
-Andrew Sloat
-Bryn Smith
-Paul Soulellis
-Christopher Swift
-Christian Swinehart
-Clement Valla
-Ryan Waller
-Tom Wedell
-Franz Werner
-Anne West
-
 JEWELRY & METAL, 13
 ---
 Brian Bergeron
@@ -699,44 +778,6 @@ Johan Van Aswegen
 Timothy Veske-McMahon
 Anne West
 
-PAINTING, 35
----
-Mickey Ackerman
-John Adimando
-Kevin Arnold
-Debra Balken
-Dike Blair
-Tony Bragg
-Manuel Cirauqui
-Dennis Congdon
-Angela Dufresne
-Gabriel Feld
-David Frazer
-Jackie Gendel
-Judy Glantzman-Leib
-Christopher Ho
-Ken Horii
-Holly Hughes
-Robert Hult
-Charles Jackson
-Mary Jones
-Bill Miller
-Jerry Mischak
-Stacy Mohammed
-Maurizia Natali
-Bayne Peterson
-Dushan Petrovich
-Andrew Raftery
-Karen Schiff
-Martin Smick
-James Stanley
-Gwen Strahle
-Craig Taylor
-Peter Wilson
-Samuel Yates
-Deborah Zlotsky
-Kevin Zucker
-
 PRINTMAKING, 13
 ---
 Mickey Ackerman
@@ -752,26 +793,6 @@ Brian Shure
 Jonathan Weinberg
 Leah Rachel Wolff
 Dan Wood
-
-SCULPTURE, 17
----
-Mickey Ackerman
-Paul Badger
-Taylor Baldwin
-Douglas Borkman
-Lee Boroson
-Maria Canada
-Gabriel Feld
-Jennifer Joy
-Benjamin Jurgensen
-David Katz
-Lane Myer
-Heidi Neilson
-Samantha Pasapane
-Christopher Sancomb
-Ethan Silverman
-Barbara Smith
-Jane South
 
 TLAD TEACHING + LEARNING, 8
 ---
