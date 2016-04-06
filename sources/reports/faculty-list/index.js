@@ -102,7 +102,9 @@ function formatCourses (employees) {
       }
     });
 
+  // Add employees based on courses taught
   return through.obj(function onwrite (row, enc, next) {
+
     var s = Courses.updateWebhookValueWithSourceValue({}, row);
     // Is the faculty who is teaching the class in
     // the list of employees?
