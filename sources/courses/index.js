@@ -23,6 +23,7 @@ function Courses () {
 }
 
 Courses.prototype.webhookContentType = 'courses';
+Courses.prototype.webhookContentTypeOneOff = false;
 Courses.prototype.keyFromWebhook = function (row) {
     return row.name;
 };

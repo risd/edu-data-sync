@@ -1,5 +1,10 @@
 var through = require('through2');
 
+module.exports.extend = function extend (dest, src) {
+  for (var key in src) dest[key] = src[key];
+  return dest;
+}
+
 // module.exports.counter = counter;
 // module.exports.counterReport = counterReport;
 // module.exports.loggify = loggify;

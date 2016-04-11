@@ -7,9 +7,9 @@ var from = require('from2-array');
 var through = require('through2');
 var combine = require('stream-combiner2');
 
-module.exports = SyncProtocol;
+module.exports = FirebaseSyncProtocol;
 
-function SyncProtocol (model, firebaseref) {
+function FirebaseSyncProtocol (model, firebaseref) {
 
     var m = ['Model does not conform to Sync protocol.'];
 

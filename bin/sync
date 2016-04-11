@@ -1,20 +1,10 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var through = require('through2');
-var pump = require('pump');
 var parseArgs = require('minimist');
 
 var Env = require('../env.js');
-var Firebaseref = require('../firebaseref.js');
-
-var Events = require('../sources/events/index.js');
-var Employees = require('../sources/employees/index.js');
-var Courses = require('../sources/courses/index.js');
-
-var sourcePrototypes = [];
-
-var Report = require('../report/index.js')();
+var Sync = require('../index.js');
 
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
@@ -29,24 +19,33 @@ if ((args._.indexOf('help') > -1) ||
   console.log(usage);
   return;
 }
-else {
-  var largs = args._
-                  .map(function (d) {
-                      return d.toLowerCase();
-                  });
+var opts = {
+  events: false,
+  employees: false,
+  courses: false
+};
+var largs = args._
+                .map(function (d) {
+                    return d.toLowerCase();
+                });
 
-  if (largs.indexOf('events') > -1) {
-    sourcePrototypes.push(Events);
-  }
-  if (largs.indexOf('employees') > -1) {
-    sourcePrototypes.push(Employees);
-  }
-  if (largs.indexOf('courses') > -1) {
-    sourcePrototypes.push(Courses);
-  }
+if (largs.indexOf('events') > -1) {
+  opts.events = true;
+}
+
+if (largs.indexOf('employees') > -1) {
+  opts.employees = true;
+}
+
+if (largs.indexOf('courses') > -1) {
+  opts.courses = true;
 }
 
 Env();
+Sync(opts);
+
+return;
+// ---- 
 
 Firebaseref()
   .pipe(AddEduSyncNodeToFirebase())

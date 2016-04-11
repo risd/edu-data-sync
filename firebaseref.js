@@ -1,4 +1,6 @@
+var debug = require('debug')('firebaseref');
 var from = require('from2-array');
+var pump = require('pump');
 var through = require('through2');
 
 module.exports = FirebaseRef;
@@ -21,15 +23,19 @@ module.exports = FirebaseRef;
  * 
  */
 
-function FirebaseRef () {
-    return from.obj([{}])
-               .pipe(FirebaseToken())
-               .pipe(FirebaseAuth())
-               .pipe(FirebaseBucketForSite())
-               .pipe(PushRef());
+function FirebaseRef (callback) {
+    debug('Initialize stream');
+    var args = [
+        from.obj([{}]),
+        FirebaseToken(),
+        FirebaseAuth(),
+        FirebaseBucketForSite(),
+        PushRef(callback)];
+
+    return pump.apply(this, args);
 }
 
-function FirebaseToken (config) {
+function FirebaseToken () {
     var request = require('request');
     var authUrl =
             'https://auth.firebase.com/auth/firebase';
@@ -38,6 +44,7 @@ function FirebaseToken (config) {
     return through.obj(createToken);
 
     function createToken (row, enc, next) {
+        debug('Create token');
         var self = this;
         var qs = {
             email: process.env.WH_EMAIL,
@@ -49,8 +56,8 @@ function FirebaseToken (config) {
             authUrl,
             { qs: qs },
             function (err, res, body) {
-                var data = JSON.parse(body);
-                self.push(data);
+                if (err) self.push(err, null);
+                else self.push(JSON.parse(body));
                 next();
             });
     }
@@ -64,6 +71,7 @@ function FirebaseAuth () {
     return through.obj(auth);
 
     function auth (row, enc, next) {
+        debug('Authenticate');
         var self = this;
         var firebase = new Firebase(
                             'https://' +
@@ -75,7 +83,7 @@ function FirebaseAuth () {
                 row.token,
                 function (error, auth) {
                     if (error) {
-                        console.log(error);
+                        self.push(error, null);
                     } else {
                         self.push({
                             firebaseRoot: firebase
@@ -86,11 +94,12 @@ function FirebaseAuth () {
     }
 }
 
-function FirebaseBucketForSite (config) {
+function FirebaseBucketForSite () {
     var fs = require('fs');
     return through.obj(conf);
 
     function conf (row, enc, next) {
+
         row.firebase =
                 row.firebaseRoot
                    .child(
@@ -105,11 +114,17 @@ function FirebaseBucketForSite (config) {
     }
 }
 
-function PushRef () {
+function PushRef (callback) {
     return through.obj(ref);
 
     function ref (row, enc, next) {
-        this.push(row.firebase);
+        if (callback) {
+            callback(null, row.firebase);
+        }
+        else {
+            this.push(row.firebase);
+        }
+        this.push(null);
         next();
     }
 }

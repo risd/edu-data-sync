@@ -18,6 +18,7 @@ function News () {
 }
 
 News.prototype.webhookContentType = 'news';
+News.prototype.webhookContentTypeOneOff = false;
 News.prototype.keyFromWebhook = function (row) {
     return row.ektron_id;
 };

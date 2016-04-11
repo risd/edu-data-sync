@@ -22,6 +22,7 @@ function Employees () {
 }
 
 Employees.prototype.webhookContentType = 'employees';
+Employees.prototype.webhookContentTypeOneOff = false;
 Employees.prototype.keyFromWebhook = function (row) {
     return row.colleague_id;
 };

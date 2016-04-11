@@ -51,6 +51,7 @@ function Events () {
 }
 
 Events.prototype.webhookContentType = 'events';
+Events.prototype.webhookContentTypeOneOff = false;
 Events.prototype.keyFromWebhook = function (row) {
     return row.localist_uid;
 };

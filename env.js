@@ -1,3 +1,4 @@
+var debug = require('debug')('env');
 var fs = require('fs');
 
 module.exports = Env;
@@ -18,7 +19,7 @@ function Env () {
 
 
 function RISDMediaConfigToEnv () {
-    console.log('Reading RISD Media Config.');
+    debug('Reading RISD Media Config.');
     var fileName = __dirname + '/.risdmedia.conf';
     var rmConf;
     try {
@@ -93,7 +94,7 @@ function RISDMediaConfigToEnv () {
 }
 
 function FirebaseConfigToEnv () {
-    console.log('Reading Firebase Config.');
+    debug('Reading Firebase Config.');
     var fileName = __dirname +  '/.firebase.conf';
 
     var fbConf;
@@ -119,7 +120,7 @@ function FirebaseConfigToEnv () {
 }
 
 function AWStoEnv () {
-    console.log('Reading AWS Config.');
+    debug('Reading AWS Config.');
     var fileName = process.env.HOME + '/.risdmedia/aws.json';
 
     var awsConf;
