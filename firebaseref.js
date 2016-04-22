@@ -29,7 +29,7 @@ function FirebaseRef () {
                .pipe(PushRef());
 }
 
-function FirebaseToken (config) {
+function FirebaseToken () {
     var request = require('request');
     var authUrl =
             'https://auth.firebase.com/auth/firebase';
@@ -86,7 +86,7 @@ function FirebaseAuth () {
     }
 }
 
-function FirebaseBucketForSite (config) {
+function FirebaseBucketForSite () {
     var fs = require('fs');
     return through.obj(conf);
 
@@ -110,6 +110,7 @@ function PushRef () {
 
     function ref (row, enc, next) {
         this.push(row.firebase);
+
         next();
     }
 }
