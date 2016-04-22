@@ -48,6 +48,9 @@ function RISDMediaConfigToEnv () {
         if (!('firebase' in rmConf.wh)) {
             missing.push('wh.firebase');
         }
+        if (!('apikey' in rmConf.wh)) {
+            missing.push('wh.apikey');
+        }
     }
     if (!('tumblr' in rmConf)) {
         missing.push('tumblr');
@@ -74,6 +77,7 @@ function RISDMediaConfigToEnv () {
     // Set env for local running
     process.env.WH_EMAIL = rmConf.wh.email;
     process.env.WH_PASSWORD = rmConf.wh.password;
+    process.env.WH_APIKEY = rmConf.wh.apikey;
     process.env.WH_FIREBASE = rmConf.wh.firebase;
     process.env.TUMBLR_CONSUMER_KEY =
         rmConf.tumblr.consumer_key;

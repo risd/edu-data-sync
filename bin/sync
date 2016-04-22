@@ -15,6 +15,7 @@ var Courses = require('../sources/courses/index.js');
 var sourcePrototypes = [];
 
 var Report = require('../report/index.js')();
+var TriggerBuild = require('../trigger-build.js');
 
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
@@ -57,6 +58,7 @@ Firebaseref()
   .pipe(RemoveFromWebhookBasedOnSource())
   .pipe(ResolveRelationships())
   .pipe(ResolveReverseRelationships())
+  .pipe(TriggerBuild())
   .pipe(Report.update())
   .pipe(Exit());
 
