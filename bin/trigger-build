@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+require('../trigger-build.js')
+  (function (err, res, body) {
+    if (err) process.stderr.write(err.message);
+  });

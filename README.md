@@ -17,7 +17,7 @@ To run locally.
 
 ### Heroku
 
-Relies on having configuration variables set on Heroku. This can be done by running `./bin/herokuConfig`.
+Relies on having configuration variables set on Heroku. This can be done by running `./bin/heroku-config`.
 
 To run on Heroku.
 

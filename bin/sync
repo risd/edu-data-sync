@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var debug = require('debug')('sync:main');
 var fs = require('fs');
 var through = require('through2');
 var pump = require('pump');
@@ -15,7 +16,6 @@ var Courses = require('../sources/courses/index.js');
 var sourcePrototypes = [];
 
 var Report = require('../report/index.js')();
-var TriggerBuild = require('../trigger-build.js');
 
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
@@ -27,7 +27,7 @@ if ((args._.indexOf('help') > -1) ||
                   '/syncUsage.md')
               .toString()
               .replace(/```/g, '\n');
-  console.log(usage);
+  debug(usage);
   return;
 }
 else {
@@ -58,7 +58,6 @@ Firebaseref()
   .pipe(RemoveFromWebhookBasedOnSource())
   .pipe(ResolveRelationships())
   .pipe(ResolveReverseRelationships())
-  .pipe(TriggerBuild())
   .pipe(Report.update())
   .pipe(Exit());
 
@@ -67,7 +66,7 @@ function AddEduSyncNodeToFirebase () {
   return through.obj(addEduSync);
 
   function addEduSync (fb, enc, next) {
-    console.log('Add eduSync to Firebase.');
+    debug('Add eduSync to Firebase.');
 
     fb.child('eduSync')
       .set({}, onComplete);
@@ -87,7 +86,7 @@ function ApplySyncProtocolToSources (sourcePrototypes) {
   return through.obj(fbref);
 
   function fbref (fb, enc, next) {
-    console.log('Applying sync protocol to sources.');
+    debug('Applying sync protocol to sources.');
 
     var stream = this;
 
@@ -113,7 +112,7 @@ function GetSourcesData () {
   return through.obj(getSourceData);
 
   function getSourceData (source, enc, next) {
-    console.log(
+    debug(
       'Get all data from source & put into firebase.');
 
     source.errors = [];
@@ -149,7 +148,7 @@ function AddSourceToWebhook () {
   return through.obj(addSource);
 
   function addSource (source, enc, next) {
-    console.log('Add source data to webhook data.');
+    debug('Add source data to webhook data.');
 
     if ((source.errors.length === 0) &&
         ('listFirebaseSource' in source) &&
@@ -189,7 +188,7 @@ function RemoveFromWebhookBasedOnSource () {
   return through.obj(remove);
 
   function remove (source, enc, next) {
-    console.log('Remove from WebHook based on source.');
+    debug('Remove from WebHook based on source.');
     
     if ((source.errors.length === 0) &&
         ('listFirebaseWebhook' in source) &&
@@ -225,7 +224,7 @@ function ResolveRelationships () {
   return through.obj(relationships);
 
   function relationships (source, enc, next) {
-    console.log('Resolve Relationships.');
+    debug('Resolve Relationships.');
 
     if ((source.errors.length === 0) &&
         ('rrListWebhookWithRelationshipsToResolve' in source) &&

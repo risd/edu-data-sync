@@ -1,21 +1,28 @@
+var debug = require('debug')('trigger-build');
 var Env = require('./env.js')();
-var through = require('through2');
-var request = require('request');
 
-module.exports = TriggerBuild;
+module.exports = APIBuild;
+module.exports.stream = APIBuildStream;
 
-function TriggerBuild () {
+function APIBuild (cb) {
+  var request = require('request');
 
-  return through.obj(apiTrigger);
-
-  function apiTrigger (source, enc, next) {
-    var url = [
+  var url = [
       "https://server.webhook.com/build/",
       "?site=", process.env.FB_SITENAME,
       "&apiKey=", process.env.WH_APIKEY,
-      ].join('');
+    ].join('');
 
-    request.post(url, end);
+  request.post(url, cb);  
+}
+
+function APIBuildStream () {
+
+  return require('through2').obj(apiTrigger);
+
+  function apiTrigger (source, enc, next) {
+
+    APIBuild(end);
 
     function end (err, res, body) {
       var stepError = new Error(
@@ -32,28 +39,4 @@ function TriggerBuild () {
     }
   }
 
-  /* not currently being used.
-     this is the node that gets updated in
-     firebase that triggers a build signal. */
-  function firebaseTrigger (fb, enc, next) {
-    var data = {
-      userid: process.env.WH_EMAIL,
-      sitename: process.env.FB_SITENAME,
-      id: uniqueId(),
-      build_time: moment().format()
-    };
-
-    // This is the node that signals a new build 
-    // to occur.
-    var child = 'management/commands/build/' + process.env.FB_SITENAME;
-
-    fb.root()
-      .child(child)
-      .set('value', function (err) {
-        console.log(err);
-        next(null);
-      });
-  }
 }
-
-

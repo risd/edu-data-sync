@@ -1,3 +1,4 @@
+var debug = require('debug')('env');
 var fs = require('fs');
 
 module.exports = Env;
@@ -13,12 +14,13 @@ module.exports = Env;
 function Env () {
     return [].concat(RISDMediaConfigToEnv(),
                      FirebaseConfigToEnv(),
-                     AWStoEnv());
+                     AWStoEnv(),
+                     Timezone());
 }
 
 
 function RISDMediaConfigToEnv () {
-    console.log('Reading RISD Media Config.');
+    debug('Reading RISD Media Config.');
     var fileName = __dirname + '/.risdmedia.conf';
     var rmConf;
     try {
@@ -29,7 +31,7 @@ function RISDMediaConfigToEnv () {
             'Expecting .risdmedia.conf variables',
             'are already in process.env'
         ];
-        console.log(e.join(' '));
+        debug(e.join(' '));
         return [];
     }
 
@@ -98,7 +100,7 @@ function RISDMediaConfigToEnv () {
 }
 
 function FirebaseConfigToEnv () {
-    console.log('Reading Firebase Config.');
+    debug('Reading Firebase Config.');
     var fileName = __dirname +  '/.firebase.conf';
 
     var fbConf;
@@ -110,7 +112,7 @@ function FirebaseConfigToEnv () {
             'Expecting .risdmedia.conf variables',
             'are already in process.env'
         ];
-        console.log(e.join(' '));
+        debug(e.join(' '));
         return [];
     }
 
@@ -124,7 +126,7 @@ function FirebaseConfigToEnv () {
 }
 
 function AWStoEnv () {
-    console.log('Reading AWS Config.');
+    debug('Reading AWS Config.');
     var fileName = process.env.HOME + '/.risdmedia/aws.json';
 
     var awsConf;
@@ -137,7 +139,7 @@ function AWStoEnv () {
             'Variables are expected already be',
             'in process.env'
         ];
-        console.log(e.join(' '));
+        debug(e.join(' '));
         return [];
     }
 
@@ -148,4 +150,13 @@ function AWStoEnv () {
         'AWS_KEY=' + awsConf.key,
         'AWS_SECRET=' + awsConf.secret
     ];
+}
+
+function Timezone () {
+    debug('Timezone');
+
+    var tz = "America/New_York";
+    process.env.TZ = tz;
+
+    return ['TZ=' + tz];
 }
