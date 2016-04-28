@@ -130,6 +130,7 @@ function GetSourcesData () {
     }
 
     function end (err) {
+      debug('get-source-data:end', err);
       var stepError = new Error('Could not get source data.');
       if (err) {
         source.errors

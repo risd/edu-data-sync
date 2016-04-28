@@ -118,8 +118,8 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 	wh.name = src.PREFERREDNAME;
     wh.colleague_id = src.ID;
     wh.colleague_person = {
-    	first: src.FIRSTNAME,
-    	last: src.LASTNAME
+    	first: src.FIRSTNAME.trim(),
+    	last: src.LASTNAME.trim()
     };
 
     var firstInPreferred = (src.FIRSTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.FIRSTNAME) : -1;
@@ -164,7 +164,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         (lastInPreferred === -1)) {
         if (firstInPreferred === 0) {
             wh.colleague_person = {
-                first: src.FIRSTNAME,
+                first: src.FIRSTNAME.trim(),
                 last: src.PREFERREDNAME
                     .slice(
                         src.FIRSTNAME.length,
@@ -179,7 +179,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                         0,
                         src.FIRSTNAME.length)
                     .trim(),
-                last: src.FIRSTNAME
+                last: src.FIRSTNAME.trim()
             }
         }
         else {
@@ -191,7 +191,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         (lastInPreferred === -1)) {
         if (middleInPreferred === 0) {
             wh.colleague_person = {
-                first: src.MIDDLENAME,
+                first: src.MIDDLENAME.trim(),
                 last: src.PREFERREDNAME
                     .slice(
                         src.MIDDLENAME.length,
@@ -204,7 +204,8 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                 first: src.PREFERREDNAME
                     .slice(
                         0,
-                        middleInPreferred),
+                        middleInPreferred)
+                    .trim(),
                 last: src.PREFERREDNAME
                     .slice(
                         middleInPreferred,
@@ -228,11 +229,12 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         }
         else if (lastInPreferred === 0) {
             wh.colleague_person = {
-                first: src.LASTNAME,
+                first: src.LASTNAME.trim(),
                 last: src.PREFERREDNAME
                     .slice(
                         src.LASTNAME.length,
                         src.PREFERREDNAME.length)
+                    .trim()
             }
         }
         else {

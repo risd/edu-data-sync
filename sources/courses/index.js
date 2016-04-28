@@ -1,3 +1,5 @@
+var debug = require('debug')('courses');
+
 var fs = require('fs');
 var through = require('through2');
 var xmlStream = require('xml-stream');
@@ -33,7 +35,7 @@ Courses.prototype.keyFromSource = function (row) {
 
 Courses.prototype.listSource = function () {
     var self = this;
-    console.log('Courses.listSource::start');
+    debug('Courses.listSource::start');
 
     var eventStream = through.obj();
 
@@ -94,7 +96,7 @@ Courses.prototype.listSource = function () {
             xml.on('end', function () {
                 sourcesCount -= 1;
                 if (sourcesCount === 0) {
-                    console.log('Courses.listSource::end');
+                    debug('Courses.listSource::end');
                     writeStream.push(null);
                     stream.push(null);
                 }
@@ -126,6 +128,7 @@ Courses.prototype.sourceStreamToFirebaseSource = function () {
     return through.obj(toFirebase);
 
     function toFirebase (row, enc, next) {
+        debug('source-stream-to-firebase-source:row');
         var stream = this;
 
         var key = self.keyFromSource(row);
