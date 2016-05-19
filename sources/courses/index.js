@@ -331,7 +331,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             currentWHData.colleague_departments
                 .filter(function (d) {
                     return d.department ===
-                           'FOUNDATION STUDIES';
+                           'Experimental and Foundation';
                 });
 
         if (foundation.length === 1) {

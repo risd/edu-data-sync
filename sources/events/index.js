@@ -230,6 +230,8 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.within_date_range = isWithinDateRange(
         wh.localist_date_range_first,
         wh.localist_date_range_last);
+
+    wh.upcoming = isUpcoming(wh.localist_date_range_last);
     
 
     wh.upcoming = isUpcoming(wh.localist_date_range_last);

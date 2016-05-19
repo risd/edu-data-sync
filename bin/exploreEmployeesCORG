@@ -12,44 +12,13 @@ Env();
 
 var Employees = require('../sources/employees/index.js')();
 
-var departmentsPath =
-	__dirname +
-	'/../sources/employees/departments.txt';
-
-var corgPath =
+var writePath =
 	__dirname +
 	'/../sources/employees/corg_field_values.txt';
 
-Employees.listSource()
-	// .pipe(pluck('CORG'))
-	.pipe(splitPluck('CORG', '; '))
-	.pipe(toFile(corgPath));
-
-function splitPluck (attribute, delimeter) {
-	var unique = [];
-
-	return through.obj(spltplck,end);
-
-	function spltplck (row, enc, next) {
-		row[attribute]
-			.split(delimeter)
-			.filter(function inUnique (d) {
-				return unique.indexOf(d) === -1;
-			})
-			.forEach(function (d) {
-				unique.push(d);
-			});
-		next();
-	}
-
-	function end () {
-		var sorted = unique.sort(function (a, b) {
-			return b - a;
-		});
-		this.push(sorted);
-		this.push(null);
-	}
-}
+Employees.listSourceLocal()
+	.pipe(pluckMultiple('CORG', '; '))
+	.pipe(toFile(writePath));
 
 function pluck (attribute) {
 	var unique = [];
@@ -57,7 +26,8 @@ function pluck (attribute) {
 	return through.obj(plck, end);
 
 	function plck (row, enc, next) {
-		if (unique.indexOf(row[attribute]) === -1) {
+		if ((attribute in row) &&
+			(unique.indexOf(row[attribute]) === -1)) {
 			unique.push(row[attribute]);
 		}
 		next();
@@ -70,6 +40,34 @@ function pluck (attribute) {
 		this.push(sorted);
 		this.push(null);
 	}
+}
+
+function pluckMultiple (attribute, delimiter) {
+	var unique = [];
+
+	return through.obj(plck, end);
+
+	function plck (row, enc, next) {
+		if (attribute in row) {
+			var check_include = row[attribute].split(delimiter);
+			check_include.forEach(check);
+
+			function check (d) {
+				if (unique.indexOf(d) === -1) {
+					unique.push(d);
+				}
+			}
+		}
+		next();
+	}
+
+	function end () {
+		var sorted = unique.sort(function (a, b) {
+			return b - a;
+		});
+		this.push(sorted);
+		this.push(null);
+	}	
 }
 
 function toFile (path) {
@@ -89,13 +87,19 @@ function toFile (path) {
 
 }
 
-function counter (row, enc, next) {
-	count += 1;
-	next();
-}
+function Counter () {
+	var c = 0;
+	return through.obj(count, logend);
+	
+	function count (row, enc, next) {
+		c += 1;
+		this.push(row);
+		next();
+	}
 
-function logend () {
-	console.log(count + ' items.');
+	function logend () {
+		console.log(c + ' items.');
+	}
 }
 
 function add (row, enc, next) {

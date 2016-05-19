@@ -92,6 +92,7 @@ function RISDMediaConfigToEnv () {
         'WH_EMAIL=' + rmConf.wh.email,
         'WH_PASSWORD=' + rmConf.wh.password,
         'WH_FIREBASE=' + rmConf.wh.firebase,
+        'WH_APIKEY=' + rmConf.wh.apikey,
         'TUMBLR_CONSUMER_KEY=' + rmConf.tumblr.consumer_key,
         'TUMBLR_CONSUMER_SECRET=' +
                 rmConf.tumblr.consumer_secret
