@@ -108,6 +108,23 @@ function ApplySyncProtocolToSources (sourcePrototypes) {
   }
 }
 
+function counter () {
+  var c = 0;
+
+  return {
+    stream: function () {
+      return through.obj(function (row, enc, next) {
+        c += 1;
+        this.push(row);
+        next();
+      });
+    },
+    count: function () {
+      return c;
+    }
+  };
+}
+
 function GetSourcesData () {
   return through.obj(getSourceData);
 
@@ -117,11 +134,14 @@ function GetSourcesData () {
 
     source.errors = [];
 
+    var c = counter();
+
     if (('listSource' in source) &&
         ('sourceStreamToFirebaseSource' in source)) {
 
       pump(
         source.listSource(),
+        c.stream(),
         source.sourceStreamToFirebaseSource(),
         end);
     }
@@ -130,7 +150,14 @@ function GetSourcesData () {
     }
 
     function end (err) {
-      debug('get-source-data:end', err);
+      if (err) debug('get-source-data:end', err);
+      else debug('get-source-data:end', c.count());
+      
+      if (c.count() === 0) {
+        var NoSoureData = new Error('No source data. Sync stopped.');
+        source.errors.push(NoSoureData);
+      }
+      
       var stepError = new Error('Could not get source data.');
       if (err) {
         source.errors
