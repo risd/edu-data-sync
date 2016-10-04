@@ -66,7 +66,7 @@ Courses.prototype.listSource = function () {
                     if (err) {
                         stream.emit('error', err);
                     } else {
-                        stream.push(res);    
+                        stream.push(res);
                     }
                     
                     next();

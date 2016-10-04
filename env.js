@@ -86,6 +86,8 @@ function RISDMediaConfigToEnv () {
     process.env.TUMBLR_CONSUMER_SECRET =
         rmConf.tumblr.consumer_secret;
 
+    debug('rmConf.wh', JSON.stringify(rmConf.wh));
+
     // Return strings that can be used
     // to set heroku config
     return [

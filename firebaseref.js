@@ -1,3 +1,4 @@
+var debug = require('debug')('firebaseref');
 var from = require('from2-array');
 var through = require('through2');
 
@@ -45,11 +46,14 @@ function FirebaseToken () {
             firebase: process.env.WH_FIREBASE
         };
 
+        debug('token:request');
+
         request(
             authUrl,
             { qs: qs },
             function (err, res, body) {
                 var data = JSON.parse(body);
+                debug('token:reseponse:', JSON.stringify(data));
                 self.push(data);
                 next();
             });
@@ -58,7 +62,7 @@ function FirebaseToken () {
 
 function FirebaseAuth () {
     var Firebase = require('firebase');
-    var dbName = 'webhook';
+    var dbName = process.env.WH_FIREBASE;
 
 
     return through.obj(auth);
@@ -69,7 +73,7 @@ function FirebaseAuth () {
                             'https://' +
                             dbName +
                             '.firebaseio.com/');
-
+        debug('auth:token', row.token);
         firebase
             .auth(
                 row.token,

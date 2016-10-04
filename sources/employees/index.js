@@ -115,7 +115,7 @@ Employees.prototype.listSourceLocal = function (path) {
 };
 
 Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
-	wh.name = src.PREFERREDNAME;
+    wh.name = src.PREFERREDNAME;
     wh.colleague_id = src.ID;
     wh.colleague_person = {
     	first: src.FIRSTNAME.trim(),

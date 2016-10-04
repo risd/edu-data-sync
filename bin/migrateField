@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+var debug = require('debug')('migrate-field');
+var fs = require('fs');
+
+var through = require('through2');
+var util = require('../util.js');
+
+previous({
+		path: __dirname + '/../backups/1463668964403.json',
+		contentType: 'news',
+		field: 'featured_image_caption',
+	})
+	.pipe(transform(
+		function (v) { return v ? ['<p>', v, '</p>'].join('') : ''; }))
+	.pipe(save());
+
+
+function previous (opts) {
+	var t = through.obj();
+
+	var d = JSON.parse(fs.readFileSync(opts.path).toString());
+
+	Object.keys(d.data[opts.contentType])
+		.forEach(function (itemKey) {
+			process.nextTick(function () {
+				t.push({
+					contentType: opts.contentType,
+					itemKey: itemKey,
+					field: opts.field,
+					value: d.data[opts.contentType][itemKey][opts.field]
+				});
+			}, 0);
+		});
+
+	process.nextTick(function () { t.push(null) });
+
+	return t;
+}
+
+function transform (fn) {
+	return through.obj(function (row, enc, next) {
+		debug(['Transforming', row.contentType, row.itemKey].join(' '));
+		row.value = fn(row.value);
+		this.push(row);
+		next();
+	});
+}
+
+function save () {
+	require('../env.js')();
+	var Firebaseref = require('../firebaseref.js');
+
+	// the variable that will be used to
+	// define the firebase instance.
+	var fb = null;
+
+	// all incoming data gets capture here
+	var queue = through.obj();
+
+	// when the fb ref is defined, the queue
+	// stream will get connected to this stream
+	// allowing for this guy to save the values
+	var saver = through.obj(function (row, enc, next) {
+		debug('Saving');
+		fb.child('data')
+			.child(row.contentType)
+			.child(row.itemKey)
+			.child(row.field)
+			.set(row.value, function onComplete () {
+				debug(['Saved', row.contentType, row.itemKey].join(' '));
+				next();
+			});
+	});
+
+	saver.on('finish', function () {
+		debug('Done');
+		process.exit(1);
+	});
+
+	Firebaseref()
+		.on('data', function (ref) {
+			debug('Firebase reference acquired');
+			// set the firebase reference
+			fb = ref;
+			// connect the queue pipeline
+			queue.pipe(saver);
+		});
+
+	return queue;
+}

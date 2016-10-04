@@ -67,6 +67,7 @@ function ToFileIn (dir) {
         var fileName = Date.now();
         var path = dir + '/' + fileName + '.json';
         debug('Writing to file:');
+        debug(data);
         console.log(path);
 
         var toWrite = JSON.stringify(data, null, 2);
