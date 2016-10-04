@@ -62,7 +62,7 @@ function FirebaseToken () {
 
 function FirebaseAuth () {
     var Firebase = require('firebase');
-    var dbName = 'webhook';
+    var dbName = process.env.WH_FIREBASE;
 
 
     return through.obj(auth);
