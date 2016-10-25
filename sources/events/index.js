@@ -1,3 +1,5 @@
+var debug = require('debug')('events');
+
 var request = require('request');
 var moment = require('moment');
 var timezone = require('moment-timezone');
@@ -60,7 +62,7 @@ Events.prototype.keyFromSource = function (row) {
 
 Events.prototype.listSource = function () {
     var self = this;
-    console.log('Events.listSource::start');
+    debug('listSource::start');
 
     // stream of Event objects from localist
     var eventStream = through.obj();
@@ -78,7 +80,7 @@ Events.prototype.listSource = function () {
     pagingStream.on('end', function () {
         // End the return stream that is
         // writing events.
-        console.log('Events.listSource::end');
+        debug('listSource::end');
         eventStream.push(null);
     });
 
@@ -127,7 +129,7 @@ Events.prototype.listSource = function () {
         function getEvents (opts) {
             var t = through.obj();
             var u = self.url.events(opts);
-            console.log('Localist events fetch: ' + u);
+            debug('Localist events fetch: ' + u);
 
             var data = [];
             request.get(u)
@@ -139,7 +141,7 @@ Events.prototype.listSource = function () {
                         var events = JSON.parse(data.join(''));
                         t.push(events);
                     } catch (err) {
-                        console.log(err);
+                        console.error(err);
                         var e = [
                             'Error getting localist events. ',
                             'Need to have all of the events, ',
@@ -175,7 +177,8 @@ Events.prototype.sourceStreamToFirebaseSource = function () {
             .once('value', onCheckComplete, onCheckError);
 
         function onCheckError (error) {
-            console.log(error);
+            console.error('sourceStreamToFirebaseSource:toFirebase:error');
+            console.error(error);
             onAddComplete();
         }
 
@@ -439,11 +442,7 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 /**
  * updateWebhookValueNotInSource implementation
  * for events. If they are in WebHook & not in
- * source, they are left alone. Since we are only
- * looking for future events. If an event has past
- * we keep it around for historical record.
- *
- * Basically a no-op stream
+ * source & older than 60 days, lets remove them.
  *
  * @return {stream} through.obj transform stream
  */
@@ -454,21 +453,20 @@ Events.prototype.updateWebhookValueNotInSource = function () {
 
     function updateNotInSource (row, enc, next) {
         var remove = false;
+
         if (row.inSource === false) {
-            var endOfLastDayStr =
-                [row.webhook.localist_date_range_last]
-                    .map(addEndOfDay)
-                    [0];
-            if (moment(endOfLastDayStr).isAfter(now)) {
-                // Not in the source, and in the future
-                // means that it was removed.
-                // if it was in the past, it means it wasn't
-                // called in our API call.
+            // not in source
+            var endOfLastDayStr = addEndOfDay(
+                row.webhook.localist_date_range_last);
+
+            if (moment(endOfLastDayStr).isBefore(now.subtract(60, 'days'))) {
+                // last day of the event occured before 60 days ago
                 remove = true;
             }
         }
 
         if (remove) {
+            debug('removing:' + row.webhook.name);
             var stream = this;
             self._firebase
                 .webhook
@@ -484,7 +482,7 @@ Events.prototype.updateWebhookValueNotInSource = function () {
     }
 
     function addEndOfDay (dateString) {
-        return dateString.split('T')[0] +
-               'T23:59:59-04:00';
+        var justBeforeMidnight = 'T23:59:59-04:00';
+        return [dateString.split('T')[0], justBeforeMidnight].join('');
     }
 };
