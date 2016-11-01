@@ -9,7 +9,7 @@ var combine = require('stream-combiner2');
 
 module.exports = SyncProtocol;
 
-function SyncProtocol (model, firebaseref) {
+function SyncProtocol (syncRoot, model, firebaseref) {
 
     var m = ['Model does not conform to Sync protocol.'];
 
@@ -86,15 +86,16 @@ function SyncProtocol (model, firebaseref) {
 
     var type = model.prototype.webhookContentType;
     var webhookDataRoot = 'data';
-    var webhookPath = 'data/' + type;
-    var sourcePath = 'eduSync/' + type;
-    var reversePath = 'eduSync/reverseRelationships';
+    var webhookPath = [webhookDataRoot, type].join('/');
+    var sourcePath = [syncRoot, type].join('/');
+    var reversePath = [syncRoot, 'reverseRelationships'].join('/');
 
     model.prototype._firebase = {
         webhook: firebaseref.child(webhookPath),
         source:  firebaseref.child(sourcePath),
+        reverse: firebaseref.child(reversePath),
         webhookDataRoot: firebaseref.child(webhookDataRoot),
-        reverse: firebaseref.child(reversePath)
+        syncRoot: firebaseref.child(syncRoot),
     };
 }
 
