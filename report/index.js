@@ -71,23 +71,53 @@ Report.prototype.config = function () {
 };
 
 /**
- * Expecting an array of Sources who
- * have completed the sync.
+ * Expecting an array of Sources to
+ * flow through one at a time
  * 
  * Using the content type, update
  * the date associated for its
- * last update
+ * last update.
+ *
+ * When the source has been updated, the
+ * source is pushed along in the stream.
  * 
- * @return {stream} HTML stream
+ * @return {stream} Sources stream
  */
 Report.prototype.update = function () {
 	var self = this;
-	return combine(
-			through.obj(toUpdate),
-			through.obj(writeToFirebase),
-			through.obj(fetchFirebase),
-			through.obj(writeHTML),
-			through.obj(pushToS3));
+
+	return through.obj(processSource);
+
+	function processSource (source, enc, next) {
+    var nowOnEastCoast = timezone().tz('America/New_York');
+	  var date = moment(nowOnEastCoast).format('MMMM Do YYYY, h:mm:ss a');
+
+    var keysToUpdate = {};
+    keysToUpdate[source.webhookContentType] = {
+      date: date,
+      errors: source.errors
+    };
+
+    var update = combine(
+      through.obj(toUpdate),
+      through.obj(writeToFirebase),
+      through.obj(fetchFirebase),
+      through.obj(writeHTML),
+      through.obj(pushToS3));
+
+    update.on('error', function (error) {
+      console.error('Failed to update the report for the source.');
+      console.error(error);
+      source.errors.push(error);
+      next(null, source);
+    });
+    update.on('finish', function () {
+      next(null, source);
+    });
+
+    update.write(source);
+    update.end();
+	}
 
 	function toUpdate (source, enc, next) {
 		var nowOnEastCoast = timezone().tz('America/New_York');
@@ -207,8 +237,7 @@ Report.prototype.update = function () {
 			if (200 == res.statusCode) {
 				console.log('Report saved to: ', req.url);
 			}
-			stream.push(html);
-			stream.push(null);
+			next();
 		});
 
 		req.end(html);

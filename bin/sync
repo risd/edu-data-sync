@@ -47,28 +47,50 @@ else {
   }
 }
 
+function timestampWithPrefix (prefix) {
+  var now = new Date();
+  var timestamp = now.toISOString()
+    .replace(/:/g, '-')
+    .replace(/T/g, '--')
+    .split('.')[0];
+  return [
+      prefix,
+      timestamp,
+    ].join('--');
+}
+var syncRoot = timestampWithPrefix('eduSync');
+
 Env();
 
+// Pass firebase ref into objects
 Firebaseref()
-  .pipe(AddEduSyncNodeToFirebase())
+  // Reads a firebase ref
+  // Writes a firebase ref
+  .pipe(AddEduSyncNodeToFirebase(syncRoot))
   .pipe(Report.config())
-  .pipe(ApplySyncProtocolToSources(sourcePrototypes))
+  // Reads a firebase ref
+  // Writes individual SyncSources with sync protocol applied
+  .pipe(ApplySyncProtocolToSources(syncRoot, sourcePrototypes))
+  // Reads SyncSource
+  // Writes SyncSource
   .pipe(GetSourcesData())
   .pipe(AddSourceToWebhook())
   .pipe(RemoveFromWebhookBasedOnSource())
   .pipe(ResolveRelationships())
   .pipe(ResolveReverseRelationships())
   .pipe(Report.update())
+  // Reads SyncSources
+  // Writes nothing
   .pipe(Exit());
 
 
-function AddEduSyncNodeToFirebase () {
+function AddEduSyncNodeToFirebase (syncRoot) {
   return through.obj(addEduSync);
 
   function addEduSync (fb, enc, next) {
     debug('Add eduSync to Firebase.');
 
-    fb.child('eduSync')
+    fb.child(syncRoot)
       .set({}, onComplete);
 
     function onComplete (error) {
@@ -80,7 +102,16 @@ function AddEduSyncNodeToFirebase () {
   }
 }
 
-function ApplySyncProtocolToSources (sourcePrototypes) {
+/**
+ * Returns a stream that expects a firebase reference
+ * (fb), and pushes into the stream Sync protocol
+ * compatabile objects.
+ * 
+ * @param {string} syncNodeName       String of the node name
+ *                                    to use for syncing new data 
+ * @param {object} sourcePrototypes[] Array of 
+ */
+function ApplySyncProtocolToSources (syncNodeName, sourcePrototypes) {
   var SyncProtocol = require('../syncProtocol.js');
 
   return through.obj(fbref);
@@ -94,10 +125,11 @@ function ApplySyncProtocolToSources (sourcePrototypes) {
       .map(configure)
       .forEach(pushInto(stream));
 
+    this.push(null);
     next();
 
     function configure (source) {
-      SyncProtocol(source, fb);
+      SyncProtocol(syncNodeName, source, fb);
       return source();
     }
     function pushInto (stream) {
@@ -337,10 +369,26 @@ function ResolveReverseRelationships () {
 }
 
 function Exit () {
-    return through.obj(exit);
+    // Firebase sync node reference
+    // that should be set to null
+    // on complete
+    var syncRoot;
 
-    function exit (row, enc, next) {
-        next(null);
-        process.exit();
+    return through.obj(sink, end);
+
+    function sink (source, enc, next) {
+      syncRoot = source._firebase.syncRoot;
+      next();
+    }
+
+    function end () {
+      try {
+        syncRoot.set(null, function () {
+          process.exit();
+        });
+      }
+      catch (err) {
+        process.exit(err);
+      }
     }
 }
