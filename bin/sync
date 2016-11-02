@@ -64,23 +64,23 @@ Env();
 
 // Pass firebase ref into objects
 Firebaseref()
-  // Reads a firebase ref
-  // Writes a firebase ref
+  // < Reads a firebase ref
+  // > Writes a firebase ref
   .pipe(AddEduSyncNodeToFirebase(syncRoot))
   .pipe(Report.config())
-  // Reads a firebase ref
-  // Writes individual SyncSources with sync protocol applied
+  // < Reads a firebase ref
+  // > Writes individual SyncSources with sync protocol applied
   .pipe(ApplySyncProtocolToSources(syncRoot, sourcePrototypes))
-  // Reads SyncSource
-  // Writes SyncSource
+  // < Reads SyncSource
+  // > Writes SyncSource
   .pipe(GetSourcesData())
   .pipe(AddSourceToWebhook())
   .pipe(RemoveFromWebhookBasedOnSource())
   .pipe(ResolveRelationships())
   .pipe(ResolveReverseRelationships())
   .pipe(Report.update())
-  // Reads SyncSources
-  // Writes nothing
+  // < Reads SyncSources
+  // > Writes nothing
   .pipe(Exit());
 
 
@@ -134,6 +134,7 @@ function ApplySyncProtocolToSources (syncNodeName, sourcePrototypes) {
     }
     function pushInto (stream) {
       return function pusher (source) {
+        source.errors = [];
         stream.push(source);
       };
     }
@@ -163,8 +164,6 @@ function GetSourcesData () {
   function getSourceData (source, enc, next) {
     debug(
       'Get all data from source & put into firebase.');
-
-    source.errors = [];
 
     var c = counter();
 
