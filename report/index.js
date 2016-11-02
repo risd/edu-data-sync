@@ -98,25 +98,25 @@ Report.prototype.update = function () {
       errors: source.errors
     };
 
+    var sink = through.obj(pushToS3);
     var update = combine(
       through.obj(toUpdate),
       through.obj(writeToFirebase),
       through.obj(fetchFirebase),
       through.obj(writeHTML),
-      through.obj(pushToS3));
+      sink);
 
-    update.on('error', function (error) {
+    sink.on('error', function (error) {
       console.error('Failed to update the report for the source.');
       console.error(error);
       source.errors.push(error);
       next(null, source);
     });
-    update.on('finish', function () {
+    sink.on('finish', function () {
       next(null, source);
     });
 
-    update.write(source);
-    update.end();
+    update.end(source);
 	}
 
 	function toUpdate (source, enc, next) {
@@ -129,13 +129,10 @@ Report.prototype.update = function () {
 			errors: source.errors
 		};
 
-		this.push(keysToUpdate);
-		this.push(null);
+		next(null, keysToUpdate);
 	}
 
 	function writeToFirebase (toUpdate, enc, next) {
-		var stream = this;
-
 		self._firebase
 			.update(toUpdate, function (error) {
 				if (error) {
@@ -143,8 +140,7 @@ Report.prototype.update = function () {
 							'to Firebase.';
 					console.log(m);
 				}
-				stream.push(toUpdate);
-				stream.push(null);
+				next(null, toUpdate);
 			});
 	}
 
@@ -181,8 +177,7 @@ Report.prototype.update = function () {
 							toWrite.push(v);
 						});
 				}
-				stream.push(toWrite);
-				stream.push(null);
+				next(null, toWrite);
 			});
 	}
 
@@ -213,8 +208,7 @@ Report.prototype.update = function () {
 			subnext();
 		}
 		function push () {
-			stream.push(htmlToWrite);
-			stream.push(null);
+			next(null, htmlToWrite);
 			this.push(null);
 		}
 	}
