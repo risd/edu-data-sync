@@ -2,6 +2,7 @@
    functions necessary for sync, and consistent
    across any api/implementation */
 
+var debug = require('debug')('sync-protocol');
 var clone = require('clone');
 var from = require('from2-array');
 var through = require('through2');
@@ -18,6 +19,8 @@ function SyncProtocol (syncRoot, model, firebaseref) {
     model.prototype.listFirebaseSource = listFirebaseSource;
     model.prototype.addSourceToWebhook = addSourceToWebhook;
     model.prototype.addInSourceBool = addInSourceBool;
+    model.prototype.addToSearchIndex = addToSearchIndex;
+    model.prototype.removeFromSearchIndex = removeFromSearchIndex;
 
     // Resolve relationship pipeline - Start
     model.prototype.rrListWebhookWithRelationshipsToResolve =
@@ -267,7 +270,7 @@ function addSourceToWebhook () {
                 stream.emit('error', error);
             }
             row.webhook = value;
-            next();
+            next(null, row);
         }
     }
 }
@@ -280,6 +283,9 @@ function sourceStreamToFirebaseSource () {
         var stream = this;
 
         var key = self.keyFromSource(row);
+
+        debug('sourceStreamToFirebaseSource:', key);
+        
         self._firebase
             .source
             .child(key)
@@ -376,18 +382,67 @@ function updateWebhookValueNotInSource () {
     function updateNotInSource (row, enc, next) {
         var stream = this;
         if (row.inSource === false) {
-            // console.log('Not in source. Remove.');
+            // debug('Not in source. Remove.');
             self._firebase
                 .webhook
                 .child(row.whKey)
                 .remove(function onComplete () {
-                    row.whKey = undefined;
-                    row.webhook = undefined;
-                    next();
+                    next(null, row);
                 });
         } else {
             next();
         }
+    }
+}
+
+
+/**
+ * `addToSearchIndex` runs after `addSourceToWebHook`
+ * with the current row = { whKey, srcKey, webhook, source }
+ * 
+ * @param {function} searchAddIndex Function to add to
+ *                                  search index
+ * @return through.obj stream
+ */
+function addToSearchIndex (searchAddIndex) {
+    var self = this;
+
+    return through.obj(addToSearch);
+
+    function addToSearch (row, enc, next) {
+        var typeName = self.webhookContentType
+        var document = row.webhook
+        var id       = row.whKey
+        var oneOff   = false
+        
+        searchAddIndex(typeName, document, id, oneOff);
+
+        next(null, row);
+    }
+}
+
+/**
+ * `removeFromSearchIndex` occurs after
+ * `updateWebhookValueNotInSource`, and only
+ * operates on values that trickle through,
+ * values not in the source
+ *
+ * 
+ * @param {function} searchDeleteIndex Function to delete
+ *                                     from search index
+ * @return through.obj stream
+ */
+function removeFromSearchIndex (searchDeleteIndex) {
+    var self = this;
+    return through.obj(removeFromSearch);
+
+    function removeFromSearch (row, enc, next) {
+        var typeName = self.webhookContentType;
+        var id       = row.whKey;
+
+        searchDeleteIndex(typeName, id);
+
+        next(null, row);
     }
 }
 
@@ -463,14 +518,14 @@ function rrGetRelatedData () {
     return through.obj(get);
 
     function get (row, enc, next) {
-        // console.log('Get related data');
+        // debug('Get related data');
         row.relatedDataCollection = false;
         row.relatedDataItem = false;
         var stream = this;
 
-        console.log('\n\nTo resolve');
-        // console.log(row.whKey);
-        console.log(row.toResolve.relationshipKey);
+        debug('\n\nTo resolve');
+        // debug(row.whKey);
+        debug(row.toResolve.relationshipKey);
         
 
         if ((row.toResolve.multipleToRelate === true) &&
@@ -757,8 +812,8 @@ function rrPopulateRelated () {
     return through.obj(populate);
 
     function populate (row, enc, next) {
-        console.log('rrPopulateRelated');
-        // console.log(row.toResolve.relationshipKey);
+        debug('rrPopulateRelated');
+        // debug(row.toResolve.relationshipKey);
 
         row.reverseToSave = {};
 
@@ -774,7 +829,7 @@ function rrPopulateRelated () {
                            [row.toResolve
                                .relateToContentTypeDataUsingKey];
 
-                    // console.log(related);
+                    // debug(related);
                     row.toResolve
                         .itemsToRelate
                         .forEach(function (itemToRelate) {
@@ -797,9 +852,9 @@ function rrPopulateRelated () {
                                    [reverseKey] = {};
                             }
 
-                            // console.log(relate);
+                            // debug(relate);
                             if (related === relate) {
-                                // console.log('Match!');
+                                // debug('Match!');
                                 // sort out updating objects
 
                                 var relationshipValue = [
@@ -873,8 +928,8 @@ function rrSaveReverse () {
     return through.obj(save);
 
     function save (row, enc, next) {
-        console.log('\n\nrrSaveReverse');
-        console.log(row.toResolve.relationshipKey);
+        debug('\n\nrrSaveReverse');
+        debug(row.toResolve.relationshipKey);
 
         var stream = this;
 
@@ -886,7 +941,7 @@ function rrSaveReverse () {
             next();
         } else {
             if (row.relatedDataCollection) {
-                // console.log('Save reverse multiple.');
+                // debug('Save reverse multiple.');
                 var relatedKeys = toSaveKeys;
                 relatedKeys.forEach(function (relatedKey) {
                         var reverseKeys =
@@ -914,7 +969,7 @@ function rrSaveReverse () {
             }
             else if (row.relatedDataItem)  {
                 var reverseKey = toSaveKeys[0];
-                console.log(row);
+                debug(row);
                 var reverseValue =
                     Object
                         .keys(row.reverseToSave[reverseKey])
@@ -944,8 +999,8 @@ function rrSaveReverse () {
 
 
         function saver (d) {
-            console.log('rrSaveReverse:saver::start');
-            console.log(d);
+            debug('rrSaveReverse:saver::start');
+            debug(d);
 
             var t = through.obj();
             var ref;
@@ -972,7 +1027,7 @@ function rrSaveReverse () {
             }
             
             ref.set(true, function () {
-                    console.log('rrSaveReverse:saver::end');
+                    debug('rrSaveReverse:saver::end');
                     t.push({});
                     t.push(null);
                 });
@@ -985,7 +1040,7 @@ function rrSaveReverse () {
             s.on('end', function () {
                 toSaveCount -= 1;
                 if (toSaveCount === 0) {
-                    // console.log('Save reverse::done');
+                    // debug('Save reverse::done');
                     stream.push(row);
                     next();
                 }
@@ -1001,10 +1056,10 @@ function rrSaveCurrent () {
     return through.obj(save);
 
     function save (row, enc, next) {
-        console.log('\n\nSave current.');
-        console.log(row.whKey);
-        console.log(row.toResolve.relationshipKey);
-        // console.log(row.webhook[row.toResolve.relationshipKey]);
+        debug('\n\nSave current.');
+        debug(row.whKey);
+        debug(row.toResolve.relationshipKey);
+        // debug(row.webhook[row.toResolve.relationshipKey]);
 
         var stream = this;
 
@@ -1014,9 +1069,9 @@ function rrSaveCurrent () {
             .child(row.toResolve.relationshipKey)
             .set(row.webhook[row.toResolve.relationshipKey],
                 function () {
-                    console.log('\n\nSave current::end');
-                    console.log(self.webhookContentType);
-                    console.log(row.toResolve.relationshipKey);
+                    debug('\n\nSave current::end');
+                    debug(self.webhookContentType);
+                    debug(row.toResolve.relationshipKey);
                     next();
                 });
     }
@@ -1026,7 +1081,7 @@ function rrSaveCurrent () {
 
 /* resolve reverse relationship - rrr - start */
 function rrrListRelationshipsToResolve () {
-    console.log('rrrListRelationshipsToResolve');
+    debug('rrrListRelationshipsToResolve');
     var self = this;
 
     var stream = through.obj();
@@ -1035,8 +1090,8 @@ function rrrListRelationshipsToResolve () {
         .forEach(function (toResolve) {
             var row = {};
             row.toResolve = toResolve;
-            console.log('rrr to Resolve');
-            console.log(toResolve);
+            debug('rrr to Resolve');
+            debug(toResolve);
             stream.push(row);
         });
     
@@ -1059,8 +1114,8 @@ function rrrAddData () {
         row.reverseContentTypeCollection = false;
         row.reverseContentTypeItem = false;
 
-        // console.log('\n\nreverse data');
-        // console.log(row.toResolve.relateToContentType);
+        // debug('\n\nreverse data');
+        // debug(row.toResolve.relateToContentType);
 
         self._firebase
             .reverse
@@ -1069,12 +1124,12 @@ function rrrAddData () {
                 var value = snapshot.val();
                 if (value) {
                     if (row.toResolve.multipleToRelate) {
-                        // console.log('reverseContentTypeCollection');
-                        // console.log(value);
+                        // debug('reverseContentTypeCollection');
+                        // debug(value);
                         row.reverseContentTypeCollection = value;
                     } else {
-                        // console.log('reverseContentTypeItem');
-                        // console.log(value);
+                        // debug('reverseContentTypeItem');
+                        // debug(value);
                         row.reverseContentTypeItem = value;
                     }
                 }
@@ -1121,8 +1176,8 @@ function rrrFormatData () {
                 });
         }
         else if (row.reverseContentTypeItem) {
-            // console.log('row.reverseContentTypeItem');
-            // console.log(row.reverseContentTypeItem);
+            // debug('row.reverseContentTypeItem');
+            // debug(row.reverseContentTypeItem);
             var reverseKey = Object.keys(row.reverseContentTypeItem)
                                    .pop();
 
@@ -1158,8 +1213,8 @@ function rrrSave () {
         var saverCount = toSave.length;
 
         if (saverCount > 0) {
-            // console.log('to save');
-            // console.log(toSave);
+            // debug('to save');
+            // debug(toSave);
             toSave
                 .map(saver)
                 .map(watcher);
@@ -1205,8 +1260,8 @@ function rrrSave () {
         }
 
         function done () {
-            console.log('rrr resolved');
-            console.log(toSave);
+            debug('rrr resolved');
+            debug(toSave);
             next();
         }
     }
