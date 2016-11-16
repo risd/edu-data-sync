@@ -1,3 +1,4 @@
+var debug = require('debug')('employees');
 var fs = require('fs');
 var through = require('through2');
 var xmlStream = require('xml-stream');
@@ -30,7 +31,7 @@ Employees.prototype.keyFromSource = function (row) {
 };
 
 Employees.prototype.listSource = function () {
-	console.log('Employees.listSource');
+	debug('listSource');
     var self = this;
 
     var eventStream = through.obj();
@@ -80,7 +81,7 @@ Employees.prototype.listSource = function () {
             });
 
             xml.on('end', function () {
-                console.log('Employees.listSource::end');
+                debug('listSource::end');
                 writeStream.push(null);
                 stream.push(null);
             });
@@ -89,7 +90,7 @@ Employees.prototype.listSource = function () {
 };
 
 Employees.prototype.listSourceLocal = function (path) {
-    console.log('Employees.listSourceLocal');
+    debug('listSourceLocal');
     var self = this;
 
     var eventStream = through.obj();
@@ -107,7 +108,7 @@ Employees.prototype.listSourceLocal = function (path) {
     });
 
     xml.on('end', function () {
-        console.log('Employees.listSource::end');
+        debug('Employees.listSource::end');
         eventStream.push(null);
     });
 
@@ -310,13 +311,13 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         if (currentWHData.colleague_department ===
             'Division of Foundation Studies') {
-            // console.log('Course is in Foundation Studies.');
+            // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
         if (currentWHData.colleague_department ===
             'Graduate Studies') {
-            // console.log('Course is in Graduate Studies.');
+            // debug('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }
 

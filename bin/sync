@@ -6,7 +6,7 @@ var through = require('through2');
 var pump = require('pump');
 var parseArgs = require('minimist');
 
-var Env = require('../env.js');
+var Env = require('../env.js')();
 var Firebaseref = require('../firebaseref.js');
 
 var Events = require('../sources/events/index.js');
@@ -16,6 +16,7 @@ var Courses = require('../sources/courses/index.js');
 var sourcePrototypes = [];
 
 var Report = require('../report/index.js')();
+var ElasticSearch = require('../elastic-search/stream-interface.js')();
 
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
@@ -60,7 +61,6 @@ function timestampWithPrefix (prefix) {
 }
 var syncRoot = timestampWithPrefix('eduSync');
 
-Env();
 
 // Pass firebase ref into objects
 Firebaseref()
@@ -203,6 +203,12 @@ function GetSourcesData () {
   }
 }
 
+function Sink () {
+  return through.obj( function (row, enc, next ) {
+    next();
+  });
+}
+
 function AddSourceToWebhook () {
   return through.obj(addSource);
 
@@ -215,6 +221,8 @@ function AddSourceToWebhook () {
       pump(
         source.listFirebaseSource(),
         source.addSourceToWebhook(),
+        source.addToSearchIndex(ElasticSearch.addIndex),
+        Sink(),
         end);
     }
     else {
@@ -257,6 +265,8 @@ function RemoveFromWebhookBasedOnSource () {
         source.listFirebaseWebhook(),
         source.addInSourceBool(),
         source.updateWebhookValueNotInSource(),
+        source.removeFromSearchIndex(ElasticSearch.deleteIndex),
+        Sink(),
         end);
     }
     else {

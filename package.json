@@ -1,6 +1,6 @@
 {
   "name": "edu-data-sync",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "Sync risd.edu datastore with external data sources.",
   "main": "index.js",
   "repository": {
@@ -17,12 +17,14 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nf --procfile Procfile.dev start",
     "sync": "./bin/sync",
     "sync-events": "./bin/sync events",
     "sync-employees": "./bin/sync employees",
     "sync-courses": "./bin/sync courses",
     "trigger-build": "./bin/trigger-build",
-    "backup": "./bin/backup"
+    "backup": "./bin/backup",
+    "preinstall": "cd elastic-search && npm install"
   },
   "author": "Ruben Rodriguez <mail@rubenrodriguez.me> (http://rubenrodriguez.me/)",
   "license": "ISC",
@@ -31,6 +33,7 @@
     "clone": "^1.0.2",
     "debug": "^2.2.0",
     "firebase": "^2.2.3",
+    "foreman": "^2.0.0",
     "from2-array": "0.0.3",
     "gapitoken": "^0.1.4",
     "html-template": "^1.2.2",

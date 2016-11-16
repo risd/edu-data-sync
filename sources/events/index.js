@@ -472,9 +472,7 @@ Events.prototype.updateWebhookValueNotInSource = function () {
                 .webhook
                 .child(row.whKey)
                 .remove(function onComplete () {
-                    row.whKey = undefined;
-                    row.webhook = undefined;
-                    next();
+                    next(null, row);
                 });
         } else {
             next();
