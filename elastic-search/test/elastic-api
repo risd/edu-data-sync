@@ -12,7 +12,7 @@ debug( elasticInterface.elastic.get )
 // elasticInterface.elastic
 //   .getMapping(
 //     'edu.risd.systems',
-//     'courses',
+//     'events',
 //     function response (error, results) {
 //       debug('response')
 //       debug(error)
@@ -23,9 +23,9 @@ elasticInterface.elastic
   .get(
     'edu.risd.systems',
     'events',
-    '-KWhqiE8Bbi0Zb4WFii-',
-    function response (error, results) {
-      debug('response')
-      debug(error)
-      debug(results)
+    '-KWhqiEeoPc8xeDAHJ1t',
+    function response ( error, results ) {
+      debug( 'response' )
+      debug( error )
+      debug( results )
     } )
