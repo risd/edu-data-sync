@@ -42,7 +42,10 @@ function ElasticSearchSync () {
     // Clean document
     document = Object.keys( document )
       .filter(function isNotUndefined ( key ) {
-        return document[key] !== undefined;
+        return document[ key ] !== undefined;
+      } )
+      .filter(function isNotNull ( key ) {
+        return document[ key ] !== null;
       } )
       .reduce( function keysToObject ( object, key ) {
         object[ key ] = document[ key ];
