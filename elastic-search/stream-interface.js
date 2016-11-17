@@ -37,14 +37,14 @@ function ElasticSearchSync () {
   function addIndex ( typeName, document, id, oneOff, attempt ) {
     debug( 'addIndex' )
 
-    attempt = (attempt || 0)
+    attempt = ( attempt || 0 )
 
     // Clean document
     document = Object.keys( document )
       .filter(function isNotUndefined ( key ) {
         return document[key] !== undefined;
       } )
-      .reduce( function keysToObject ( key, object ) {
+      .reduce( function keysToObject ( object, key ) {
         object[ key ] = document[ key ];
         return object;
       }, {} )
@@ -92,7 +92,7 @@ function ElasticSearchSync () {
   function deleteIndex ( typeName, id, attempt ) {
     debug( 'deleteIndex' )
 
-    attempt = attempt || 0;
+    attempt = ( attempt || 0 );
 
     if ( attempt > maxAttempts ) return;
 

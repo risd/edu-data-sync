@@ -414,7 +414,7 @@ function addToSearchIndex (searchAddIndex) {
         var document = row.webhook
         var id       = row.whKey
         var oneOff   = false
-        
+
         searchAddIndex(typeName, document, id, oneOff);
 
         next(null, row);

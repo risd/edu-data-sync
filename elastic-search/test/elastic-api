@@ -22,8 +22,8 @@ debug( elasticInterface.elastic.get )
 elasticInterface.elastic
   .get(
     'edu.risd.systems',
-    'departments',
-    '-Jb-0HSzfOyQy2ler8SZ',
+    'events',
+    '-KWhqiE8Bbi0Zb4WFii-',
     function response (error, results) {
       debug('response')
       debug(error)
