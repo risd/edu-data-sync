@@ -46,6 +46,9 @@ function ElasticSearchSync () {
       } )
       .reduce( function keysToObject ( object, key ) {
         object[ key ] = document[ key ];
+        // objects are made into strings
+        if ( typeof document[ key ] === 'object' )
+          object[ key ] = JSON.stringify( document[ key ] )
         return object;
       }, {} )
 
@@ -60,7 +63,7 @@ function ElasticSearchSync () {
       },
       function response ( error, data ) {
         if ( error ) return retry( error )
-        if ( data && data.error ) return retry( error )
+        if ( data && data.error ) return retry( data.error )
         debug( 'addIndex:response' )
       } )
 
