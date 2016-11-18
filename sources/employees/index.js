@@ -250,7 +250,10 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_title = src.TITLE;
     wh.colleague_department = src.DEPARTMENT;
     wh.colleague_institutions_attended =
-    	src.INSTITUTIONSATTENDED;
+    	src.INSTITUTIONSATTENDED.split( ';' )
+            .map( function ( institution ) {
+                return { institution: institution.trim() }
+            } );
 
     wh.colleague_status = true;
 
