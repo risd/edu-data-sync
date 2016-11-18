@@ -189,17 +189,10 @@ function ElasticSearch () {
 
     process.env.ELASTIC_SEARCH_INDEX = elasticSearchConf.ELASTIC_SEARCH_INDEX;
 
-    process.env.FIREBASE_PROJECT = elasticSearchConf.FIREBASE_PROJECT;
-    process.env.FIREBASE_SERVICE_ACCOUNT = JSON.stringify(elasticSearchConf.FIREBASE_SERVICE_ACCOUNT);
-    process.env.WORKER_CONCURRENCY = elasticSearchConf.WORKER_CONCURRENCY;
-
     return [
         'ELASTIC_SEARCH_SERVER=' + process.env.ELASTIC_SEARCH_SERVER,
         'ELASTIC_SEARCH_USER=' + process.env.ELASTIC_SEARCH_USER,
         'ELASTIC_SEARCH_PASSWORD=' + process.env.ELASTIC_SEARCH_PASSWORD,
         'ELASTIC_SEARCH_INDEX=' + process.env.ELASTIC_SEARCH_INDEX,
-        'FIREBASE_PROJECT=' + process.env.FIREBASE_PROJECT,
-        'FIREBASE_SERVICE_ACCOUNT=' + process.env.FIREBASE_SERVICE_ACCOUNT,
-        'WORKER_CONCURRENCY=' + process.env.WORKER_CONCURRENCY,
     ];
 }
