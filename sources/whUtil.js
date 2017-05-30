@@ -145,7 +145,7 @@ module.exports = function () {
         }],
         forFoundationStudies: [{
             "colleague": "Division of Foundation Studies",
-            "courseCatalogue": "Experimental and Foundation",
+            "courseCatalogue": "Foundation Studies",
             "webhook": "Experimental and Foundation Studies"
         }],
         forGraduateStudies: [{
