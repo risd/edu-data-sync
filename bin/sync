@@ -7,6 +7,7 @@ var pump = require('pump');
 var parseArgs = require('minimist');
 
 var Env = require('../env.js')();
+var envConf = Env.asObject();
 var Firebaseref = require('../firebaseref.js');
 
 var Events = require('../sources/events/index.js');
@@ -16,7 +17,8 @@ var Courses = require('../sources/courses/index.js');
 var sourcePrototypes = [];
 
 var Report = require('../report/index.js')();
-var ElasticSearch = require('../elastic-search/stream-interface.js')();
+var SignalBuild = require( '../signal-build.js' ).stream( envConf.build );
+var ElasticSearch = require('../elastic-search/stream-interface.js')( envConf.elasticSearch );
 
 // Based on arguments passed into this process
 // populate the sources that will be sync'd.
@@ -63,11 +65,12 @@ var syncRoot = timestampWithPrefix('eduSync');
 
 
 // Pass firebase ref into objects
-Firebaseref()
+Firebaseref( envConf.firebase )
   // < Reads a firebase ref
   // > Writes a firebase ref
   .pipe(AddEduSyncNodeToFirebase(syncRoot))
   .pipe(Report.config())
+  .pipe(SignalBuild.config())
   // < Reads a firebase ref
   // > Writes individual SyncSources with sync protocol applied
   .pipe(ApplySyncProtocolToSources(syncRoot, sourcePrototypes))
@@ -78,6 +81,7 @@ Firebaseref()
   .pipe(RemoveFromWebhookBasedOnSource())
   .pipe(ResolveRelationships())
   .pipe(ResolveReverseRelationships())
+  .pipe(SignalBuild.send( envConf.build ))
   .pipe(Report.update())
   // < Reads SyncSources
   // > Writes nothing

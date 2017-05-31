@@ -4,17 +4,24 @@ var extend = require( 'xtend' )
 
 module.exports = ElasticSearch;
 
-function ElasticSearch () {
-  if ( ! ( this instanceof ElasticSearch ) ) return new ElasticSearch();
+/**
+ * @param {object} options
+ * @param {string} options.server
+ * @param {string} options.user
+ * @param {string} options.password
+ */
+function ElasticSearch ( options ) {
+  if ( ! ( this instanceof ElasticSearch ) ) return new ElasticSearch( options );
+  if ( !options ) options = {};
 
-  var serverName = process.env.ELASTIC_SEARCH_SERVER.replace('http://', '').replace('https://', '');
+  var serverName = options.server.replace('http://', '').replace('https://', '');
   serverName = serverName.split(':')[0];
   var elasticOptions = {
       host: serverName,
       port: 9200,
       auth: {
-        username: process.env.ELASTIC_SEARCH_USER,
-        password: process.env.ELASTIC_SEARCH_PASSWORD
+        username: options.user,
+        password: options.password,
       }
     };
 

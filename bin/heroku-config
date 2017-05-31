@@ -3,10 +3,10 @@
 var debug = require('debug')('heroku-config');
 var spawn = require('child_process').spawn;
 
-var env = require('../env.js');
+var Env = require('../env.js')();
 
 var args = ['config:set'];
-var confArgs = env();
+var confArgs = Env.asString();
 
 args = args.concat(confArgs);
 args = args.concat(['--app', 'edu-data-sync']);
@@ -14,8 +14,3 @@ args = args.concat(['--app', 'edu-data-sync']);
 debug(args);
 
 spawn('heroku', args).stdout.pipe(process.stdout);
-spawn('heroku',
-      ['buildpack:set',
-       'https://github.com/ddollar/heroku-buildpack-multi.git'])
-    .stdout
-    .pipe(process.stdout);

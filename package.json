@@ -8,12 +8,12 @@
     "url": "git://github.com/risd/edu-data-sync.git"
   },
   "engines": {
-    "node": "0.12.x",
-    "npm": "2.12.x"
+    "node": "4.8.x",
+    "npm": "2.15.x"
   },
   "bin": {
     "sync": "./bin/sync",
-    "backup": "./bin/backup"
+    "backup": "./bin/backup",
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -32,6 +32,7 @@
     "cheerio": "^0.19.0",
     "clone": "^1.0.2",
     "debug": "^2.2.0",
+    "dotenv-safe": "^4.0.4",
     "firebase": "^2.2.3",
     "foreman": "^2.0.0",
     "from2-array": "0.0.3",

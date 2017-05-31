@@ -4,11 +4,18 @@ var through = require( 'through2' );
 
 module.exports = ElasticSearchSync;
 
-function ElasticSearchSync () {
-  if ( ! ( this instanceof ElasticSearchSync ) ) return new ElasticSearchSync();
+/**
+ * @param {object} options
+ * @param {string} options.server
+ * @param {string} options.user
+ * @param {string} options.password
+ * @param {string} options.siteName
+ */
+function ElasticSearchSync ( options ) {
+  if ( ! ( this instanceof ElasticSearchSync ) ) return new ElasticSearchSync( options );
 
-  var elastic = ElasticSearch();
-  var indexName = process.env.ELASTIC_SEARCH_INDEX;
+  var elastic = ElasticSearch( options );
+  var indexName = escapeSiteName( options.siteName );
 
   var maxAttempts = 10;
 
@@ -126,4 +133,8 @@ function ElasticSearchSync () {
     addIndex: addIndex,
     deleteIndex: deleteIndex,
   }
+}
+
+function escapeSiteName ( siteName ) {
+  return siteName.replace(/\./g, ',1');
 }
