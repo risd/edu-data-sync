@@ -220,7 +220,11 @@ Events.prototype.sourceStreamToFirebaseSource = function () {
 Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     src = src.event;
 
-    wh.name = src.title + ' ' + src.id;
+    wh.name = [
+        readable_date([src.first_date].map(addTimeZone)[0]),
+        src.title,
+        src.id
+    ].join(' ');
     wh.localist_title = src.title.trim();
     wh.localist_uid = src.id;
     wh.localist_venue_uid = src.venue_id || '';
@@ -349,6 +353,10 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             .set('minute', 0)
             .set('second', 0);
         return moment(beginningOfDay).isBefore(end);
+    }
+
+    function readable_date (date) {
+        return moment(start).format('YYYY-MM-DD')
     }
 };
 
