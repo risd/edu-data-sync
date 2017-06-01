@@ -160,6 +160,8 @@ function listFirebaseSource () {
     }
 
     function onError (error) {
+        debug('list-source-firebase:error')
+        debug( error )
         stream.emit('error', error);
     }
 }
@@ -201,7 +203,7 @@ function addSourceToWebhook () {
     var self = this;
     var whData = false;
 
-    return combine(
+    return combine.obj(
         through.obj(findWhKey),
         through.obj(updateWebhook));
 
@@ -240,6 +242,7 @@ function addSourceToWebhook () {
         }
 
         function onError (error) {
+            debug( 'could-not-download-data-cache' )
             next(new Error(error));
         }
     }
@@ -269,6 +272,7 @@ function addSourceToWebhook () {
             if (error) {
                 stream.emit('error', error);
             }
+            row.whKey = ref.name();
             row.webhook = value;
             next(null, row);
         }
@@ -459,6 +463,7 @@ function removeFromSearchIndex (searchDeleteIndex) {
  * @return {stream} through.obj
  */
 function rrListWebhookWithRelationshipsToResolve () {
+    debug( 'init-list-to-resolve' )
     var self = this;
 
     var eventStream = through.obj();
@@ -495,6 +500,8 @@ function rrListWebhookWithRelationshipsToResolve () {
     }
 
     function onError (error) {
+        debug( 'list-to-resolve:error' )
+        debug( error )
         eventStream.emit('error', error);
     }
 }
@@ -518,7 +525,7 @@ function rrGetRelatedData () {
     return through.obj(get);
 
     function get (row, enc, next) {
-        // debug('Get related data');
+        debug('Get related data');
         row.relatedDataCollection = false;
         row.relatedDataItem = false;
         var stream = this;

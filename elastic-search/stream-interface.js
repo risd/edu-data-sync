@@ -15,7 +15,7 @@ function ElasticSearchSync ( options ) {
   if ( ! ( this instanceof ElasticSearchSync ) ) return new ElasticSearchSync( options );
 
   var elastic = ElasticSearch( options );
-  var indexName = escapeSiteName( options.siteName );
+  var indexName = unescapeSiteName( options.siteName );
 
   var maxAttempts = 10;
 
@@ -135,6 +135,6 @@ function ElasticSearchSync ( options ) {
   }
 }
 
-function escapeSiteName ( siteName ) {
-  return siteName.replace(/\./g, ',1');
+function unescapeSiteName ( siteName ) {
+  return siteName.replace(/,1/g, '.');
 }

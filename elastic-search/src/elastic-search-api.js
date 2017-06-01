@@ -31,7 +31,7 @@ function ElasticSearch ( options ) {
   var elastic = new ElasticSearchClient( elasticOptions );
 
   function addIndex ( toIndex, callback ) {
-    debug( 'addIndex', toIndex )
+    debug( 'addIndex' )
 
     var document = extend( {}, toIndex.document );
     document.__oneOff = toIndex.oneOff || false;

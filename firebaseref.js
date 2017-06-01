@@ -15,6 +15,7 @@ module.exports = FirebaseRef;
  * @param {string} options.firebaseName  The name of the firebase
  * @param {string} options.firebaseKey   The key of the firebase
  * @param {string} options.siteName      The site instance
+ * @param {string} options.siteKey       The key for the site
  * @returns {Stream} firebaseRef
  */
 
@@ -67,8 +68,8 @@ function FirebaseRef ( options ) {
       if ( !options ) options = {}
 
       var Firebase = require('firebase');
-      var dbName = options.firebase;
-
+      var dbName = options.firebaseName;
+      var dbKey = options.firebaseKey;
 
       return through.obj(auth);
 
@@ -78,10 +79,10 @@ function FirebaseRef ( options ) {
                               'https://' +
                               dbName +
                               '.firebaseio.com/');
-          debug('auth:token', row.token);
+          debug('auth:token', dbKey);
           firebase
               .auth(
-                  row.token,
+                  dbKey,
                   function (error, auth) {
                       if (error) {
                           console.log(error);

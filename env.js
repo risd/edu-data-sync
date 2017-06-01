@@ -12,6 +12,9 @@ module.exports = Env;
  * SITE_NAME
  * FIREBASE_NAME
  * FIREBASE_KEY
+ * AWS_KEY
+ * AWS_SECRET
+ * AWS_BUCKET
  * ELASTIC_SEARCH_SERVER
  * ELASTIC_SEARCH_USER
  * ELASTIC_SEARCH_PASSWORD
@@ -43,9 +46,15 @@ function Env ( options ) {
       firebaseName: environment.FIREBASE_NAME,
       firebaseKey : environment.FIREBASE_KEY,
       siteName    : environment.SITE_NAME,
+      siteKey     : environment.SITE_KEY,
     },
     build: {
       siteName: environment.SITE_NAME,
+    },
+    aws: {
+      key: environment.AWS_KEY,
+      secret: environment.AWS_SECRET,
+      bucket: environment.AWS_BUCKET,
     }
   }
 

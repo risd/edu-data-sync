@@ -12,14 +12,10 @@ module.exports = Employees;
 /**
  * Employees are provided via XML dump from Colleague.
  */
-function Employees () {
-    if (!(this instanceof Employees)) return new Employees();
+function Employees ( options ) {
+    if (!(this instanceof Employees)) return new Employees( options );
     var self = this;
-    this.aws = knox.createClient({
-        key: process.env.AWS_KEY,
-        secret: process.env.AWS_SECRET,
-        bucket: 'from-oit-for-edu'
-    });
+    this.aws = knox.createClient( options.aws );
 }
 
 Employees.prototype.webhookContentType = 'employees';
