@@ -14,14 +14,10 @@ module.exports = Courses;
 /**
  * Courses are provided via XML dump from Colleague.
  */
-function Courses () {
-    if (!(this instanceof Courses)) return new Courses();
+function Courses ( options ) {
+    if (!(this instanceof Courses)) return new Courses( options );
     var self = this;
-    this.aws = knox.createClient({
-        key: process.env.AWS_KEY,
-        secret: process.env.AWS_SECRET,
-        bucket: 'from-oit-for-edu'
-    });
+    this.aws = knox.createClient( options.aws );
 }
 
 Courses.prototype.webhookContentType = 'courses';
@@ -30,7 +26,8 @@ Courses.prototype.keyFromWebhook = function (row) {
 };
 Courses.prototype.keyFromSource = function (row) {
     return [row.COURSESYNONYM,
-            row.COURSENAME].join(' ');
+            row.COURSENAME,
+            row.COURSETERM].join(' ');
 };
 
 Courses.prototype.listSource = function () {
@@ -83,6 +80,7 @@ Courses.prototype.listSource = function () {
 
             // capture all departments per course
             xml.collect('COURSE');
+            xml.collect('COURSEFACULTY');
             xml.on('error', function (err) {
                 writeStream.emit('error', err);
             });
@@ -193,7 +191,7 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_course_term = src.COURSETERM;
     wh.colleague_course_credits = src.COURSECREDITS;
     wh.colleague_course_academic_level = src.COURSEACADEMICLEVEL;
-    wh.colleague_course_faculty_id = src.COURSEFACULTY || false;
+    wh.colleague_course_faculty = mapCourseFaculty( src.COURSEFACULTY );
 
     return (whUtil.whRequiredDates(wh));
 
@@ -241,6 +239,13 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             var $ = cheerio.load('<div class="top">' + body + '</div>');
             return $('.top').html();
         }
+    }
+
+    function mapCourseFaculty ( faculty ) {
+        if ( Array.isArray( faculty ) ) {
+            return faculty.map( function ( fid ) { return { faculty_colleague_id: fid } } )
+        }
+        return [];
     }
 };
 
@@ -331,7 +336,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
             currentWHData.colleague_departments
                 .filter(function (d) {
                     return d.department ===
-                           'Experimental and Foundation';
+                           'Foundation Studies';
                 });
 
         if (foundation.length === 1) {
@@ -366,11 +371,12 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
-    if ('colleague_course_faculty_id' in currentWHData) {
-        if (currentWHData.colleague_course_faculty_id) {
-            toResolve[4].itemsToRelate = [{
-                employees: currentWHData.colleague_course_faculty_id
-            }];
+    if ('colleague_course_faculty' in currentWHData) {
+        if (Array.isArray(currentWHData.colleague_course_faculty)) {
+            toResolve[4].itemsToRelate = currentWHData.colleague_course_faculty
+                .map( function ( row ) {
+                    return { employees: row.faculty_colleague_id }
+                } );
         }
     }
 

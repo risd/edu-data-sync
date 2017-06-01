@@ -6,13 +6,21 @@ Piggy back's a the webhook firebase instance. Where `data`, `contentType` & `pre
 
 A [report](http://edu-data-sync-report.s3-website-us-east-1.amazonaws.com/index.html) is written at the end of the process.
 
-### Locally
 
-Relies on having run `wh init` to get the `.firebase.conf` file, as well as a `.risdmedia.conf` file that houses credentials for accessing the firebase via a WebHook account.
+### Environment variables
 
-To run locally.
+Requires the following environment variables to be defined. 
 
-`./bin/sync`
+```
+SITE_NAME
+FIREBASE_NAME
+FIREBASE_KEY
+ELASTIC_SEARCH_SERVER
+ELASTIC_SEARCH_USER
+ELASTIC_SEARCH_PASSWORD
+```
+
+Uses [dotenv-safe](https://github.com/rolodato/dotenv-safe) via [env.js](env.js) to load configuration.
 
 
 ### Heroku

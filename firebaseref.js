@@ -11,110 +11,123 @@ module.exports = FirebaseRef;
  * firebase object that has been configured
  * for the current WebHook site.
  *
- * WebHook configuration is depends on
- * these environment variables to be set.
- *
- * process.env.WH_EMAIL
- * process.env.WH_PASSWORD
- * process.env.WH_FIREBASE
- * process.env.FB_SITENAME
- * process.env.FB_SECRET
- * 
+ * @param {object} options
+ * @param {string} options.firebaseName  The name of the firebase
+ * @param {string} options.firebaseKey   The key of the firebase
+ * @param {string} options.siteName      The site instance
+ * @param {string} options.siteKey       The key for the site
+ * @returns {Stream} firebaseRef
  */
 
-function FirebaseRef () {
-    return from.obj([{}])
-               .pipe(FirebaseToken())
-               .pipe(FirebaseAuth())
-               .pipe(FirebaseBucketForSite())
-               .pipe(PushRef());
-}
+function FirebaseRef ( options ) {
+  if ( !options ) options = {}
 
-function FirebaseToken () {
-    var request = require('request');
-    var authUrl =
-            'https://auth.firebase.com/auth/firebase';
+  return from.obj([ options, null])
+             .pipe(FirebaseToken())
+             .pipe(FirebaseAuth())
+             .pipe(FirebaseBucketForSite())
+             .pipe(PushRef());
 
-
-    return through.obj(createToken);
-
-    function createToken (row, enc, next) {
-        var self = this;
-        var qs = {
-            email: process.env.WH_EMAIL,
-            password: process.env.WH_PASSWORD,
-            firebase: process.env.WH_FIREBASE
-        };
-
-        debug('token:request');
-
-        request(
-            authUrl,
-            { qs: qs },
-            function (err, res, body) {
-                var data = JSON.parse(body);
-                debug('token:reseponse:', JSON.stringify(data));
-                self.push(data);
-                next();
-            });
-    }
-}
-
-function FirebaseAuth () {
-    var Firebase = require('firebase');
-    var dbName = process.env.WH_FIREBASE;
+  /**
+   * @param {object} options
+   * @param {object} options.email
+   * @param {object} options.password
+   * @param {object} options.firebase
+   */
+  function FirebaseToken () {
+      if ( !options ) options = {};
+      var request = require('request');
+      var authUrl = 'https://auth.firebase.com/auth/firebase';
 
 
-    return through.obj(auth);
+      return through.obj(createToken);
 
-    function auth (row, enc, next) {
-        var self = this;
-        var firebase = new Firebase(
-                            'https://' +
-                            dbName +
-                            '.firebaseio.com/');
-        debug('auth:token', row.token);
-        firebase
-            .auth(
-                row.token,
-                function (error, auth) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        self.push({
-                            firebaseRoot: firebase
-                        });
-                    }
-                    next();
-                });
-    }
-}
+      function createToken (row, enc, next) {
+          var self = this;
+          var qs = options;
 
-function FirebaseBucketForSite () {
-    var fs = require('fs');
-    return through.obj(conf);
+          debug('token:request');
 
-    function conf (row, enc, next) {
-        row.firebase =
-                row.firebaseRoot
-                   .child(
-                        'buckets/' +
-                        process.env.FB_SITENAME +
-                        '/' +
-                        process.env.FB_SECRET +
-                        '/dev');
+          request(
+              authUrl,
+              { qs: options },
+              function (err, res, body) {
+                  var data = JSON.parse(body);
+                  debug('token:reseponse:', JSON.stringify(data));
+                  self.push( data );
+                  next();
+              });
+      }
+  }
 
-        this.push(row);
-        next();
-    }
-}
+  /**
+   * @param {object} options
+   * @param {object} options.firebase
+   */
+  function FirebaseAuth () {
+      if ( !options ) options = {}
 
-function PushRef () {
-    return through.obj(ref);
+      var Firebase = require('firebase');
+      var dbName = options.firebaseName;
+      var dbKey = options.firebaseKey;
 
-    function ref (row, enc, next) {
-        this.push(row.firebase);
+      return through.obj(auth);
 
-        next();
-    }
+      function auth (row, enc, next) {
+          var self = this;
+          var firebase = new Firebase(
+                              'https://' +
+                              dbName +
+                              '.firebaseio.com/');
+          debug('auth:token', dbKey);
+          firebase
+              .auth(
+                  dbKey,
+                  function (error, auth) {
+                      if (error) {
+                          console.log(error);
+                      } else {
+                          self.push({
+                              firebaseRoot: firebase
+                          });
+                      }
+                      next();
+                  });
+      }
+  }
+
+  /**
+   * @param {object} options
+   * @param {string} options.siteName  The site instance
+   * @param {string} options.siteKey   The site key
+   */
+  function FirebaseBucketForSite () {
+      var fs = require('fs');
+      return through.obj(conf);
+
+      function conf (row, enc, next) {
+          row.firebase =
+                  row.firebaseRoot
+                     .child(
+                          'buckets/' +
+                          options.siteName +
+                          '/' +
+                          options.siteKey +
+                          '/dev');
+
+          this.push(row);
+          next();
+      }
+  }
+
+  function PushRef () {
+      return through.obj(ref);
+
+      function ref (row, enc, next) {
+          this.push(row.firebase);
+
+          next();
+      }
+  }
+
 }

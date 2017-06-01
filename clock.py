@@ -6,13 +6,11 @@ sched = BlockingScheduler()
 @sched.scheduled_job('interval', minutes=60)
 def timed_job():
     subprocess.call(['sync', 'events'])
-    subprocess.call(['trigger-build'])
 
 
 @sched.scheduled_job('cron', hour=7)
 def scheduled_job():
     subprocess.call(['sync', 'employees'])
     subprocess.call(['sync', 'courses'])
-    subprocess.call(['trigger-build'])
 
 sched.start()

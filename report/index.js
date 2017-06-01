@@ -99,7 +99,7 @@ Report.prototype.update = function () {
     };
 
     var sink = through.obj(pushToS3);
-    var update = combine(
+    var update = combine.obj(
       through.obj(toUpdate),
       through.obj(writeToFirebase),
       through.obj(fetchFirebase),

@@ -1,6 +1,8 @@
 var debug = require( 'debug' )( 'elastic-search-sync' )
 var CreateTasks = require( './src/firebase-tasks.js' )
 
+// Not currently used
+
 module.exports = ElasticSearchSync;
 
 function ElasticSearchSync ( namespace ) {
