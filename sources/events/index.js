@@ -356,7 +356,7 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     }
 
     function readable_date (date) {
-        return moment(start).format('YYYY-MM-DD')
+        return moment(date).format('YYYY-MM-DD')
     }
 };
 
