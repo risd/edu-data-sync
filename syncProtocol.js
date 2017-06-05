@@ -272,7 +272,7 @@ function addSourceToWebhook () {
             if (error) {
                 stream.emit('error', error);
             }
-            row.whKey = ref.name();
+            row.whKey = ref.key();
             row.webhook = value;
             next(null, row);
         }
