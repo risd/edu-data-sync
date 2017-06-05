@@ -309,7 +309,7 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         toResolve[0].itemsToRelate = departments;
 
         if (currentWHData.colleague_department ===
-            'Division of Foundation Studies') {
+            'Experimental + Found Studies') {
             // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
