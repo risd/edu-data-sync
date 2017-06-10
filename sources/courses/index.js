@@ -206,7 +206,15 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                     }
                 )
                 .replace(/ Iii/g, ' III')
-                .replace(/ Ii/g,  ' II');
+                .replace(/ Ii/g,  ' II')
+                .replace(/Ehp /g, 'EHP ')
+                .replace(/Isp /g, 'ISP ')
+                .replace(/Havc /g, 'HAVC ')
+                .replace(/Ncss /g, 'NCSS ')
+                .replace(/Hpss /g, 'HPSS ')
+                .replace(/Lael /g, 'LAEL ')
+                .replace(/Id /g,   'ID ')
+                .replace(/Las /g,  'LAS ');
     }
 
     function formatDescription (desc) {
@@ -372,7 +380,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     }
 
     if ('colleague_course_faculty' in currentWHData) {
-        if (Array.isArray(currentWHData.colleague_course_faculty)) {
+        if (Array.isArray(currentWHData.colleague_course_faculty) && isNotEHPCourse( currentWHData ) ) {
             toResolve[4].itemsToRelate = currentWHData.colleague_course_faculty
                 .map( function ( row ) {
                     return { employees: row.faculty_colleague_id }
@@ -381,4 +389,13 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     }
 
     return toResolve;
+
+    function isNotEHPCourse ( course ) {
+        try {
+            return course.colleague_course_title.toLowerCase().indexOf( 'ehp' ) === -1    
+        } catch ( error ) {
+            return true;
+        }
+        
+    }
 };
