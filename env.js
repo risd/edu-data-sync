@@ -39,7 +39,7 @@ function Env ( options ) {
   } catch ( error ) {
     // These are expected as process.env variables if there is no `.env` file
     debug( 'loading-from-process.env' )
-    var environment = process.env;
+    var environment = Object.assign( {}, process.env );
   }
 
   var configuration = {
