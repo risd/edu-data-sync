@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var debug = require('debug')('sync-courses:cli');
+var Sync = require( '../sync.js' );
+var Courses = require('../sources/courses/index.js');
+
+Sync( Courses, function onComplete () {
+  process.exit()
+} )
