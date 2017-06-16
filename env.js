@@ -64,6 +64,11 @@ function Env ( options ) {
     }
   }
 
+  debug( configuration.elasticSearch )
+  debug( configuration.firebase )
+  debug( configuration.build )
+  debug( configuration.aws )
+
   return {
     asObject: extendConfiguration,
     asString: asString,
