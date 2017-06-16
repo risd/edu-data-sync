@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var debug = require('debug')('sync-employees:cli');
+var Sync = require( '../sync.js' );
+var Employees = require('../sources/employees/index.js');
+
+Sync( Employees, function onComplete () {
+  process.exit()
+} )
