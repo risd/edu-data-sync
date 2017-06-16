@@ -33,7 +33,13 @@ function Env ( options ) {
     allowEmptyValues: false,
     sample: '.env.example',
   }
-  var environment = dotenv.load( Object.assign( defaultOptions, options ) ).parsed;
+  
+  try {
+    var environment = dotenv.load( Object.assign( defaultOptions, options ) ).parsed;
+  } catch ( error ) {
+    // These are expected as process.env variables if there is no `.env` file
+    var environment = process.env;
+  }
 
   var configuration = {
     elasticSearch: {
