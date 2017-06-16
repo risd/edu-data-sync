@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var debug = require('debug')('sync-events:cli');
+var Sync = require( '../sync.js' );
+var Events = require('../sources/events/index.js');
+
+Sync( Events, function onComplete () {
+  process.exit()
+} )
