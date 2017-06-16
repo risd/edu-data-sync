@@ -35,10 +35,12 @@ function Env ( options ) {
   }
   
   try {
-    var environment = dotenv.load( Object.assign( defaultOptions, options ) ).parsed;
+    var environment = dotenv.load( Object.assign( defaultOptions, options ) ).required;
   } catch ( error ) {
     // These are expected as process.env variables if there is no `.env` file
-    var environment = process.env;
+    debug( 'loading-from-process.env' )
+    var environment = Object.assign( {}, process.env );
+    debug( environment )
   }
 
   var configuration = {
@@ -63,6 +65,11 @@ function Env ( options ) {
       bucket: environment.AWS_BUCKET,
     }
   }
+
+  debug( configuration.elasticSearch )
+  debug( configuration.firebase )
+  debug( configuration.build )
+  debug( configuration.aws )
 
   return {
     asObject: extendConfiguration,

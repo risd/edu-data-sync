@@ -358,7 +358,15 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
             dirty = true;
         }
         
-        if (row.inSource === false) {
+        // check to see if the item is in the source feed
+        // & contains a valid colleague_id.
+        // having a valid colleague_id means that the invidual
+        // HAS been part of the sync process, connected to a value
+        // in the feed, and this is no longer true
+        // Not having a valid colleague_id means that the individual
+        // was manually added to Webhook, and has never been synchronized
+        // with the employee feed.
+        if (row.inSource === false && isStringWithLength( row.webhook.colleague_id ) ) {
             if (row.webhook.colleague_status === true) {
                 row.webhook.colleague_status = false;
                 dirty = true;
@@ -382,3 +390,7 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         }
     }
 };
+
+function isStringWithLength( value ) {
+    return ( typeof value === 'string' ) && ( value.length > 0 );
+}
