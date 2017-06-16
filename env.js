@@ -38,6 +38,7 @@ function Env ( options ) {
     var environment = dotenv.load( Object.assign( defaultOptions, options ) ).parsed;
   } catch ( error ) {
     // These are expected as process.env variables if there is no `.env` file
+    debug( 'loading-from-process.env' )
     var environment = process.env;
   }
 
