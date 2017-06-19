@@ -467,7 +467,7 @@ Events.prototype.updateWebhookValueNotInSource = function () {
             var endOfLastDayStr = addEndOfDay(
                 row.webhook.localist_date_range_last);
 
-            if (moment(endOfLastDayStr).isBefore(now.subtract(60, 'days'))) {
+            if (endOfLastDayStr === false || moment(endOfLastDayStr).isBefore(now.subtract(60, 'days'))) {
                 // last day of the event occured before 60 days ago
                 remove = true;
             }
@@ -485,10 +485,16 @@ Events.prototype.updateWebhookValueNotInSource = function () {
         } else {
             next();
         }
-    }
 
+        
+    }
+    
     function addEndOfDay (dateString) {
         var justBeforeMidnight = 'T23:59:59-04:00';
-        return [dateString.split('T')[0], justBeforeMidnight].join('');
+        try {
+            return [dateString.split('T')[0], justBeforeMidnight].join('');    
+        } catch (error) {
+            return false;
+        }   
     }
 };
