@@ -23,7 +23,7 @@ function SignalBuild ( options, callback ) {
     var buildCommandReference = options.firebase.root().child( 'management/commands/build' )
 
     var data = {
-      user: options.user || 'edu-data-sync',
+      userid: options.user || 'mgdevelopers@risd.edu',
       sitename: options.siteName,
       id: uniqueId(),
     }
