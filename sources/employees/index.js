@@ -262,8 +262,15 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             return { name: org };
         });
 
-    return (whUtil.whRequiredDates(wh));
+    return (whUtil.whRequiredDates(colleagueAmmendments(wh)));
 };
+
+function colleagueAmmendments ( wh ) {
+    if ( wh.colleague_id === '1485333' ) {
+        wh.colleague_institutions_attended = [];
+    }
+    return wh;
+}
 
 Employees.prototype.relationshipsToResolve = function () {
     return [{
