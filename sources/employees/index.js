@@ -120,8 +120,13 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     };
 
     var firstInPreferred = (src.FIRSTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.FIRSTNAME) : -1;
+    var nicknameInPreferred = (src.NICKNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.NICKNAME) : -1;
     var middleInPreferred = (src.MIDDLENAME.length > 0) ? src.PREFERREDNAME.indexOf(src.MIDDLENAME) : -1;
     var lastInPreferred = (src.LASTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.LASTNAME) : -1;
+
+    if ( nicknameInPreferred > -1 && firstInPreferred === -1 ) {
+        firstInPreferred = nicknameInPreferred;
+    }
 
     if ((firstInPreferred > -1) &&
         (lastInPreferred > -1)) {
