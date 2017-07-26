@@ -405,8 +405,15 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         if (row.inSource === false && isStringWithLength( row.webhook.colleague_id ) ) {
             if (row.webhook.colleague_status === true) {
                 row.webhook.colleague_status = false;
+                row.webhook.isDraft = true;
                 dirty = true;
             }
+        }
+
+        // ensure active employees are not drafts, and are being published
+        if (row.webhook.colleague_status === true && row.webhook.isDraft === true) {
+            row.webhook.isDraft = false;
+            dirty = true;
         }
 
         if (dirty) {
