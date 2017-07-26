@@ -254,7 +254,7 @@ function addSourceToWebhook () {
                 row.whKey = whItem.key;
                 return next();
             } else if (typeof self.secondaryKeyComparison === 'function') {
-                var secondaryComparison = extend({ webhook: whItem.data, whKey: whItem.key }, row);
+                var secondaryComparison = extend({}, row, { webhook: whItem.data, whKey: whItem.key });
                 self.secondaryKeyComparison(secondaryComparison, compareResult)
                 function compareResult (error, secondaryKeyMatch) {
                     if (secondaryKeyMatch) {

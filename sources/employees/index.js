@@ -8,9 +8,6 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Employees;
 
-var COLLEAGUE_EFS = 'Experimental + Found Studies';
-var COLLEAGUE_GRAD_STUDIES =  'Graduate Studies';
-
 /**
  * Employees are provided via XML dump from Colleague.
  */
@@ -28,6 +25,7 @@ Employees.prototype.keyFromSource = function (sourceItem) {
     return sourceItem.ID;
 };
 Employees.prototype.secondaryKeyComparison = function (row, callback) {
+    
     // row = { source, srcKey, webhook, whKey }
     // return true if
     //     source.PREFERREDNAME === webhook.name
@@ -67,7 +65,6 @@ Employees.prototype.secondaryKeyComparison = function (row, callback) {
 Employees.prototype.listSource = function () {
 	debug('listSource');
     var self = this;
-    return this.listSourceLocal('EMPLOYEE.DATA.2017-07-26--12:42:33.XML')
 
     var eventStream = through.obj();
 
@@ -405,17 +402,9 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         // having a valid colleague_id means that the invidual
         // HAS been part of the sync process, connected to a value
         // in the feed, and this is no longer true
-        // Not having a valid colleague_id means that the individual
-        // was manually added to Webhook, and has never been synchronized
-        // with the employee feed, so we keep their status as active.
         if (row.inSource === false && isStringWithLength( row.webhook.colleague_id ) ) {
             if (row.webhook.colleague_status === true) {
                 row.webhook.colleague_status = false;
-                dirty = true;
-            }
-        } else {
-            if (row.webhook.colleague_status === false) {
-                row.webhook.colleague_status = true;
                 dirty = true;
             }
         }
