@@ -30,8 +30,9 @@ Employees.prototype.keyFromSource = function (sourceItem) {
 Employees.prototype.secondaryKeyComparison = function (row, callback) {
     // row = { source, srcKey, webhook, whKey }
     // return true if
-    //     source.PREFERREDNAME === webhook.name &&
-    //     webhook.related_{department} === whUtil.webhookDepartmentForColleague(source.DEPARTMENT);
+    //     source.PREFERREDNAME === webhook.name
+    //     if webhook.colleague_department
+    //         source.DEPARTMENT === webhook.colleague_department;
     
     // only compare if there is no primary key value
     if (isStringWithLength(this.keyFromWebhook(row.webhook))) {
@@ -41,7 +42,7 @@ Employees.prototype.secondaryKeyComparison = function (row, callback) {
     if ( row.source.PREFERREDNAME === row.webhook.name ) {
         // if names are the same, ensure departments are also the same
         if (isStringWithLength(row.webhook.colleague_department)) {
-            if (whUtil.allColleagueDepartments.indexOf(row.source.DEPARTMENT)) {
+            if (whUtil.allColleagueDepartments.indexOf(row.source.DEPARTMENT) > -1) {
                 if (row.webhook.colleague_department === row.source.DEPARTMENT) {
                     return callback(null, true);
                 } else {
@@ -57,60 +58,6 @@ Employees.prototype.secondaryKeyComparison = function (row, callback) {
             // need to confirm the match
             return callback(null, true);
         }
-        // if (isArrayWithLength(row.webhook.related_graduate_studies)) {
-        //     if (row.source.DEPARTMENT === COLLEAGUE_GS) {
-        //         return callback(null, true)
-        //     } else {
-        //         return callback(null, false)
-        //     }
-        // }
-        // else if (isArrayWithLength(row.webhook.related_foundation_studies)) {
-        //     if (row.source.DEPARTMENT === COLLEAGUE_EFS) {
-        //         return callback(null, true)
-        //     } else {
-        //         return callback(null, false)
-        //     }
-        // }
-        // else if (isArrayWithLength(row.webhook.related_liberal_arts_departments)) {
-        //     findDepartmentMatchFor(row.webhook.related_liberal_arts_departments[0]);
-        // }
-        // else if (isArrayWithLength(row.webhook.related_departments)) {
-        //     findDepartmentMatchFor(row.webhook.related_departments[0]);
-        // } else {
-        //     // employee is not related to other departments, so we can
-        //     // not make a secondary match. their names match, and thats all we
-        //     // need to confirm the match
-        //     return callback(null, true)
-        // }
-
-        function findDepartmentMatchFor(relatedDepartment) {
-            var whContentTypeColleagueMapping = {
-                departments: whUtil.webhookDepartmentForColleague,
-                liberalartsdepartments: whUtil.webhookLiberalArtsDepartmentForColleague,
-            }
-
-            var relatedDepartmentContentType = relatedDepartment.split(' ')[0];
-            var relatedDepartmentKey = relatedDepartment.split(' ')[1];
-            var colleagueDepartmentMapping = whContentTypeColleagueMapping[relatedDepartmentContentType];
-            
-            self._firebase.webhookDataRoot.child(relatedDepartmentContentType)
-                .once('value', onDepartmentData, onDepartmentError)
-
-            function onDepartmentData (departmentSnapshot) {
-                var departments = departmentSnapshot.val();
-                var matching = false;
-                if (relatedDepartmentKey in departments) {
-                    if (departments[relatedDepartmentKey].name === colleagueDepartmentMapping(source.DEPARTMENT)) {
-                        matching = true;
-                    }
-                }
-                return callback(null, matching);
-            }
-            
-            function onDepartmentError(deparmentError) {
-                return callback(null, false)
-            }
-        }
     }
     else {
         return callback(null, false)
@@ -120,7 +67,7 @@ Employees.prototype.secondaryKeyComparison = function (row, callback) {
 Employees.prototype.listSource = function () {
 	debug('listSource');
     var self = this;
-    // return this.listSourceLocal('EMPLOYEE.DATA.2017-07-26--12:42:33.XML')
+    return this.listSourceLocal('EMPLOYEE.DATA.2017-07-26--12:42:33.XML')
 
     var eventStream = through.obj();
 
@@ -405,12 +352,12 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         toResolve[0].itemsToRelate = departments;
 
-        if (currentWHData.colleague_department === COLLEAGUE_EFS) {
+        if (currentWHData.colleague_department === whUtil.colleagueFoundationStudies) {
             // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
-        if (currentWHData.colleague_department === COLLEAGUE_GRAD_STUDIES) {
+        if (currentWHData.colleague_department === whUtil.colleagueGraduateStudies) {
             // debug('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }

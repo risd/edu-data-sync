@@ -411,8 +411,7 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var foundation =
             currentWHData.localist_filters__department
                 .filter(function (d) {
-                    return d.department ===
-                           "Division of Foundation Studies";
+                    return d.department === whUtil.localistFoundationStudies;
                 });
         if (foundation.length === 1) {
             toResolve[1].itemToRelate = true;
@@ -421,8 +420,7 @@ Events.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var graduate =
             currentWHData.localist_filters__department
                 .filter(function (d) {
-                    return d.department ===
-                        "Division of Graduate Studies";
+                    return d.department === whUtil.localistGraduateStudies;
                 });
         if (graduate.length === 1) {
             toResolve[2].itemToRelate = true;

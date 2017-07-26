@@ -145,13 +145,15 @@ module.exports = function () {
         }],
         forFoundationStudies: [{
             "colleague": "Experimental + Found Studies",
-            "courseCatalogue": "Foundation Studies",
-            "webhook": "Experimental and Foundation Studies"
+            "courseCatalogue": "EXPERIMENTAL,FOUNDATION STUDY",
+            "webhook": "Experimental and Foundation Studies",
+            "localist": "Division of Foundation Studies",
         }],
         forGraduateStudies: [{
             "colleague": "Graduate Studies",
             "courseCatalogue": "GRADUATE STUDIES",
-            "webhook": "Graduate Studies"
+            "webhook": "Graduate Studies",
+            "localist": "Division of Graduate Studies",
         }]
     };
 
@@ -184,14 +186,30 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forLiberalArtsDepartments',
                 'colleague'),
-        webhookFoundationStudiesForColleague:
-            forMapUsingKeyFindWebhookValue(
+        colleagueFoundationStudies:
+            valueForMapAndKey(
                 'forFoundationStudies',
                 'colleague'),
-        webhookGraduateStudiesForColleague:
-            forMapUsingKeyFindWebhookValue(
+        colleagueGraduateStudies:
+            valueForMapAndKey(
                 'forGraduateStudies',
                 'colleague'),
+        courseCatalogueFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'courseCatalogue'),
+        courseCatalogueGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'courseCatalogue'),
+        localistFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'localist'),
+        localistGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'localist'),
         allColleagueDepartments:
             allKeyValuesInMaps(
                 [ 'forDepartments',
@@ -271,10 +289,13 @@ module.exports = function () {
         mapsOfInterest.forEach(function (mapOfInterest){
             aggregateMaps = aggregateMaps.concat(maps[mapOfInterest])
         });
-        console.log(aggregateMaps)
         return aggregateMaps.map(function valueInMap(mapping) {
             return mapping[key];
         });
+    }
+
+    function valueForMapAndKey (mapOfInterest, key) {
+        return maps[mapOfInterest][0][key];
     }
 };
 

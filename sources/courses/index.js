@@ -343,8 +343,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var foundation =
             currentWHData.colleague_departments
                 .filter(function (d) {
-                    return d.department ===
-                           'EXPERIMENTAL,FOUNDATION STUDY';
+                    return d.department === whUtil.courseCatalogueFoundationStudies;
                 });
 
         if (foundation.length === 1) {
@@ -354,8 +353,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var graduate =
             currentWHData.colleague_departments
                 .filter(function (d) {
-                    return d.department ===
-                           'GRADUATE STUDIES';
+                    return d.department === whUtil.courseCatalogueGraduateStudies;
                 });
 
         if (graduate.length === 1) {
