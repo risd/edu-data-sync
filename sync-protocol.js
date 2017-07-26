@@ -4,6 +4,7 @@
 
 var debug = require('debug')('sync-protocol');
 var clone = require('clone');
+var extend = require('xtend');
 var from = require('from2-array');
 var through = require('through2');
 var combine = require('stream-combiner2');
@@ -215,22 +216,7 @@ function addSourceToWebhook () {
                 .webhook
                 .once('value', onData, onError);
         } else {
-            findKeyInWhData();
-        }
-
-        function findKeyInWhData () {
-            row.webhook = {};
-            row.whKey = undefined;
-            Object
-                .keys(whData)
-                .forEach(function (key) {
-                    if (self.keyFromWebhook(whData[key]) === row.srcKey) {
-                        row.webhook = whData[key];
-                        row.whKey = key;
-                    }
-                });
-            stream.push(row);
-            next();
+            findKeyInWhData(row, next);
         }
 
         function onData (snapshot) {
@@ -238,12 +224,52 @@ function addSourceToWebhook () {
             if (whData === null) {
                 whData = {};
             }
-            findKeyInWhData();
+            findKeyInWhData(row, next);
         }
 
         function onError (error) {
             debug( 'could-not-download-data-cache' )
             next(new Error(error));
+        }
+    }
+
+    function findKeyInWhData (row, callback) {
+        row.webhook = {};
+        row.whKey = undefined;
+
+        var whEmitter = through.obj();
+        var whComparer = through.obj(compareEachItem, onCompareEnd);
+
+        whEmitter.pipe(whComparer);
+
+        Object.keys(whData).forEach(function (key) {
+            var whItem = { data: whData[key], key: key };
+            whEmitter.push(whItem);
+        });
+        whEmitter.push(null);
+
+        function compareEachItem (whItem, enc, next) {
+            if (self.keyFromWebhook(whItem.data) === row.srcKey) {
+                row.webhook = whItem.data;
+                row.whKey = whItem.key;
+                return next();
+            } else if (typeof self.secondaryKeyComparison === 'function') {
+                var secondaryComparison = extend({ webhook: whItem.data, whKey: whItem.key }, row);
+                self.secondaryKeyComparison(secondaryComparison, compareResult)
+                function compareResult (error, secondaryKeyMatch) {
+                    if (secondaryKeyMatch) {
+                        row.webhook = whItem.data;
+                        row.whKey = whItem.key;
+                    }
+                    return next();
+                }
+            } else {
+                return next();
+            }
+        }
+
+        function onCompareEnd () {
+            callback(null, row);
         }
     }
 

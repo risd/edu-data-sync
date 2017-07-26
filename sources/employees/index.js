@@ -8,6 +8,8 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Employees;
 
+var COLLEAGUE_EFS = 'Experimental + Found Studies';
+var COLLEAGUE_GRAD_STUDIES =  'Graduate Studies';
 
 /**
  * Employees are provided via XML dump from Colleague.
@@ -19,16 +21,106 @@ function Employees ( options ) {
 }
 
 Employees.prototype.webhookContentType = 'employees';
-Employees.prototype.keyFromWebhook = function (row) {
-    return row.colleague_id;
+Employees.prototype.keyFromWebhook = function (webhookItem) {
+    return webhookItem.colleague_id;
 };
-Employees.prototype.keyFromSource = function (row) {
-    return row.ID;
+Employees.prototype.keyFromSource = function (sourceItem) {
+    return sourceItem.ID;
+};
+Employees.prototype.secondaryKeyComparison = function (row, callback) {
+    // row = { source, srcKey, webhook, whKey }
+    // return true if
+    //     source.PREFERREDNAME === webhook.name &&
+    //     webhook.related_{department} === whUtil.webhookDepartmentForColleague(source.DEPARTMENT);
+    
+    // only compare if there is no primary key value
+    if (isStringWithLength(this.keyFromWebhook(row.webhook))) {
+        return callback(null, false)
+    }
+
+    if ( row.source.PREFERREDNAME === row.webhook.name ) {
+        // if names are the same, ensure departments are also the same
+        if (isStringWithLength(row.webhook.colleague_department)) {
+            if (whUtil.allColleagueDepartments.indexOf(row.source.DEPARTMENT)) {
+                if (row.webhook.colleague_department === row.source.DEPARTMENT) {
+                    return callback(null, true);
+                } else {
+                    return callback(null, false);
+                }
+            } else {
+                // Not a tracked department, we only have the name match to go off of
+                return callback(null, true);
+            }
+        } else {
+            // employee is not related to other departments, so we can
+            // not make a secondary match. their names match, and thats all we
+            // need to confirm the match
+            return callback(null, true);
+        }
+        // if (isArrayWithLength(row.webhook.related_graduate_studies)) {
+        //     if (row.source.DEPARTMENT === COLLEAGUE_GS) {
+        //         return callback(null, true)
+        //     } else {
+        //         return callback(null, false)
+        //     }
+        // }
+        // else if (isArrayWithLength(row.webhook.related_foundation_studies)) {
+        //     if (row.source.DEPARTMENT === COLLEAGUE_EFS) {
+        //         return callback(null, true)
+        //     } else {
+        //         return callback(null, false)
+        //     }
+        // }
+        // else if (isArrayWithLength(row.webhook.related_liberal_arts_departments)) {
+        //     findDepartmentMatchFor(row.webhook.related_liberal_arts_departments[0]);
+        // }
+        // else if (isArrayWithLength(row.webhook.related_departments)) {
+        //     findDepartmentMatchFor(row.webhook.related_departments[0]);
+        // } else {
+        //     // employee is not related to other departments, so we can
+        //     // not make a secondary match. their names match, and thats all we
+        //     // need to confirm the match
+        //     return callback(null, true)
+        // }
+
+        function findDepartmentMatchFor(relatedDepartment) {
+            var whContentTypeColleagueMapping = {
+                departments: whUtil.webhookDepartmentForColleague,
+                liberalartsdepartments: whUtil.webhookLiberalArtsDepartmentForColleague,
+            }
+
+            var relatedDepartmentContentType = relatedDepartment.split(' ')[0];
+            var relatedDepartmentKey = relatedDepartment.split(' ')[1];
+            var colleagueDepartmentMapping = whContentTypeColleagueMapping[relatedDepartmentContentType];
+            
+            self._firebase.webhookDataRoot.child(relatedDepartmentContentType)
+                .once('value', onDepartmentData, onDepartmentError)
+
+            function onDepartmentData (departmentSnapshot) {
+                var departments = departmentSnapshot.val();
+                var matching = false;
+                if (relatedDepartmentKey in departments) {
+                    if (departments[relatedDepartmentKey].name === colleagueDepartmentMapping(source.DEPARTMENT)) {
+                        matching = true;
+                    }
+                }
+                return callback(null, matching);
+            }
+            
+            function onDepartmentError(deparmentError) {
+                return callback(null, false)
+            }
+        }
+    }
+    else {
+        return callback(null, false)
+    }
 };
 
 Employees.prototype.listSource = function () {
 	debug('listSource');
     var self = this;
+    // return this.listSourceLocal('EMPLOYEE.DATA.2017-07-26--12:42:33.XML')
 
     var eventStream = through.obj();
 
@@ -313,14 +405,12 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         toResolve[0].itemsToRelate = departments;
 
-        if (currentWHData.colleague_department ===
-            'Experimental + Found Studies') {
+        if (currentWHData.colleague_department === COLLEAGUE_EFS) {
             // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
-        if (currentWHData.colleague_department ===
-            'Graduate Studies') {
+        if (currentWHData.colleague_department === COLLEAGUE_GRAD_STUDIES) {
             // debug('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }
@@ -370,7 +460,7 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         // in the feed, and this is no longer true
         // Not having a valid colleague_id means that the individual
         // was manually added to Webhook, and has never been synchronized
-        // with the employee feed.
+        // with the employee feed, so we keep their status as active.
         if (row.inSource === false && isStringWithLength( row.webhook.colleague_id ) ) {
             if (row.webhook.colleague_status === true) {
                 row.webhook.colleague_status = false;
@@ -396,6 +486,10 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
     }
 };
 
+function isArrayWithLength (value) {
+    return ( value && Array.isArray(value) && value.length > 0 );
+}
+
 function isStringWithLength( value ) {
-    return ( typeof value === 'string' ) && ( value.length > 0 );
+    return ( typeof value === 'string' ) && ( value.trim().length > 0 );
 }
