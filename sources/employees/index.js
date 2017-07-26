@@ -8,7 +8,6 @@ var whUtil = require('../whUtil.js')();
 
 module.exports = Employees;
 
-
 /**
  * Employees are provided via XML dump from Colleague.
  */
@@ -19,11 +18,48 @@ function Employees ( options ) {
 }
 
 Employees.prototype.webhookContentType = 'employees';
-Employees.prototype.keyFromWebhook = function (row) {
-    return row.colleague_id;
+Employees.prototype.keyFromWebhook = function (webhookItem) {
+    return webhookItem.colleague_id;
 };
-Employees.prototype.keyFromSource = function (row) {
-    return row.ID;
+Employees.prototype.keyFromSource = function (sourceItem) {
+    return sourceItem.ID;
+};
+Employees.prototype.secondaryKeyComparison = function (row, callback) {
+    
+    // row = { source, srcKey, webhook, whKey }
+    // return true if
+    //     source.PREFERREDNAME === webhook.name
+    //     if webhook.colleague_department
+    //         source.DEPARTMENT === webhook.colleague_department;
+    
+    // only compare if there is no primary key value
+    if (isStringWithLength(this.keyFromWebhook(row.webhook))) {
+        return callback(null, false)
+    }
+
+    if ( row.source.PREFERREDNAME === row.webhook.name ) {
+        // if names are the same, ensure departments are also the same
+        if (isStringWithLength(row.webhook.colleague_department)) {
+            if (whUtil.allColleagueDepartments.indexOf(row.source.DEPARTMENT) > -1) {
+                if (row.webhook.colleague_department === row.source.DEPARTMENT) {
+                    return callback(null, true);
+                } else {
+                    return callback(null, false);
+                }
+            } else {
+                // Not a tracked department, we only have the name match to go off of
+                return callback(null, true);
+            }
+        } else {
+            // employee is not related to other departments, so we can
+            // not make a secondary match. their names match, and thats all we
+            // need to confirm the match
+            return callback(null, true);
+        }
+    }
+    else {
+        return callback(null, false)
+    }
 };
 
 Employees.prototype.listSource = function () {
@@ -120,8 +156,13 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     };
 
     var firstInPreferred = (src.FIRSTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.FIRSTNAME) : -1;
+    var nicknameInPreferred = (src.NICKNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.NICKNAME) : -1;
     var middleInPreferred = (src.MIDDLENAME.length > 0) ? src.PREFERREDNAME.indexOf(src.MIDDLENAME) : -1;
     var lastInPreferred = (src.LASTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.LASTNAME) : -1;
+
+    if ( nicknameInPreferred > -1 && firstInPreferred === -1 ) {
+        firstInPreferred = nicknameInPreferred;
+    }
 
     if ((firstInPreferred > -1) &&
         (lastInPreferred > -1)) {
@@ -308,14 +349,12 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         toResolve[0].itemsToRelate = departments;
 
-        if (currentWHData.colleague_department ===
-            'Experimental + Found Studies') {
+        if (currentWHData.colleague_department === whUtil.colleagueFoundationStudies) {
             // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
-        if (currentWHData.colleague_department ===
-            'Graduate Studies') {
+        if (currentWHData.colleague_department === whUtil.colleagueGraduateStudies) {
             // debug('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }
@@ -363,19 +402,18 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         // having a valid colleague_id means that the invidual
         // HAS been part of the sync process, connected to a value
         // in the feed, and this is no longer true
-        // Not having a valid colleague_id means that the individual
-        // was manually added to Webhook, and has never been synchronized
-        // with the employee feed.
         if (row.inSource === false && isStringWithLength( row.webhook.colleague_id ) ) {
             if (row.webhook.colleague_status === true) {
                 row.webhook.colleague_status = false;
+                row.webhook.isDraft = true;
                 dirty = true;
             }
-        } else {
-            if (row.webhook.colleague_status === false) {
-                row.webhook.colleague_status = true;
-                dirty = true;
-            }
+        }
+
+        // ensure active employees are not drafts, and are being published
+        if (row.webhook.colleague_status === true && row.webhook.isDraft === true) {
+            row.webhook.isDraft = false;
+            dirty = true;
         }
 
         if (dirty) {
@@ -391,6 +429,10 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
     }
 };
 
+function isArrayWithLength (value) {
+    return ( value && Array.isArray(value) && value.length > 0 );
+}
+
 function isStringWithLength( value ) {
-    return ( typeof value === 'string' ) && ( value.length > 0 );
+    return ( typeof value === 'string' ) && ( value.trim().length > 0 );
 }

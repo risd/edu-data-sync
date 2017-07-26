@@ -144,23 +144,18 @@ module.exports = function () {
             "ektronNews": "Apparel Design"
         }],
         forFoundationStudies: [{
-            "colleague": "Division of Foundation Studies",
-            "courseCatalogue": "Foundation Studies",
-            "webhook": "Experimental and Foundation Studies"
+            "colleague": "Experimental + Found Studies",
+            "courseCatalogue": "EXPERIMENTAL,FOUNDATION STUDY",
+            "webhook": "Experimental and Foundation Studies",
+            "localist": "Division of Foundation Studies",
         }],
         forGraduateStudies: [{
             "colleague": "Graduate Studies",
             "courseCatalogue": "GRADUATE STUDIES",
-            "webhook": "Graduate Studies"
+            "webhook": "Graduate Studies",
+            "localist": "Division of Graduate Studies",
         }]
     };
-
-    // var foundationstudiesMap = [{
-    //         "colleague": "Foundation Studies",
-    //         "webhook": "Foundation Studies",
-    //         "localist": "Division of Foundation Studies",
-    //         "courseCatalogue": "FOUNDATION STUDIES"
-    //     }];
 
     return {
         guid: guid,
@@ -170,6 +165,10 @@ module.exports = function () {
         webhookDepartmentForCourseCatalogue:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
+                'courseCatalogue'),
+        webhookLiberalArtsDepartmentForCourseCatalogue:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
                 'courseCatalogue'),
         webhookDepartmentForLocalist:
             forMapUsingKeyFindWebhookValue(
@@ -183,14 +182,41 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
                 'colleague'),
-        webhookLiberalArtsDepartmentForCourseCatalogue:
-            forMapUsingKeyFindWebhookValue(
-                'forLiberalArtsDepartments',
-                'courseCatalogue'),
         webhookLiberalArtsDepartmentForColleague:
             forMapUsingKeyFindWebhookValue(
                 'forLiberalArtsDepartments',
                 'colleague'),
+        colleagueFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'colleague'),
+        colleagueGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'colleague'),
+        courseCatalogueFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'courseCatalogue'),
+        courseCatalogueGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'courseCatalogue'),
+        localistFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'localist'),
+        localistGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'localist'),
+        allColleagueDepartments:
+            allKeyValuesInMaps(
+                [ 'forDepartments',
+                  'forLiberalArtsDepartments',
+                  'forFoundationStudies',
+                  'forGraduateStudies' ],
+                'colleague' ),
         webhookDepartmentForEktronNews:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -256,6 +282,20 @@ module.exports = function () {
                 return webhookDepartment;
             }
         }
+    }
+
+    function allKeyValuesInMaps (mapsOfInterest, key) {
+        var aggregateMaps = [];
+        mapsOfInterest.forEach(function (mapOfInterest){
+            aggregateMaps = aggregateMaps.concat(maps[mapOfInterest])
+        });
+        return aggregateMaps.map(function valueInMap(mapping) {
+            return mapping[key];
+        });
+    }
+
+    function valueForMapAndKey (mapOfInterest, key) {
+        return maps[mapOfInterest][0][key];
     }
 };
 
