@@ -1,6 +1,6 @@
 {
   "name": "edu-data-sync",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "Sync risd.edu datastore with external data sources.",
   "main": "index.js",
   "repository": {
