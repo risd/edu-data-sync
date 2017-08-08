@@ -253,17 +253,19 @@ function addSourceToWebhook () {
                 row.webhook = whItem.data;
                 row.whKey = whItem.key;
                 return next();
-            } else if (typeof self.secondaryKeyComparison === 'function') {
-                var secondaryComparison = extend({}, row, { webhook: whItem.data, whKey: whItem.key });
-                self.secondaryKeyComparison(secondaryComparison, compareResult)
-                function compareResult (error, secondaryKeyMatch) {
-                    if (secondaryKeyMatch) {
-                        row.webhook = whItem.data;
-                        row.whKey = whItem.key;
-                    }
-                    return next();
-                }
-            } else {
+            }
+            // else if (typeof self.secondaryKeyComparison === 'function') {
+            //     var secondaryComparison = extend({}, row, { webhook: whItem.data, whKey: whItem.key });
+            //     self.secondaryKeyComparison(secondaryComparison, compareResult)
+            //     function compareResult (error, secondaryKeyMatch) {
+            //         if (secondaryKeyMatch) {
+            //             row.webhook = whItem.data;
+            //             row.whKey = whItem.key;
+            //         }
+            //         return next();
+            //     }
+            // }
+            else {
                 return next();
             }
         }
