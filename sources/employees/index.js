@@ -24,43 +24,43 @@ Employees.prototype.keyFromWebhook = function (webhookItem) {
 Employees.prototype.keyFromSource = function (sourceItem) {
     return sourceItem.ID;
 };
-Employees.prototype.secondaryKeyComparison = function (row, callback) {
+// Employees.prototype.secondaryKeyComparison = function (row, callback) {
     
-    // row = { source, srcKey, webhook, whKey }
-    // return true if
-    //     source.PREFERREDNAME === webhook.name
-    //     if webhook.colleague_department
-    //         source.DEPARTMENT === webhook.colleague_department;
+//     // row = { source, srcKey, webhook, whKey }
+//     // return true if
+//     //     source.PREFERREDNAME === webhook.name
+//     //     if webhook.colleague_department
+//     //         source.DEPARTMENT === webhook.colleague_department;
     
-    // only compare if there is no primary key value
-    if (isStringWithLength(this.keyFromWebhook(row.webhook))) {
-        return callback(null, false)
-    }
+//     // only compare if there is no primary key value
+//     if (isStringWithLength(this.keyFromWebhook(row.webhook))) {
+//         return callback(null, false)
+//     }
 
-    if ( row.source.PREFERREDNAME === row.webhook.name ) {
-        // if names are the same, ensure departments are also the same
-        if (isStringWithLength(row.webhook.colleague_department)) {
-            if (whUtil.allColleagueDepartments.indexOf(row.source.DEPARTMENT) > -1) {
-                if (row.webhook.colleague_department === row.source.DEPARTMENT) {
-                    return callback(null, true);
-                } else {
-                    return callback(null, false);
-                }
-            } else {
-                // Not a tracked department, we only have the name match to go off of
-                return callback(null, true);
-            }
-        } else {
-            // employee is not related to other departments, so we can
-            // not make a secondary match. their names match, and thats all we
-            // need to confirm the match
-            return callback(null, true);
-        }
-    }
-    else {
-        return callback(null, false)
-    }
-};
+//     if ( row.source.PREFERREDNAME === row.webhook.name ) {
+//         // if names are the same, ensure departments are also the same
+//         if (isStringWithLength(row.webhook.colleague_department)) {
+//             if (whUtil.allColleagueDepartments.indexOf(row.source.DEPARTMENT) > -1) {
+//                 if (row.webhook.colleague_department === row.source.DEPARTMENT) {
+//                     return callback(null, true);
+//                 } else {
+//                     return callback(null, false);
+//                 }
+//             } else {
+//                 // Not a tracked department, we only have the name match to go off of
+//                 return callback(null, true);
+//             }
+//         } else {
+//             // employee is not related to other departments, so we can
+//             // not make a secondary match. their names match, and thats all we
+//             // need to confirm the match
+//             return callback(null, true);
+//         }
+//     }
+//     else {
+//         return callback(null, false)
+//     }
+// };
 
 Employees.prototype.listSource = function () {
 	debug('listSource');
@@ -293,6 +293,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             } );
 
     wh.colleague_status = true;
+    wh.manual_entry = false;
 
     wh.colleague_organizations = src.CORG
         .split('; ')
@@ -370,6 +371,9 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
                 });
         
         toResolve[3].itemsToRelate = liberalArtsDepartments;
+    } else if ( currentWHData.manual_entry === true ) {
+        // this is a manual entry, don't mess with it
+        return [];
     }
 
     return toResolve;
@@ -392,20 +396,24 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         var stream = this;
         var dirty = false;
 
+        // If this is a manual entry ( which is overriden by any )
+        // updated items in `updateWebhookValueWithSourceValue`
+        // then lets leave it alone
+        if ('manual_entry' in row.webhook && row.webhook.manual_entry === 'true') {
+            return next();
+        }
+
         if (!('colleague_status' in row.webhook)) {
             row.webhook.colleague_status = false;
             dirty = true;
         }
         
-        // check to see if the item is in the source feed
-        // & contains a valid colleague_id.
-        // having a valid colleague_id means that the invidual
-        // HAS been part of the sync process, connected to a value
-        // in the feed, and this is no longer true
-        if (row.inSource === false && isStringWithLength( row.webhook.colleague_id ) ) {
+        // if they are not in the feed, lets make sure they
+        // have the correct colleague status
+        if (row.inSource === false) {
             if (row.webhook.colleague_status === true) {
                 row.webhook.colleague_status = false;
-                row.webhook.isDraft = true;
+                row.webhook.isDraft = true; // don't publish their page
                 dirty = true;
             }
         }
