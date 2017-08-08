@@ -399,7 +399,7 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         // If this is a manual entry ( which is overriden by any )
         // updated items in `updateWebhookValueWithSourceValue`
         // then lets leave it alone
-        if ('manual_entry' in row.webhook && row.webhook.manual_entry === 'true') {
+        if ('manual_entry' in row.webhook && row.webhook.manual_entry === true) {
             return next();
         }
 
