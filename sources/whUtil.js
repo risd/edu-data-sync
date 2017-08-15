@@ -145,9 +145,13 @@ module.exports = function () {
         }],
         forFoundationStudies: [{
             "colleague": "Experimental + Found Studies",
-            "courseCatalogue": "EXPERIMENTAL,FOUNDATION STUDY",
+            "courseCatalogue": "Foundation Studies",
             "webhook": "Experimental and Foundation Studies",
             "localist": "Division of Foundation Studies",
+        }],
+        forFoundationStudiesConcentrations: [{
+            "courseCatalogue": "EXPERIMENTAL,FOUNDATION STUDY",
+            "webhook": "Experimental and Foundation Studies",
         }],
         forGraduateStudies: [{
             "colleague": "Graduate Studies",
@@ -201,6 +205,10 @@ module.exports = function () {
         courseCatalogueGraduateStudies:
             valueForMapAndKey(
                 'forGraduateStudies',
+                'courseCatalogue'),
+        courseCatalogueFoundationStudiesConcentrations:
+            valueForMapAndKey(
+                'forFoundationStudiesConcentrations',
                 'courseCatalogue'),
         localistFoundationStudies:
             valueForMapAndKey(

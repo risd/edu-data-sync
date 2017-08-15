@@ -343,7 +343,8 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         var foundation =
             currentWHData.colleague_departments
                 .filter(function (d) {
-                    return d.department === whUtil.courseCatalogueFoundationStudies;
+                    return d.department === whUtil.courseCatalogueFoundationStudies ||
+                           d.department === whUtil.courseCatalogueFoundationStudiesConcentrations;
                 });
 
         if (foundation.length === 1) {
@@ -377,6 +378,8 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
+    // Do not make course <-> employee relationships based on
+    // EHP courses. these are all listed as being one individual
     if ('colleague_course_faculty' in currentWHData) {
         if (Array.isArray(currentWHData.colleague_course_faculty) && isNotEHPCourse( currentWHData ) ) {
             toResolve[4].itemsToRelate = currentWHData.colleague_course_faculty
