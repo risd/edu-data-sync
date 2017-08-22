@@ -291,7 +291,13 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             .map( function ( institution ) {
                 return { institution: institution.trim() }
             } )
-            .sort();
+            .sort( function ( a, b ) {
+                return a.institution < b.institution
+                    ? -1
+                    : a.institution > b.institution
+                        ? 1
+                        : 0;
+            } );
 
     wh.colleague_status = true;
     wh.manual_entry = false;
