@@ -15,6 +15,7 @@
     "sync-events": "./bin/sync-events",
     "sync-employees": "./bin/sync-employees",
     "sync-courses": "./bin/sync-courses",
+    "map-exhibitions": "./bin/map-exhibitions",
     "backup": "./bin/backup"
   },
   "scripts": {
