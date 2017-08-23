@@ -299,7 +299,7 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                 return [];
             }
         })(src.filters || {});
-    wh.is_draft = false;
+    wh.isDraft = false;
 
     return (eventDateSort(
                 whUtil.whRequiredDates(
