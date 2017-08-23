@@ -290,6 +290,13 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     	src.INSTITUTIONSATTENDED.split( ';' )
             .map( function ( institution ) {
                 return { institution: institution.trim() }
+            } )
+            .sort( function ( a, b ) {
+                return a.institution < b.institution
+                    ? -1
+                    : a.institution > b.institution
+                        ? 1
+                        : 0;
             } );
 
     wh.colleague_status = true;
