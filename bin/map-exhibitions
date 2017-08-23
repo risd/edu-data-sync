@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+var debug = require( 'debug' )( 'map-exhibitions' )
+var MapCoordinator = require( '../map.js' )
+var MapExhibitions = require( '../maps/exhibitions.js' )
+
+var Firebaseref = require( '../firebaseref.js' )
+var envConf = require( '../env.js' )().asObject()
+
+// Defines which MapCoordinator prototype to use
+var execute = executeMap( MapExhibitions )
+  
+Firebaseref( envConf.firebase )
+  .on( 'data', execute )
+  .on( 'error', firebaseError )
+
+function executeMap ( mapPrototype ) {
+  var mapFnOptions = { mapPrototype: mapPrototype }
+
+  return function withFirebaseref ( firebaseref ) {
+    MapCoordinator( Object.assign( mapFnOptions, { firebaseref: firebaseref  } ), mapComplete )
+
+    function mapComplete ( error ) {
+      if ( error ) console.log( error )
+      process.exit()
+    }
+  }
+}
+
+function firebaseError ( error ) {
+  console.log( error )
+  process.exit()
+}
