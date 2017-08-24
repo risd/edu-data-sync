@@ -447,9 +447,9 @@ function addToSearchIndex (searchAddIndex) {
         var id       = row.whKey
         var oneOff   = false
 
-        searchAddIndex(typeName, document, id, oneOff);
-
-        next(null, row);
+        searchAddIndex(typeName, document, id, oneOff, function () {
+            next(null, row);
+        });
     }
 }
 
@@ -472,9 +472,9 @@ function removeFromSearchIndex (searchDeleteIndex) {
         var typeName = self.webhookContentType;
         var id       = row.whKey;
 
-        searchDeleteIndex(typeName, id);
-
-        next(null, row);
+        searchDeleteIndex(typeName, id, function () {
+            next(null, row);
+        });
     }
 }
 

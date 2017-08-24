@@ -17,7 +17,7 @@ function Sync ( sourcePrototype, callback ) {
   var sourcePrototypes = [ sourcePrototype ];
 
   var ElasticSearch = require('./elastic-search/stream-interface.js')( envConf.elasticSearch );
-  var SignalBuild = require( './signal-build.js' ).stream( envConf.build );
+  var SignalBuild = require( './signal/build.js' ).stream();
   var Report = require('./report/index.js')();
 
   var syncRoot = timestampWithPrefix('eduSync');
@@ -40,7 +40,7 @@ function Sync ( sourcePrototype, callback ) {
     .pipe(ResolveRelationships())
     .pipe(ResolveReverseRelationships())
     .pipe(Report.update())
-    .pipe(SignalBuild.send( envConf.build ))
+    .pipe(SignalBuild.send( envConf.signal ))
     // < Reads SyncSources
     // > Writes nothing
     .pipe(Exit( callback ));

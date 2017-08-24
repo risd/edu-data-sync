@@ -56,8 +56,11 @@ function Env ( options ) {
       siteName    : environment.SITE_NAME,
       siteKey     : environment.SITE_KEY,
     },
-    build: {
-      siteName: environment.SITE_NAME,
+    signal: {
+      payload: {
+        userid: 'mgdevelopers@risd.edu',
+        sitename: environment.SITE_NAME,
+      },
     },
     aws: {
       key: environment.AWS_KEY,
