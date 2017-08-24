@@ -4,7 +4,10 @@ var MapCoordinator = require( '../map.js' )
 var MapExhibitions = require( '../maps/exhibitions.js' )
 
 var Firebaseref = require( '../firebaseref.js' )
+var Signal = require( '../signal/index' )
 var envConf = require( '../env.js' )().asObject()
+
+var ElasticSearch = require( '../elastic-search/stream-interface.js' )( envConf.elasticSearch )
 
 // Defines which MapCoordinator prototype to use
 var execute = executeMap( MapExhibitions )
@@ -17,11 +20,22 @@ function executeMap ( mapPrototype ) {
   var mapFnOptions = { mapPrototype: mapPrototype }
 
   return function withFirebaseref ( firebaseref ) {
+
     MapCoordinator( Object.assign( mapFnOptions, { firebaseref: firebaseref  } ), mapComplete )
 
-    function mapComplete ( error ) {
-      if ( error ) console.log( error )
-      process.exit()
+    function mapComplete ( error, mappedData ) {
+      if ( error ) {
+        console.log( error )
+        return process.exit()
+      }
+
+      var signalOptions = Object.assign( { firebase: firebaseref }, envConf.signal )
+      Signal( 'siteSearchReindex' )( signalOptions, signalComplete )
+
+      function signalComplete ( error, payload ) {
+        if ( error ) console.log( error )
+        process.exit()
+      }
     }
   }
 }
