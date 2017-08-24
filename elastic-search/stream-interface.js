@@ -28,8 +28,7 @@ function ElasticSearchSync ( options ) {
   }
 
   /**
-   * Add a webhook object to the edu.risd.systems elastic
-   * search endpoint.
+   * Add a webhook object to the index by name indexName
    *
    * Retries up to maxAttempts
    * 
@@ -40,8 +39,9 @@ function ElasticSearchSync ( options ) {
    *                          off content-type?
    * @param {number?} attempt Optional number that tracks the current
    *                          attempt against the API to make the call
+   * @param {Function} callback Function to call on completion
    */
-  function addIndex ( typeName, document, id, oneOff, attempt ) {
+  function addIndex ( typeName, document, id, oneOff, callback, attempt ) {
     debug( 'addIndex' )
 
     attempt = ( attempt || 0 )
@@ -62,8 +62,6 @@ function ElasticSearchSync ( options ) {
         return object;
       }, {} )
 
-    if ( attempt > maxAttempts ) return;
-
     elastic.addIndex( {
         indexName: indexName,
         typeName: typeName,
@@ -75,6 +73,7 @@ function ElasticSearchSync ( options ) {
         if ( error ) return retry( error )
         if ( data && data.error ) return retry( data.error )
         debug( 'addIndex:response' )
+        callback( null, data )
       } )
 
     function retry ( error ) {
@@ -82,10 +81,12 @@ function ElasticSearchSync ( options ) {
       debug( error )
       debug( document )
 
+      if ( attempt > maxAttempts ) return callback( error )
+
       setTimeout(function () {
         debug( 'addIndex:retrying' )
 
-        addIndex( typeName, document, id, oneOff, ( attempt += 1 ) )
+        addIndex( typeName, document, id, oneOff, callback, ( attempt += 1 ) )
 
       }, timeout( attempt ) )
     }
@@ -102,29 +103,29 @@ function ElasticSearchSync ( options ) {
    * @param {number?} attempt Optional number that tracks the current
    *                          attempt against the API to make the call
    */
-  function deleteIndex ( typeName, id, attempt ) {
+  function deleteIndex ( typeName, id, callback, attempt ) {
     debug( 'deleteIndex' )
 
     attempt = ( attempt || 0 );
-
-    if ( attempt > maxAttempts ) return;
 
     elastic.deleteIndex({
       indexName: indexName,
       typeName: typeName,
       id: id
     }, function (error, data) {
-      if ( error ) return retry();
-      if ( data && data.error ) return retry();
+      if ( error ) return retry( error );
+      if ( data && data.error ) return retry( data.error );
         debug( 'deleteIndex:response' );
     } );
 
-    function retry () {
+    function retry ( error ) {
       debug( 'deleteIndex:retry' );
+
+      if ( attempt > maxAttempts ) return callback( error )
 
       setTimeout(function () {
         debug( 'deleteIndex:retrying' );
-        deleteIndex( typeName, id, ( attempt += 1 ) );
+        deleteIndex( typeName, id, callback, ( attempt += 1 ) );
       }, timeout( attempt ) )
     }
   }
