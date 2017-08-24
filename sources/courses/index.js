@@ -378,10 +378,23 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
         toResolve[3].itemsToRelate = liberalArtsDepartments;
     }
 
+    var ignoreCoursePrefix = function ( course ) {
+        var prefixes = [ 'ehp', 'isp' ]
+        var ignore = false;
+        var courseTitle = course.colleague_course_title.toLowerCase()
+        prefixes.forEach( function ( prefix ) {
+            try {
+                if ( courseTitle.indexOf( prefix ) !== -1 ) ignore = true;
+            } catch ( error ) {}
+            
+        } )
+        return ignore;
+    }
+
     // Do not make course <-> employee relationships based on
     // EHP courses. these are all listed as being one individual
     if ('colleague_course_faculty' in currentWHData) {
-        if (Array.isArray(currentWHData.colleague_course_faculty) && isNotEHPCourse( currentWHData ) ) {
+        if (Array.isArray(currentWHData.colleague_course_faculty) && !ignoreCoursePrefix( currentWHData ) ) {
             toResolve[4].itemsToRelate = currentWHData.colleague_course_faculty
                 .map( function ( row ) {
                     return { employees: row.faculty_colleague_id }
