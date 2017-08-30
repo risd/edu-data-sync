@@ -379,7 +379,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
     }
 
     var ignoreCoursePrefix = function ( course ) {
-        var prefixes = [ 'ehp', 'isp' ]
+        var prefixes = [ 'ehp' ]
         var ignore = false;
         var courseTitle = course.colleague_course_title.toLowerCase()
         prefixes.forEach( function ( prefix ) {
