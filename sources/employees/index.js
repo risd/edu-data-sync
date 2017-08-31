@@ -162,6 +162,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     if ( nicknameInPreferred > -1 && firstInPreferred === -1 ) {
         firstInPreferred = nicknameInPreferred;
+        src.FIRSTNAME = src.NICKNAME;
     }
 
     if ((firstInPreferred > -1) &&
