@@ -333,13 +333,13 @@ function formattedDate(date) {
 function whRequiredDates (d) {
     var time = new Date();
 
-    d.create_date = formattedDate(time);
+    if ( ! d.hasOwnProperty( 'create_date' ) ) d.create_date = formattedDate(time);
     d.publish_date = formattedDate(time);
     d.last_updated = formattedDate(time);
-    d._sort_create_date = time.getTime();
+    if ( ! d.hasOwnProperty( '_sort_create_date' ) ) d._sort_create_date = time.getTime();
     d._sort_last_updated = time.getTime();
     d._sort_publish_date = time.getTime();
-    d.preview_url = guid();
+    if ( ! d.hasOwnProperty( 'preview_url' ) ) d.preview_url = guid();
 
     return d;
 }
