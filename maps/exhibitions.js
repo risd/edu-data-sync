@@ -84,24 +84,45 @@ function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
   }
 
   function isPopulatedRelationship ( relationship ) {
-    return typeof relationship === 'string' && relationship.split( ' ' ).length === 2;
+    return typeof relationship === 'string' && relationship.split( ' ' ).length === 2 && relationshipKey( relationship ).startsWith( '-' );
   }
 
   function emptyRowIfWidgetKeyArchived ( row ) {
     if ( ! isPopulatedRow( row ) ) return undefined;
-    
-    var rowWidget = row[ widgetKey ];
-    if ( ! rowWidget ) return undefined;
+
+    var rowWidget = row[ widgetKey ]
+
+    if ( ! rowWidget ) return row;
 
     if ( isMultipleRelationship( rowWidget ) ) {
       // no such cases, not sure how it should be handled yet
-      // var mappedRowWidget = rowWidget.map( emptyRelationshipIfArchived ).filter( isPopulatedRelationship )
-      // if ( differentRelationshipWidget( rowWidget, mappedRowWidget ) )
+      row[ widgetKey ] = rowWidget.map( emptyRelationshipIfArchived ).filter( isPopulatedRelationship )
+      if ( ! isPopulatedMultipleRelationship( row[ widgetKey ] ) ) row = saveRowIfOthersRelated( row )
     }
     else if ( isSingleRelationship( rowWidget ) ) {
-      rowWidget = [ rowWidget ].map( emptyRelationshipIfArchived )[ 0 ]
-      if ( ! isPopulatedRelationship( mappedRowWidget ) ) row = undefined;
+      row[ widgetKey ] = [ rowWidget ].map( emptyRelationshipIfArchived )[ 0 ]
+      if ( ! isPopulatedRelationship( row[ widgetKey ] ) ) row = saveRowIfOthersRelated( row )
     }
+
+    return row;
+  }
+
+  function saveRowIfOthersRelated ( row ) {
+    // if the widget in question does not have any relationships
+    // look for others that might
+    // exhibitions within a grid are always found within a
+    // row that includes other relationships. in an either/or
+    // situation. if there are no other relationships, that
+    // are populated, this row should be removed.
+    var saveRow = false;
+    
+    Object.keys( row ).forEach( function ( rowKey ) {
+      var rowValue = row[ rowKey ];
+      if ( isPopulatedRelationship( rowValue ) ) saveRow = true;
+      else if ( isPopulatedMultipleRelationship( rowValue ) ) saveRow = true;
+    } )
+
+    if ( saveRow === false ) row = undefined;
 
     return row;
   }
@@ -111,7 +132,9 @@ function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
   }
 
   function isPopulatedMultipleRelationship ( relationship ) {
-    return Array.isArray( relationship ) && relationship.length > 0;
+    return Array.isArray( relationship ) &&
+      relationship.length > 0 &&
+      ( relationship.filter( isPopulatedRelationship ).length === relationship.length );
   }
 
   function differentRelationshipWidget ( a, b ) {

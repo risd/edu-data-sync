@@ -1,5 +1,8 @@
 var debug = require( 'debug' )( 'map-coordinator' )
-var EventEmitter = require( 'events' );
+var parallelLimit = require( 'run-parallel-limit' )
+var EventEmitter = require( 'events' )
+
+var MAX_CONCURRENCY = 10;
 
 module.exports = MapCoordinator;
 module.exports.protocol = MapProtocol;
@@ -28,20 +31,35 @@ function MapCoordinator ( options, complete ) {
 
     // function used to apply the Map
     var applyMapFn = self.applyMapFn( isOneOff )
-
-    // DataToMap => MappedData
-    self.applyMap( applyMapFn, complete )
     
-    // relationship work in progress
-    // self.applyMap( applyMapFn, function ( error, mappedData ) {
-    //   self.relatedContentTypeKeyPaths( function ( error, relatedContentTypeKeyPaths ) {
-    //     debug( relatedContentTypeKeyPaths )
-    //     complete( error, relatedContentTypeKeyPaths )
-    //   } )
-    // } )
+    // apply the a map fn on the mapPrototype
+    self.applyMap( applyMapFn, function ( error, mappedData ) {
+      if ( error ) return complete( error )
 
+      // is there a mapRelatedFn defined? if so, lets use it to updated related data
+      if ( typeof self.mapPrototype.mapRelatedFn !== 'function' ) return complete( null, { data: mappedData } )
+
+      // get related content types to map
+      self.relatedContentTypeKeyPaths( function ( error, relatedContentTypeKeyPaths ) {
+        if ( error ) return complete( error )
+
+        // get data for related content types
+        self.dataForContentTypeKeyPaths( relatedContentTypeKeyPaths, function ( error, absoluteControlKeyPathData ) {
+          if ( error ) return complete( error )
+
+          // apply the related map fn
+          var mappedDataKeyPathPairs = self.applyMapRelatedFn( absoluteControlKeyPathData, mappedData )
+
+          // save the related data
+          self.saveRelatedControls( mappedDataKeyPathPairs, function ( error, relatedControls ) {
+            if ( error ) return complete( error )
+
+            complete( null, { data: mappedData, related: relatedControls }  )
+          } )
+        } )
+      } )
+    } )
   } )
-
 }
 
 MapCoordinator.prototype.isOneOff = function ( complete ) {
@@ -102,14 +120,18 @@ MapCoordinator.prototype.applyMap = function ( applyMapFn, complete ) {
         complete( error, mappedSnapshotData )
       }
     } )
-
 }
 
 /**
  * () => [ ContentTypeKeyPathControl ]
  *
  * ContentTypeKeyPathControl : { keyPath : ContentTypeKeyPath, control: ContentTypeControl }
- * 
+ *
+ * ContentTypeKeyPath : [ type, widget ]
+ *  | [ type, widget, [], grid-key ]
+ *  | [ type, {}, widget ]
+ *  | [ type, {}, widget, [], grid-key ]
+ *  
  * @param  {Function} complete Callback
  */
 MapCoordinator.prototype.relatedContentTypeKeyPaths = function ( complete ) {
@@ -149,11 +171,6 @@ MapCoordinator.prototype.relatedContentTypeKeyPaths = function ( complete ) {
 
   /**
    * ContentTypes => [ ContentTypeKeyPathControl ]
-   *
-   * ContentTypeKeyPath : [ type, widget ]
-   *  | [ type, widget, [], grid-key ]
-   *  | [ type, {}, widget ]
-   *  | [ type, {}, widget, [], grid-key ]
    *
    * ContentTypeControl : { name : string, controlType: string, controls : [ ContentTypeControl ]? }
    *
@@ -209,7 +226,7 @@ MapCoordinator.prototype.relatedContentTypeKeyPaths = function ( complete ) {
 }
 
 /**
- * ( controlKeyPaths : [ { keyPath : ContentTypeKeyPath } ] ) => [ AbsoluteControlKeyPathData ]
+ * ( contentTypeKeyPaths : [ { keyPath : ContentTypeKeyPath } ] ) => [ AbsoluteControlKeyPathData ]
  *
  * AbsoluteControlKeyPathData : { keyPath : ContentTypeKeyPath, control : ControlData }
  *
@@ -225,7 +242,81 @@ MapCoordinator.prototype.relatedContentTypeKeyPaths = function ( complete ) {
  * @param  {[type]} controlKeyPath
  * @param  {[type]} complete       Function to call with 
  */
-MapCoordinator.prototype.dataForContentTypeKeyPaths = function ( controlKeyPath, complete ) { }
+MapCoordinator.prototype.dataForContentTypeKeyPaths = function ( contentTypeKeyPaths, complete ) {
+  var siteDataRef = this.firebaseref.child( 'data' )
+
+  var dataTasks = contentTypeKeyPaths.map( toAbsoluteControlKeyPathTask )
+
+  return parallelLimit( dataTasks, MAX_CONCURRENCY, reduceResults( complete ) )
+
+  function toAbsoluteControlKeyPathTask ( contentTypeKeyPath ) {
+    var keyPath = contentTypeKeyPath.keyPath;
+    var contentType = keyPath[ 0 ];
+    var snapshotToAbsoluteControlKeyPathData = keyPath.filter( isMultipleKeyPath ).length > 0
+      ? onMultipleTypeKeySnapshot( keyPath )
+      : onSingleTypeKeySnapshot( keyPath );
+
+    return function task ( taskComplete ) {
+      siteDataRef.child( contentType ).once( 'value', onSnapshot, onError )
+
+      function onSnapshot ( snapshot ) {
+        var absoluteControlKeyPathData = snapshotToAbsoluteControlKeyPathData( snapshot )
+        taskComplete( null, absoluteControlKeyPathData )
+      }
+
+      function onError ( error ) {
+        taskComplete( error )
+      }
+    }
+  }
+
+  function onMultipleTypeKeySnapshot ( contentTypeKeyPath ) {
+    var controlKeys = controlKeysFrom( contentTypeKeyPath )
+
+    return function ( snapshot ) {
+      var multiple = snapshot.val()
+
+      var absoluteControlKeyPathData = Object.keys( multiple ).map( multipleKeyToAbsoluteControlKeyPathData )
+
+      function multipleKeyToAbsoluteControlKeyPathData ( key ) {
+        return {
+          keyPath: replaceInArray( contentTypeKeyPath, 1, key ),
+          control: multiple[ key ][ controlKeys.control ],
+        }
+      }
+
+      return absoluteControlKeyPathData;
+    }
+  }
+
+  function onSingleTypeKeySnapshot ( contentTypeKeyPath ) {
+    var controlKeys = controlKeysFrom( contentTypeKeyPath )
+
+    return function ( snapshot ) {
+      var single = snapshot.val()
+
+      var absoluteControlKeyPathData = [ {
+        keyPath: contentTypeKeyPath,
+        control: single[ controlKeys.control ],
+      } ]
+
+      return absoluteControlKeyPathData;
+    }
+  }
+
+  function replaceInArray ( arr, index, value ) {
+    return arr.slice( 0, index ).concat( [ value ] ).concat( arr.slice( index + 1 ) )
+  }
+
+  function reduceResults ( onReduced ) {
+    // results : [ [ {}, {} ], [ {} ] ] => reduced : [ {}, {}, {} ]
+    return function ( error, results ) {
+      if ( error ) return onReduced( error )
+      var reduced = results.reduce( function concat ( previous, current ) { return previous.concat( current ) }, [] )
+      onReduced( null, reduced )
+    }
+  }
+}
 
 /**
  * ( controlKeyPathDataArray : [ AbsoluteControlKeyPathData ], mappedData ) => ( mappedControlKeyPathData : [ RelativeControlKeyPathData ] )
@@ -241,7 +332,21 @@ MapCoordinator.prototype.dataForContentTypeKeyPaths = function ( controlKeyPath,
  * @param  {object} mappedData               The data that resulted from `applyMapFn`
  * @return {object} mappedDataKeyPathPairs   The result of the appplication of `mapRelatedExhibitionsFn` on `controlKeyPathDataArray`
  */
-MapCoordinator.prototype.applyMapRelatedFn = function ( controlKeyPathDataArray, mappedData ) { }
+MapCoordinator.prototype.applyMapRelatedFn = function ( controlKeyPathDataArray, mappedData ) {
+  return controlKeyPathDataArray.map( toMappedDataKeyPathPairs( this.mapPrototype.mapRelatedFn ) )
+
+  function toMappedDataKeyPathPairs ( mapRelatedFn ) {
+    return function ( controlKeyPathData ) {
+      var control = controlKeyPathData.control;
+      var controlKeys = controlKeysFrom( controlKeyPathData.keyPath );
+
+      return {
+        keyPath: controlKeyPathData.keyPath,
+        control: mapRelatedFn( control, controlKeys.grid, mappedData )
+      }
+    }
+  }
+}
 
 /**
  *
@@ -256,9 +361,68 @@ MapCoordinator.prototype.applyMapRelatedFn = function ( controlKeyPathDataArray,
  * @param  {object} controlKeyPathDataArray
  * @param  {Function} complete              The function to call upon saving `controlKeyPathDataArray`
  */
-MapCoordinator.prototype.saveControlKeyPathData = function ( controlKeyPathDataArray, complete ) {
+MapCoordinator.prototype.saveRelatedControls = function ( controlKeyPathDataArray, complete ) {
+  var siteDataRef = this.firebaseref.child( 'data' )
 
+  var saveTasks = controlKeyPathDataArray.map( toSaveTasks )
+
+  return parallelLimit( saveTasks, MAX_CONCURRENCY, complete )
+
+  function toSaveTasks ( controlKeyPathData ) {
+    var control = controlKeyPathData.control;
+    var keyPath = controlKeyPathData.keyPath;
+
+    var controlKeys = controlKeysFrom( keyPath )
+
+    var saveControlKeyPath = controlKeys.grid
+      ? keyPath.slice( 0, -2 )
+      : keyPath.slice( 0 )
+
+    return function saveTask ( taskComplete ) {
+      var controlRef;
+
+      function setControlRefPath ( key ) {
+        if ( ! controlRef ) controlRef = siteDataRef.child( key )
+        else controlRef = controlRef.child( key )
+      }
+
+      saveControlKeyPath.forEach( setControlRefPath )
+
+      controlRef.set( control, onSet )
+
+      function onSet( error ) {
+        if ( error ) return taskComplete( error )
+        taskComplete( null, controlKeyPathData )
+      }
+      
+    }
+  }
 }
+
+/* ---- keyPath utils ---- */
+
+function isMultipleKeyPath ( key ) { return typeof key === 'object' && ! Array.isArray( key ) }
+function isGridKeyPath ( key ) { return Array.isArray( key ) }
+
+function controlKeysFrom ( contentTypeKeyPath ) {
+  var gridPathKeys = contentTypeKeyPath.filter( isGridKeyPath );
+  var keyPathContainsGrid = gridPathKeys.length > 0
+
+  var controlKey = keyPathContainsGrid
+    ? contentTypeKeyPath.slice( -3, -2 )[ 0 ]
+    : contentTypeKeyPath.slice( -1 )[ 0 ];
+
+  var gridKey = keyPathContainsGrid
+    ? contentTypeKeyPath.slice( -1 )[ 0 ]
+    : undefined;
+
+  return {
+    control: controlKey,
+    grid: gridKey,
+  }
+}
+
+/* ---- keyPath utils ---- */
 
 /**
  * Enforces MapProtocol on model.
