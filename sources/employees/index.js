@@ -427,6 +427,7 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
             if (row.inSource === false) {
                 if (row.webhook.colleague_status === true) {
                     row.webhook.colleague_status = false;
+                    dirty = true;
                 }
             }
         }
