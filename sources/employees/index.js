@@ -403,21 +403,21 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         if ('manual_removal' in row.webhook && row.webhook.manual_removal === true) {
             // manual removel sync over ride
             row.webhook.colleague_status = false;
+            dirty = true;
 
             if (row.inSource === false) {
                 row.webhook.manual_removal = false;
-                dirty = true;
             }
         }
         else if ('manual_entry' in row.webhook && row.webhook.manual_entry === true) {
             // manual entry sync override
             row.webhook.colleague_status = true;
+            dirty = true;
 
             if (row.inSource === true) {
                 // the person is in the feed now, so we can turn this off
                 // future synchronizations don't need to lean on this
                 row.webhook.manual_entry = false;
-                dirty = true;
             }
         }
         else {
