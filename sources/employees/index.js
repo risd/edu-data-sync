@@ -160,10 +160,6 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     var middleInPreferred = (src.MIDDLENAME.length > 0) ? src.PREFERREDNAME.indexOf(src.MIDDLENAME) : -1;
     var lastInPreferred = (src.LASTNAME.length > 0) ? src.PREFERREDNAME.indexOf(src.LASTNAME) : -1;
 
-    if ( nicknameInPreferred > -1 && firstInPreferred === -1 ) {
-        firstInPreferred = nicknameInPreferred;
-    }
-
     if ((firstInPreferred > -1) &&
         (lastInPreferred > -1)) {
         // names are correct
@@ -403,32 +399,51 @@ Employees.prototype.updateWebhookValueNotInSource = function () {
         var stream = this;
         var dirty = false;
 
-        // If this is a manual entry ( which is overriden by any )
-        // updated items in `updateWebhookValueWithSourceValue`
-        // then lets leave it alone
-        if ('manual_entry' in row.webhook && row.webhook.manual_entry === true) {
-            return next();
-        }
-
-        if (!('colleague_status' in row.webhook)) {
+        // sync overrides, set the appropriate colleague_status
+        if ('manual_removal' in row.webhook && row.webhook.manual_removal === true) {
+            // manual removel sync over ride
             row.webhook.colleague_status = false;
             dirty = true;
+
+            if (row.inSource === false) {
+                row.webhook.manual_removal = false;
+            }
         }
-        
-        // if they are not in the feed, lets make sure they
-        // have the correct colleague status
-        if (row.inSource === false) {
-            if (row.webhook.colleague_status === true) {
-                row.webhook.colleague_status = false;
-                row.webhook.isDraft = true; // don't publish their page
-                dirty = true;
+        else if ('manual_entry' in row.webhook && row.webhook.manual_entry === true) {
+            // manual entry sync override
+            row.webhook.colleague_status = true;
+            dirty = true;
+
+            if (row.inSource === true) {
+                // the person is in the feed now, so we can turn this off
+                // future synchronizations don't need to lean on this
+                row.webhook.manual_entry = false;
+            }
+        }
+        else {
+            // no sync overrides
+            // if they are not in the feed, lets make sure they
+            // have the correct colleague status
+            if (row.inSource === false) {
+                if (row.webhook.colleague_status === true) {
+                    row.webhook.colleague_status = false;
+                    dirty = true;
+                }
             }
         }
 
-        // ensure active employees are not drafts, and are being published
-        if (row.webhook.colleague_status === true && row.webhook.isDraft === true) {
-            row.webhook.isDraft = false;
-            dirty = true;
+        // update the webhook object based on its colleauge_status
+        if (row.webhook.colleague_status === true) {
+            if (row.webhook.isDraft === true) {
+                row.webhook.isDraft = false;
+                dirty = true;
+            }
+        }
+        else if (row.webhook.colleague_status === false) {
+            if (row.webhook.isDraft === false) {
+                row.webhook.isDraft = true;
+                dirty = true;
+            }
         }
 
         if (dirty) {

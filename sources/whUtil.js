@@ -2,162 +2,193 @@ var moment = require('moment');
 
 module.exports = function () {
     var maps = {
-        forInitiatives: [{
-            "webhook": "Public Engagement",
-            "ektronNews": "public engagement"
-        }, {
-            "webhook": "STEM to STEAM",
-            "ektronNews": "STEAM"
-        }],
-        forLiberalArtsDepartments: [{
-            "colleague": "History of Art & Visual Cultur",
-            "webhook": "History of Art + Visual Culture",
-            "localist": "History of Art + Visual Culture",
-            "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE",
-            "ektronNews": "History of Art + Visual Culture"
-        }, {
-            "colleague": "English",
-            "webhook": "Literary Arts + Studies",
-            "localist": "Literary Arts + Studies",
-            "courseCatalogue": "LITERARY ARTS AND STUDIES",
-            "ektronNews": "Literary Arts + Studies"
-        }, {
-            "colleague": "History Phil Social Sciences",
-            "webhook": "History, Philosophy + the Social Sciences",
-            "localist": "History, Philosophy + the Social Sciences",
-            "courseCatalogue": "HIST/PHIL/SO SC DEPT",
-            "ektronNews": "History, Philosophy + the Social Sciences"
-        }],
-        forDepartments: [{
-            "colleague": "Textiles",
-            "webhook": "Textiles",
-            "localist": "Textiles",
-            "courseCatalogue": "TEXTILES",
-            "ektronNews": "Textiles"
-        }, {
-            "colleague": "Painting",
-            "webhook": "Painting",
-            "localist": "Painting",
-            "courseCatalogue": "PAINTING",
-            "ektronNews": "Painting"
-        }, {
-            "colleague": "Glass",
-            "webhook": "Glass",
-            "localist": "Glass",
-            "courseCatalogue": "GLASS",
-            "ektronNews": "Glass"
-        }, {
-            "colleague": "Sculpture",
-            "webhook": "Sculpture",
-            "localist": "Sculpture",
-            "courseCatalogue": "SCULPTURE",
-            "ektronNews": "Sculpture"
-        }, {
-            "colleague": "Printmaking",
-            "webhook": "Printmaking",
-            "localist": "Printmaking",
-            "courseCatalogue": "PRINTMAKING",
-            "ektronNews": "Printmaking"
-        }, {
-            "colleague": "Photography",
-            "webhook": "Photography",
-            "localist": "Photography",
-            "courseCatalogue": "PHOTOGRAPHY",
-            "ektronNews": "Photography"
-        }, {
-            "colleague": "Digital Media",
-            "webhook": "Digital + Media",
-            "localist": "Digital + Media",
-            "courseCatalogue": "DIGITAL & MEDIA",
-            "ektronNews": "Digital + Media"
-        }, {
-            "colleague": "Teach Learn Art + Design",
-            "webhook": "Teaching + Learning in Art + Design",
-            "localist": "Teaching + Learning in Art + Design",
-            "courseCatalogue": "TLAD TEACHING + LEARNING",
-            "ektronNews": "Teaching + Learning in Art + Design"
-        }, {
-            "colleague": "Landscape Architecture",
-            "webhook": "Landscape Architecture",
-            "localist": "Landscape Architecture",
-            "courseCatalogue": "LANDSCAPE ARCH",
-            "ektronNews": "Landscape Architecture"
-        }, {
-            "colleague": "Jewelry & Metalsmithing",
-            "webhook": "Jewelry + Metalsmithing",
-            "localist": "Jewelry + Metalsmithing",
-            "courseCatalogue": "JEWELRY & METAL",
-            "ektronNews": "Jewelry + Metalsmithing"
-        }, {
-            "colleague": "Interior Architecture",
-            "webhook": "Interior Architecture",
-            "localist": "Interior Architecture",
-            "courseCatalogue": "INTERIOR ARCH",
-            "ektronNews": "Interior Architecture"
-        }, {
-            "colleague": "Industrial Design",
-            "webhook": "Industrial Design",
-            "localist": "Industrial Design",
-            "courseCatalogue": "INDUSTRIAL DESIGN",
-            "ektronNews": "Industrial Design"
-        }, {
-            "colleague": "Illustration",
-            "webhook": "Illustration",
-            "localist": "Illustration",
-            "courseCatalogue": "ILLUSTRATION",
-            "ektronNews": "Illustration"
-        }, {
-            "colleague": "Furniture Design",
-            "webhook": "Furniture Design",
-            "localist": "Furniture Design",
-            "courseCatalogue": "FURNITURE DESIGN",
-            "ektronNews": "Furniture Design"
-        }, {
-            "colleague": "Film/Animation/Video",
-            "webhook": "Film / Animation / Video",
-            "localist": "Film/Animation/Video",
-            "courseCatalogue": "FILM/ANIMATION/VIDEO",
-            "ektronNews": "Film-Animation-Video"
-        }, {
-            "colleague": "Ceramics",
-            "webhook": "Ceramics",
-            "localist": "Ceramics",
-            "courseCatalogue": "CERAMICS",
-            "ektronNews": "Ceramics"
-        }, {
-            "colleague": "Department of Architecture",
-            "webhook": "Architecture",
-            "localist": "Architecture",
-            "courseCatalogue": "ARCHITECTURE",
-            "ektronNews": "Architecture"
-        }, {
-            "colleague": "Graphic Design",
-            "webhook": "Graphic Design",
-            "localist": "Graphic Design",
-            "courseCatalogue": "GRAPHIC DESIGN",
-            "ektronNews": "Graphic Design"
-        }, {
-            "colleague": "Apparel Design",
-            "webhook": "Apparel Design",
-            "localist": "Apparel Design",
-            "courseCatalogue": "APPAREL DESIGN",
-            "ektronNews": "Apparel Design"
-        }],
+        forInitiatives: [
+            {
+                "webhook": "Public Engagement",
+                "ektronNews": "public engagement"
+            }, {
+                "webhook": "STEM to STEAM",
+                "ektronNews": "STEAM"
+            }
+        ],
+        forLiberalArtsDepartments: [
+            {
+                "colleague": "History of Art & Visual Cultur",
+                "webhook": "History of Art + Visual Culture",
+                "localist": "History of Art + Visual Culture",
+                "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE",
+                "ektronNews": "History of Art + Visual Culture",
+                "courseCatalogueNameAbbreviation": "HAVC",
+            }, {
+                "colleague": "English",
+                "webhook": "Literary Arts + Studies",
+                "localist": "Literary Arts + Studies",
+                "courseCatalogue": "LITERARY ARTS AND STUDIES",
+                "ektronNews": "Literary Arts + Studies",
+                "courseCatalogueNameAbbreviation": "LAS",
+            }, {
+                "colleague": "History Phil Social Sciences",
+                "webhook": "History, Philosophy + the Social Sciences",
+                "localist": "History, Philosophy + the Social Sciences",
+                "courseCatalogue": "HIST/PHIL/SO SC DEPT",
+                "ektronNews": "History, Philosophy + the Social Sciences",
+                "courseCatalogueNameAbbreviation": "HPSS",
+            }
+        ],
+        forDepartments: [
+            {
+                "colleague": "Textiles",
+                "webhook": "Textiles",
+                "localist": "Textiles",
+                "courseCatalogue": "TEXTILES",
+                "ektronNews": "Textiles",
+                "courseCatalogueNameAbbreviation": "TEXT",
+            }, {
+                "colleague": "Painting",
+                "webhook": "Painting",
+                "localist": "Painting",
+                "courseCatalogue": "PAINTING",
+                "ektronNews": "Painting",
+                "courseCatalogueNameAbbreviation": "PAINT",
+            }, {
+                "colleague": "Glass",
+                "webhook": "Glass",
+                "localist": "Glass",
+                "courseCatalogue": "GLASS",
+                "ektronNews": "Glass",
+                "courseCatalogueNameAbbreviation": "GLASS",
+            }, {
+                "colleague": "Sculpture",
+                "webhook": "Sculpture",
+                "localist": "Sculpture",
+                "courseCatalogue": "SCULPTURE",
+                "ektronNews": "Sculpture",
+                "courseCatalogueNameAbbreviation": "SCULP",
+            }, {
+                "colleague": "Printmaking",
+                "webhook": "Printmaking",
+                "localist": "Printmaking",
+                "courseCatalogue": "PRINTMAKING",
+                "ektronNews": "Printmaking",
+                "courseCatalogueNameAbbreviation": "PRINT",
+            }, {
+                "colleague": "Photography",
+                "webhook": "Photography",
+                "localist": "Photography",
+                "courseCatalogue": "PHOTOGRAPHY",
+                "ektronNews": "Photography",
+                "courseCatalogueNameAbbreviation": "PHOTO",
+            }, {
+                "colleague": "Digital Media",
+                "webhook": "Digital + Media",
+                "localist": "Digital + Media",
+                "courseCatalogue": "DIGITAL & MEDIA",
+                "ektronNews": "Digital + Media",
+                "courseCatalogueNameAbbreviation": "DM",
+            }, {
+                "colleague": "Teach Learn Art + Design",
+                "webhook": "Teaching + Learning in Art + Design",
+                "localist": "Teaching + Learning in Art + Design",
+                "courseCatalogue": "TLAD TEACHING + LEARNING",
+                "ektronNews": "Teaching + Learning in Art + Design",
+                "courseCatalogueNameAbbreviation": "TLAD",
+            }, {
+                "colleague": "Landscape Architecture",
+                "webhook": "Landscape Architecture",
+                "localist": "Landscape Architecture",
+                "courseCatalogue": "LANDSCAPE ARCH",
+                "ektronNews": "Landscape Architecture",
+                "courseCatalogueNameAbbreviation": "LDAR",
+            }, {
+                "colleague": "Jewelry & Metalsmithing",
+                "webhook": "Jewelry + Metalsmithing",
+                "localist": "Jewelry + Metalsmithing",
+                "courseCatalogue": "JEWELRY & METAL",
+                "ektronNews": "Jewelry + Metalsmithing",
+                "courseCatalogueNameAbbreviation": "J&M",
+            }, {
+                "colleague": "Interior Architecture",
+                "webhook": "Interior Architecture",
+                "localist": "Interior Architecture",
+                "courseCatalogue": "INTERIOR ARCH",
+                "ektronNews": "Interior Architecture",
+                "courseCatalogueNameAbbreviation": "INTAR",
+            }, {
+                "colleague": "Industrial Design",
+                "webhook": "Industrial Design",
+                "localist": "Industrial Design",
+                "courseCatalogue": "INDUSTRIAL DESIGN",
+                "ektronNews": "Industrial Design",
+                "courseCatalogueNameAbbreviation": "ID",
+            }, {
+                "colleague": "Illustration",
+                "webhook": "Illustration",
+                "localist": "Illustration",
+                "courseCatalogue": "ILLUSTRATION",
+                "ektronNews": "Illustration",
+                "courseCatalogueNameAbbreviation": "ILLUS",
+            }, {
+                "colleague": "Furniture Design",
+                "webhook": "Furniture Design",
+                "localist": "Furniture Design",
+                "courseCatalogue": "FURNITURE DESIGN",
+                "ektronNews": "Furniture Design",
+                "courseCatalogueNameAbbreviation": "FURN",
+            }, {
+                "colleague": "Film/Animation/Video",
+                "webhook": "Film / Animation / Video",
+                "localist": "Film/Animation/Video",
+                "courseCatalogue": "FILM/ANIMATION/VIDEO",
+                "ektronNews": "Film-Animation-Video",
+                "courseCatalogueNameAbbreviation": "FAV",
+            }, {
+                "colleague": "Ceramics",
+                "webhook": "Ceramics",
+                "localist": "Ceramics",
+                "courseCatalogue": "CERAMICS",
+                "ektronNews": "Ceramics",
+                "courseCatalogueNameAbbreviation": "CER",
+            }, {
+                "colleague": "Department of Architecture",
+                "webhook": "Architecture",
+                "localist": "Architecture",
+                "courseCatalogue": "ARCHITECTURE",
+                "ektronNews": "Architecture",
+                "courseCatalogueNameAbbreviation": "ARCH",
+            }, {
+                "colleague": "Graphic Design",
+                "webhook": "Graphic Design",
+                "localist": "Graphic Design",
+                "courseCatalogue": "GRAPHIC DESIGN",
+                "ektronNews": "Graphic Design",
+                "courseCatalogueNameAbbreviation": "GRAPH",
+            }, {
+                "colleague": "Apparel Design",
+                "webhook": "Apparel Design",
+                "localist": "Apparel Design",
+                "courseCatalogue": "APPAREL DESIGN",
+                "ektronNews": "Apparel Design",
+                "courseCatalogueNameAbbreviation": "APPAR",
+            }
+        ],
         forFoundationStudies: [{
             "colleague": "Experimental + Found Studies",
             "courseCatalogue": "Foundation Studies",
             "webhook": "Experimental and Foundation Studies",
             "localist": "Division of Foundation Studies",
+            "courseCatalogueNameAbbreviation": "FOUND",
         }],
         forFoundationStudiesConcentrations: [{
             "courseCatalogue": "EXPERIMENTAL,FOUNDATION STUDY",
             "webhook": "Experimental and Foundation Studies",
+            "courseCatalogueNameAbbreviation": "",
         }],
         forGraduateStudies: [{
             "colleague": "Graduate Studies",
             "courseCatalogue": "GRADUATE STUDIES",
             "webhook": "Graduate Studies",
             "localist": "Division of Graduate Studies",
+            "courseCatalogueNameAbbreviation": "GRAD",
         }]
     };
 
@@ -174,6 +205,7 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forLiberalArtsDepartments',
                 'courseCatalogue'),
+
         webhookDepartmentForLocalist:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -182,6 +214,7 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forLiberalArtsDepartments',
                 'localist'),
+
         webhookDepartmentForColleague:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -190,6 +223,24 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forLiberalArtsDepartments',
                 'colleague'),
+
+        webhookDepartmentForCourseCatalogueNameAbbreviation:
+            forMapUsingKeyFindWebhookValue(
+                'forDepartments',
+                'courseCatalogueNameAbbreviation'),
+        webhookLiberalArtsDepartmentForCourseCatalogueNameAbbreviation:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'courseCatalogueNameAbbreviation'),
+        webhookFoundationStudiesForCourseCatalogueNameAbbreviation:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'courseCatalogueNameAbbreviation'),
+        webhookGraduateStudiesForCourseCatalogueNameAbbreviation:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'courseCatalogueNameAbbreviation'),
+
         colleagueFoundationStudies:
             valueForMapAndKey(
                 'forFoundationStudies',
@@ -198,6 +249,7 @@ module.exports = function () {
             valueForMapAndKey(
                 'forGraduateStudies',
                 'colleague'),
+
         courseCatalogueFoundationStudies:
             valueForMapAndKey(
                 'forFoundationStudies',
@@ -206,10 +258,12 @@ module.exports = function () {
             valueForMapAndKey(
                 'forGraduateStudies',
                 'courseCatalogue'),
+
         courseCatalogueFoundationStudiesConcentrations:
             valueForMapAndKey(
                 'forFoundationStudiesConcentrations',
                 'courseCatalogue'),
+
         localistFoundationStudies:
             valueForMapAndKey(
                 'forFoundationStudies',
@@ -218,6 +272,7 @@ module.exports = function () {
             valueForMapAndKey(
                 'forGraduateStudies',
                 'localist'),
+
         allColleagueDepartments:
             allKeyValuesInMaps(
                 [ 'forDepartments',
@@ -225,6 +280,7 @@ module.exports = function () {
                   'forFoundationStudies',
                   'forGraduateStudies' ],
                 'colleague' ),
+
         webhookDepartmentForEktronNews:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -237,6 +293,7 @@ module.exports = function () {
             forMapUsingKeyFindWebhookValue(
                 'forInitiatives',
                 'ektronNews'),
+
         valueForCombinedMap: valueForCombinedMap
     };
 
@@ -286,8 +343,7 @@ module.exports = function () {
             if (f.length === 0) {
                 return false;
             } else {
-                var webhookDepartment = f[0];
-                return webhookDepartment;
+                return f[0];
             }
         }
     }
@@ -333,13 +389,13 @@ function formattedDate(date) {
 function whRequiredDates (d) {
     var time = new Date();
 
-    d.create_date = formattedDate(time);
+    if ( ! d.hasOwnProperty( 'create_date' ) ) d.create_date = formattedDate(time);
     d.publish_date = formattedDate(time);
     d.last_updated = formattedDate(time);
-    d._sort_create_date = time.getTime();
+    if ( ! d.hasOwnProperty( '_sort_create_date' ) ) d._sort_create_date = time.getTime();
     d._sort_last_updated = time.getTime();
     d._sort_publish_date = time.getTime();
-    d.preview_url = guid();
+    if ( ! d.hasOwnProperty( 'preview_url' ) ) d.preview_url = guid();
 
     return d;
 }
