@@ -387,8 +387,7 @@ function addInSourceBool () {
                         row.inSource = true;
                     }
                 });
-            stream.push(row);
-            next();
+            next(null, row);
         }
     }
 }
