@@ -221,7 +221,7 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     src = src.event;
 
     wh.name = [
-        readable_date([src.first_date].map(addTimeZone)[0]),
+        readable_date(src.first_date),
         src.title,
         src.id
     ].join(' ');
@@ -229,18 +229,13 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.localist_uid = src.id;
     wh.localist_venue_uid = src.venue_id || '';
     wh.localist_featured = src.featured || false;
-    wh.localist_date_range_first =
-        [src.first_date].map(addTimeZone)[0];
-    wh.localist_date_range_last =
-        [src.last_date].map(addTimeZone)[0];
+    wh.localist_date_range_first = src.first_date;
+    wh.localist_date_range_last = src.last_date;
     
     wh.within_date_range = isWithinDateRange(
         wh.localist_date_range_first,
         wh.localist_date_range_last);
-
-    wh.upcoming = isUpcoming(wh.localist_date_range_last);
     
-
     wh.upcoming = isUpcoming(wh.localist_date_range_last);
 
     wh.localist_instances = src.event_instances
@@ -323,10 +318,6 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         return d;
     }
 
-    function addTimeZone (dateString) {
-        return dateString + 'T00:00:00-04:00';
-    }
-
     function isWithinDateRange (start, end) {
         /* The isBetween method of moment.js
            is not inclusive of the start and
@@ -347,12 +338,9 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     }
 
     function isUpcoming (end) {
-        var now = timezone().tz('America/New_York');
-        var beginningOfDay = now
-            .set('hour', 0)
-            .set('minute', 0)
-            .set('second', 0);
-        return moment(beginningOfDay).isBefore(end);
+        var beginningOfDay = timezone().tz('America/New_York').set('hour', 0).set('minute', 0).set('second', 0);
+        var endOfend = timezone(end).tz('America/New_York').set('hour', 23).set('minute', 59).set('second', 59)
+        return moment(beginningOfDay).isBefore(endOfend);
     }
 
     function readable_date (date) {
@@ -465,7 +453,12 @@ Events.prototype.updateWebhookValueNotInSource = function () {
             var endOfLastDayStr = addEndOfDay(
                 row.webhook.localist_date_range_last);
 
-            if (endOfLastDayStr === false || moment(endOfLastDayStr).isBefore(now.subtract(60, 'days'))) {
+            // reasons for removal
+            var noEndDate = endOfLastDayStr === false; // no last date
+            var isWellInThePast = moment(endOfLastDayStr).isBefore(now.subtract(60, 'days')); // removed from the API, being in the past
+            var isRemovedAndUpcoming = row.webhook.upcoming; // must have been removed from localist
+
+            if ( noEndDate || isWellInThePast || isRemovedAndUpcoming ) {
                 // last day of the event occured before 60 days ago
                 remove = true;
             }

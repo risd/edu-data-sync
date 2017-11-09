@@ -115,7 +115,8 @@ function ElasticSearchSync ( options ) {
     }, function (error, data) {
       if ( error ) return retry( error );
       if ( data && data.error ) return retry( data.error );
-        debug( 'deleteIndex:response' );
+      debug( 'deleteIndex:response' );
+      callback( null, data )
     } );
 
     function retry ( error ) {
