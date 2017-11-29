@@ -109,6 +109,9 @@ Employees.prototype.listSource = function () {
             });
 
             xml.on('endElement: EMPLOYEE', function (d) {
+                if ( typeof d.SABBATICAL === 'object' && typeof d.SABBATICAL['$'] === 'object' )  {
+                    d.SABBATICAL = d.SABBATICAL['$']
+                }
                 writeStream.push(d);
             });
 
@@ -294,6 +297,9 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                         ? 1
                         : 0;
             } );
+
+    wh.sabbatical_start_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL.start_date : '' ;
+    wh.sabbatical_end_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL.end_date : '' ;
 
     wh.colleague_status = true;
     wh.manual_entry = false;
