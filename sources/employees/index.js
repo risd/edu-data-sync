@@ -298,8 +298,8 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
                         : 0;
             } );
 
-    wh.sabbatical_start_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL.start_date : '' ;
-    wh.sabbatical_end_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL.end_date : '' ;
+    wh.sabbatical_start_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL[ 'start-date' ] : '' ;
+    wh.sabbatical_end_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL[ 'end-date' ] : '' ;
 
     wh.colleague_status = true;
     wh.manual_entry = false;
