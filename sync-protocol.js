@@ -293,8 +293,7 @@ function addSourceToWebhook () {
             self.updateWebhookValueWithSourceValue(
                 row.webhook,
                 row.source);
-        console.log('update-webhook:set')
-        console.log(value)
+
         ref.set(value, onComplete);
 
         function onComplete (error) {
