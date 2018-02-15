@@ -4,7 +4,7 @@ var moment = require( 'moment' )
 var timezone = require( 'moment-timezone' )
 
 var ARCHIVED_PREFIX = 'ARCHIVED';
-var PAST_END_DATE_PREFIX = 'PAST END DATE';
+var PAST_END_DATE_PREFIX = 'ENDED';
 
 /* These widget keys will be preserved when an exhibition is marked as PAST_END_DATE */
 var PRESERVE_PAST_END_DATE_CONTROL_KEYS = [ 'community_exhibitions_related_campus_resources' ]
