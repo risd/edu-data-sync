@@ -4,6 +4,10 @@ var moment = require( 'moment' )
 var timezone = require( 'moment-timezone' )
 
 var ARCHIVED_PREFIX = 'ARCHIVED';
+var PAST_END_DATE_PREFIX = 'PAST END DATE';
+
+/* These widget keys will be preserved when an exhibition is marked as PAST_END_DATE */
+var PRESERVE_PAST_END_DATE_CONTROL_KEYS = [ 'community_exhibitions_related_campus_resources' ]
 
 module.exports = MapExhibitions;
 
@@ -16,33 +20,97 @@ MapExhibitions.prototype.mapFn = mapExhibitionsFn;
 MapExhibitions.prototype.mapRelatedFn = mapRelatedExhibitionsFn;
 
 function mapExhibitionsFn ( exhibition ) {
-  // if now < end_date
-  //   prefix the name with ARCHIVED
-  //   set list_in_news_section to false
-  //   set to isDraft to true
-  if ( inThePast( exhibition.end_date ) ) {
-    exhibition.name = isArchivedExhibition( exhibition )
-      ? exhibition.name
-      : [ ARCHIVED_PREFIX, exhibition.name ].join( ' ' )
-    exhibition.list_in_news_section = false;
-    exhibition.isDraft = true;
+
+  /* if now < end_date && ! hasRelatedCampusResource, archive the exibition */
+  if ( inThePast( exhibition.end_date ) && ( ! hasRelatedCampusResource( exhibition ) ) ) {
+    archiveExhibition( exhibition )
+  }
+  /* if now < end_date + 180 days && hasRelatedCampusResource, archive the exibition */
+  else if ( inThePast( exhibition.end_date, 18, 'months' ) && hasRelatedCampusResource( exhibition ) ) {
+    archiveExhibition( exhibition )
+  }
+  /* if now < end_date && hasRelatedCampusResource, remove the relationships that promote the exhibition */
+  else if ( inThePast( exhibition.end_date ) && hasRelatedCampusResource( exhibition ) ) {
+    pastEndDateExhibition( exhibition )
   }
   
   return exhibition;
 
-  function inThePast( timestamp ) {
+  function inThePast( timestamp, durationInPast, durationType ) {
     if ( typeof timestamp !== 'string' ) return false;
     var now = timezone().tz( 'America/New_York' )
-    return moment( endOfDay( timestamp ) ).isBefore( now )
+    
+    durationInPast = durationInPast || 0;
+    durationType = durationType || 'days';
+
+    var durationObject = {};
+    durationObject[ durationType ] = durationInPast;
+    
+    return moment( endOfDay( timestamp ) ).add( durationObject ).isBefore( now )
   }
 
   function endOfDay ( timestamp ) {
     return [ timestamp.split( 'T' )[ 0 ], 'T23:59:59-04:00' ].join( '' )
   }
+
+  function archiveExhibition ( exhibition ) {
+    /* set the archival name  */
+    markAsArchived( exhibition )
+
+    /* reset all relationship fields */
+    delete exhibition.related_campus_resources;
+    removePromotionRelationships( exhibition );
+    exhibition.isDraft = true;
+  }
+
+  function pastEndDateExhibition ( exhibition ) {
+    markAsPastEndDate( exhibition );
+    removePromotionRelationships( exhibition );
+    delete exhibition.isDraft;
+  }
+
+  function hasRelatedCampusResource ( exhibition ) {
+    return Array.isArray( exhibition.related_campus_resources ) && exhibition.related_campus_resources.length > 0;
+  }
+
+  function removePromotionRelationships ( exhibition ) {
+    delete exhibition.homepage_exhibitions_to_display;
+    delete exhibition.show_on_homepage; /* replaced by control above */
+    delete exhibition.news_index_exhibitions_to_display;
+    delete exhibition.news_index_select_on_campus_exhibitions;
+    delete exhibition.news_index_select_off_campus_exhibitions;
+  }
+
+  function markAsArchived ( exhibition ) {
+    exhibition.name = isArchivedExhibition( exhibition )
+      ? exhibition.name
+      : isPastEndExhibition( exhibition )
+        ? [ ARCHIVED_PREFIX, exhibition.name.split( PAST_END_DATE_PREFIX )[ 1 ].trim() ].join( ' ' )
+        : [ ARCHIVED_PREFIX, exhibition.name ].join( ' ' )
+  }
+
+  function markAsPastEndDate ( exhibition ) {
+    exhibition.name = isPastEndExhibition( exhibition )
+      ? exhibition.name
+      : isArchivedExhibition( exhibition )
+        ? [ PAST_END_DATE_PREFIX, exhibition.name.split( ARCHIVED_PREFIX )[ 1 ].trim() ].join( ' ' )
+        : [ PAST_END_DATE_PREFIX, exhibition.name ].join( ' ' )
+  }
 }
 
+/**
+ * Using the widget, determine which exhibitions are related to it, and depending on
+ * their state, clear them from the widget or leave them.
+ * 
+ * @param  {array|string} widget
+ * @param  {string} widgetKey
+ * @param  {array} exhibitions
+ * @return {object} widget
+ */
 function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
   assert( typeof exhibitions === 'object', 'Related data needs to be passed in to update relationship widgets.' )
+
+  var isWidgetKeyToPreservePastEnd = PRESERVE_PAST_END_DATE_CONTROL_KEYS.indexOf( widgetKey ) !== -1;
 
   if ( isRelationshipInRepeatable( widget, widgetKey ) ) {
     // relationship widget lives in a repeatable
@@ -76,6 +144,7 @@ function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
     var relatedToKey = relationshipKey( relationship )
     var relatedExhibition = exhibitions[ relatedToKey ]
     if ( isArchivedExhibition( relatedExhibition ) ) relationship = '';
+    else if ( isPastEndExhibition( relatedExhibition ) && ( ! isWidgetKeyToPreservePastEnd ) ) relationship = '';
     return relationship;
   }
 
@@ -144,4 +213,8 @@ function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
 
 function isArchivedExhibition ( exhibition ) {
   return typeof exhibition === 'object' && exhibition.name.startsWith( ARCHIVED_PREFIX )
+}
+
+function isPastEndExhibition ( exhibition ) {
+  return typeof exhibition === 'object' && exhibition.name.startsWith( PAST_END_DATE_PREFIX )
 }
