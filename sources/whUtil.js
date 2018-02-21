@@ -172,7 +172,7 @@ module.exports = function () {
             }
         ],
         forFoundationStudies: [{
-            "colleague": "Experimental + Found Studies",
+            "colleague": "Experimental and Found Studies",
             "courseCatalogue": "Foundation Studies",
             "webhook": "Experimental and Foundation Studies",
             "localist": "Division of Foundation Studies",
