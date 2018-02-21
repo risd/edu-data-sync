@@ -217,6 +217,7 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     .replace(/Id:/g,   'ID: ')
     .replace(/Las /g,  'LAS ')
     .replace(/Risd /g,  'RISD ')
+    .replace(/Cad /g,  'CAD ')
     .replace(/ Cad/g,  ' CAD')
     .replace(/D\+m /g,  'D+M ')
     .replace(/Fav /g,  'FAV ')
