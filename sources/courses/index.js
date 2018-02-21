@@ -214,7 +214,15 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     .replace(/Hpss /g, 'HPSS ')
     .replace(/Lael /g, 'LAEL ')
     .replace(/Id /g,   'ID ')
-    .replace(/Las /g,  'LAS ');
+    .replace(/Id:/g,   'ID: ')
+    .replace(/Las /g,  'LAS ')
+    .replace(/Risd /g,  'RISD ')
+    .replace(/ Cad/g,  ' CAD')
+    .replace(/D\+m /g,  'D+M ')
+    .replace(/Fav /g,  'FAV ')
+    .replace(/T&m /g,  'T&M ')
+    .replace(/ And /g,  ' and ')
+    .replace(/ Or /g,  ' or ')
   }
 
   function formatDescription (desc) {
