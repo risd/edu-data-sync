@@ -107,16 +107,16 @@ function mapExhibitionsFn ( exhibition ) {
  * @param  {array} exhibitions
  * @return {object} widget
  */
-function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
+function mapRelatedExhibitionsFn ( widget, widgetKey, widgetKeyInGrid, exhibitions ) {
   assert( typeof exhibitions === 'object', 'Related data needs to be passed in to update relationship widgets.' )
 
   var isWidgetKeyToPreservePastEnd = PRESERVE_PAST_END_DATE_CONTROL_KEYS.indexOf( widgetKey ) !== -1;
 
-  if ( isRelationshipInRepeatable( widget, widgetKey ) ) {
+  if ( isRelationshipInRepeatable( widget, widgetKey, widgetKeyInGrid ) ) {
     // relationship widget lives in a repeatable
     widget = widget.map( emptyRowIfWidgetKeyArchived ).filter( isPopulatedRow )
   }
-  else if ( isMultipleRelationship( widget ) ) {
+  else if ( isMultipleRelationship( widget, widgetKey, widgetKeyInGrid ) ) {
     // widget is a multiple relationship
     widget = widget.map( emptyRelationshipIfArchived ).filter( isPopulatedRelationship )
   }
@@ -127,12 +127,12 @@ function mapRelatedExhibitionsFn ( widget, widgetKey, exhibitions ) {
 
   return widget;
 
-  function isRelationshipInRepeatable ( widget, widgetKey ) {
-    return Array.isArray( widget ) && typeof widgetKey === 'string'
+  function isRelationshipInRepeatable ( widget, widgetKey, widgetKeyInGrid ) {
+    return Array.isArray( widget ) && typeof widgetKey === 'string' && widgetKeyInGrid === true;
   }
 
-  function isMultipleRelationship ( widget ) {
-    return Array.isArray( widget )
+  function isMultipleRelationship ( widget, widgetKey, widgetKeyInGrid ) {
+    return Array.isArray( widget ) && typeof widgetKey === 'string' && widgetKeyInGrid === false;
   }
 
   function isSingleRelationship ( widget ) {

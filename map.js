@@ -349,10 +349,12 @@ MapCoordinator.prototype.applyMapRelatedFn = function ( controlKeyPathDataArray,
     return function ( controlKeyPathData ) {
       var control = controlKeyPathData.control;
       var controlKeys = controlKeysFrom( controlKeyPathData.keyPath );
+      var controlKey = controlKeys.grid ? controlKeys.grid : controlKeys.control;
+      var controlKeyInGrid = typeof controlKeys.grid === 'string' ? true : false;
 
       return {
         keyPath: controlKeyPathData.keyPath,
-        control: mapRelatedFn( control, controlKeys.grid, mappedData )
+        control: mapRelatedFn( control, controlKey, controlKeyInGrid, mappedData )
       }
     }
   }
