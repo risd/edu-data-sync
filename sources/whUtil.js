@@ -20,7 +20,7 @@ module.exports = function () {
                 "ektronNews": "History of Art + Visual Culture",
                 "courseCatalogueNameAbbreviation": "HAVC",
             }, {
-                "colleague": "English",
+                "colleague": "Literary Arts and Studies",
                 "webhook": "Literary Arts + Studies",
                 "localist": "Literary Arts + Studies",
                 "courseCatalogue": "LITERARY ARTS AND STUDIES",
