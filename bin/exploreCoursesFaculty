@@ -1,16 +1,17 @@
 #!/usr/bin/env node
+
+var argv = require('minimist')(process.argv.slice(2))
+
 var fs = require('fs');
 
 var through = require('through2');
-var util = require('../util.js');
 
-var Env = require('../env.js');
+var env = require('../env.js')();
 
-Env();
+var Courses = require('../sources/courses/index.js')(env.asObject());
 
-var Courses = require('../sources/courses/index.js')();
 
-Courses.listSource()
+Courses.listSource( { local: argv.local } )
 	.pipe(pluck('departments'))
 	.pipe(loggify());
 
@@ -21,18 +22,22 @@ function pluck (attribute) {
 	return through.obj(plck, end);
 
 	function plck (row, enc, next) {
-		if ((attribute in row) &&
-			(unique.indexOf(row[attribute]) === -1)) {
-			unique.push(row[attribute]);
+		if (attribute in row) {
+			if (Array.isArray(row[attribute]) && row[attribute].length === 1) {
+				if (unique.indexOf(row[attribute][0]) === -1) {
+					unique.push(row[attribute][0]);
+				}
+			}
+			else {
+				unique.push(row[attribute]);
+			}
 		}
 		next();
 	}
 
 	function end () {
-		var sorted = unique.sort(function (a, b) {
-			return b - a;
-		});
-		this.push(sorted);
+		unique.sort();
+		this.push(unique);
 		this.push(null);
 	}
 }
@@ -41,8 +46,7 @@ function loggify () {
 	return through.obj(log);
 
 	function log ( row, enc, next ) {
-		console.log(row);
-		// this.push(row);
+		console.log(row.join('\n'));
 		next();
 	}
 }

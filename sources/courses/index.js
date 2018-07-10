@@ -30,15 +30,19 @@ module.exports = Courses;
    row.COURSETERM].join(' ');
  };
 
- Courses.prototype.listSource = function () {
+ Courses.prototype.listSource = function (options) {
+   if (!options) options = {};
    var self = this;
    debug('Courses.listSource::start');
 
    var eventStream = through.obj();
 
    var seed = through.obj();
+   var fileStream = options.local
+     ? localStream
+     : s3Stream;
 
-   seed.pipe(s3Stream())
+   seed.pipe(fileStream())
    .pipe(drainXMLResIntoStream(eventStream));
 
    var sources = ['ENGL.COURSE.DATA.XML',
@@ -68,6 +72,16 @@ module.exports = Courses;
 
          next();
        });
+     }
+   }
+
+   function localStream () {
+     return through.obj(local);
+
+     function local (path, enc, next) {
+       var absPath = require('path').join(process.cwd(), path);
+       var fileStream = fs.createReadStream(absPath);
+       next(null, fileStream);
      }
    }
 
