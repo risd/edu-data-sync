@@ -350,7 +350,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
   var colleagueDepartments = currentWHData.colleague_departments.map(valueFrom( 'department' ))
 
   if ( relateCourseToDepartmentBasedOnCourseNameAbbreviation( colleagueDepartments ) ) {
-    
+
     var courseNameAbbreviation = [ currentWHData.colleague_course_name.split( '-' )[ 0 ] ]
 
     var departments = courseNameAbbreviation
@@ -372,7 +372,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
       .map( valueAs( 'liberalartsdepartments' ) )
 
   } else {
-    
+
     // relate based on department offering course
     var departments = colleagueDepartments
       .map(whUtil.webhookDepartmentForCourseCatalogue)
@@ -394,6 +394,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
       .map(whUtil.webhookLiberalArtsDepartmentForCourseCatalogue)
       .filter(isNotFalse)
       .map(valueAs( 'liberalartsdepartments' ));
+
   }
 
   toResolve[0].itemsToRelate = departments;

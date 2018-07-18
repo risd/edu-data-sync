@@ -14,7 +14,7 @@ module.exports = function () {
         forLiberalArtsDepartments: [
             {
                 "colleague": "History of Art & Visual Cultur",
-                "webhook": "History of Art + Visual Culture",
+                "webhook": "Theory + History of Art + Design",
                 "localist": "History of Art + Visual Culture",
                 "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE",
                 "ektronNews": "History of Art + Visual Culture",
