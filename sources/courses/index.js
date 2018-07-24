@@ -30,15 +30,19 @@ module.exports = Courses;
    row.COURSETERM].join(' ');
  };
 
- Courses.prototype.listSource = function () {
+ Courses.prototype.listSource = function (options) {
+   if (!options) options = {};
    var self = this;
    debug('Courses.listSource::start');
 
    var eventStream = through.obj();
 
    var seed = through.obj();
+   var fileStream = options.local
+     ? localStream
+     : s3Stream;
 
-   seed.pipe(s3Stream())
+   seed.pipe(fileStream())
    .pipe(drainXMLResIntoStream(eventStream));
 
    var sources = ['ENGL.COURSE.DATA.XML',
@@ -68,6 +72,16 @@ module.exports = Courses;
 
          next();
        });
+     }
+   }
+
+   function localStream () {
+     return through.obj(local);
+
+     function local (path, enc, next) {
+       var absPath = require('path').join(process.cwd(), path);
+       var fileStream = fs.createReadStream(absPath);
+       next(null, fileStream);
      }
    }
 
@@ -214,7 +228,16 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     .replace(/Hpss /g, 'HPSS ')
     .replace(/Lael /g, 'LAEL ')
     .replace(/Id /g,   'ID ')
-    .replace(/Las /g,  'LAS ');
+    .replace(/Id:/g,   'ID: ')
+    .replace(/Las /g,  'LAS ')
+    .replace(/Risd /g,  'RISD ')
+    .replace(/Cad /g,  'CAD ')
+    .replace(/ Cad/g,  ' CAD')
+    .replace(/D\+m /g,  'D+M ')
+    .replace(/Fav /g,  'FAV ')
+    .replace(/T&m /g,  'T&M ')
+    .replace(/ And /g,  ' and ')
+    .replace(/ Or /g,  ' or ')
   }
 
   function formatDescription (desc) {
@@ -327,7 +350,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
   var colleagueDepartments = currentWHData.colleague_departments.map(valueFrom( 'department' ))
 
   if ( relateCourseToDepartmentBasedOnCourseNameAbbreviation( colleagueDepartments ) ) {
-    
+
     var courseNameAbbreviation = [ currentWHData.colleague_course_name.split( '-' )[ 0 ] ]
 
     var departments = courseNameAbbreviation
@@ -349,7 +372,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
       .map( valueAs( 'liberalartsdepartments' ) )
 
   } else {
-    
+
     // relate based on department offering course
     var departments = colleagueDepartments
       .map(whUtil.webhookDepartmentForCourseCatalogue)
@@ -371,6 +394,7 @@ Courses.prototype.dataForRelationshipsToResolve = function (currentWHData) {
       .map(whUtil.webhookLiberalArtsDepartmentForCourseCatalogue)
       .filter(isNotFalse)
       .map(valueAs( 'liberalartsdepartments' ));
+
   }
 
   toResolve[0].itemsToRelate = departments;

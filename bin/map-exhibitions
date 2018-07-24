@@ -21,6 +21,7 @@ function executeMap ( mapPrototype ) {
 
   return function withFirebaseref ( firebaseref ) {
 
+    debug( 'map-coordinator' )
     MapCoordinator( Object.assign( mapFnOptions, { firebaseref: firebaseref  } ), mapComplete )
 
     function mapComplete ( error, mappedData ) {
@@ -29,6 +30,7 @@ function executeMap ( mapPrototype ) {
         return process.exit()
       }
 
+      debug( 'signal-reindex' )
       var signalOptions = Object.assign( { firebase: firebaseref }, envConf.signal )
       Signal( 'siteSearchReindex' )( signalOptions, signalComplete )
 

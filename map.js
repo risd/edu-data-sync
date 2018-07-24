@@ -108,15 +108,21 @@ MapCoordinator.prototype.applyMapFn = function ( isOneOff ) {
 MapCoordinator.prototype.applyMap = function ( applyMapFn, complete ) {
   var firebaseDataRef = this.firebaseref.child( 'data' ).child( this.mapPrototype.webhookContentType )
   
+  debug( 'apply-map' )
+
   firebaseDataRef
     .once( 'value', function ( snapshot ) {
       var snapshotData = snapshot.val()
 
       var mappedSnapshotData = applyMapFn( snapshotData )
 
+      debug( 'apply-map:set' )
+
       firebaseDataRef.set( mappedSnapshotData, setComplete )
 
       function setComplete ( error ) {
+        debug( 'apply-map:set:complete' )
+        debug( error )
         complete( error, mappedSnapshotData )
       }
     } )
@@ -135,6 +141,7 @@ MapCoordinator.prototype.applyMap = function ( applyMapFn, complete ) {
  * @param  {Function} complete Callback
  */
 MapCoordinator.prototype.relatedContentTypeKeyPaths = function ( complete ) {
+  debug( 'related-content-type-key-paths' )
   var siteDataRef = this.firebaseref.child( 'data' )
   var mappedContentType = this.mapPrototype.webhookContentType;
 
@@ -243,6 +250,8 @@ MapCoordinator.prototype.relatedContentTypeKeyPaths = function ( complete ) {
  * @param  {[type]} complete       Function to call with 
  */
 MapCoordinator.prototype.dataForContentTypeKeyPaths = function ( contentTypeKeyPaths, complete ) {
+  debug( 'data-for-content-type-key-paths' )
+
   var siteDataRef = this.firebaseref.child( 'data' )
 
   var dataTasks = contentTypeKeyPaths.map( toAbsoluteControlKeyPathTask )
@@ -333,16 +342,19 @@ MapCoordinator.prototype.dataForContentTypeKeyPaths = function ( contentTypeKeyP
  * @return {object} mappedDataKeyPathPairs   The result of the appplication of `mapRelatedExhibitionsFn` on `controlKeyPathDataArray`
  */
 MapCoordinator.prototype.applyMapRelatedFn = function ( controlKeyPathDataArray, mappedData ) {
+  debug( 'apply-map-related-fn' )
   return controlKeyPathDataArray.map( toMappedDataKeyPathPairs( this.mapPrototype.mapRelatedFn ) )
 
   function toMappedDataKeyPathPairs ( mapRelatedFn ) {
     return function ( controlKeyPathData ) {
       var control = controlKeyPathData.control;
       var controlKeys = controlKeysFrom( controlKeyPathData.keyPath );
+      var controlKey = controlKeys.grid ? controlKeys.grid : controlKeys.control;
+      var controlKeyInGrid = typeof controlKeys.grid === 'string' ? true : false;
 
       return {
         keyPath: controlKeyPathData.keyPath,
-        control: mapRelatedFn( control, controlKeys.grid, mappedData )
+        control: mapRelatedFn( control, controlKey, controlKeyInGrid, mappedData )
       }
     }
   }
@@ -362,6 +374,7 @@ MapCoordinator.prototype.applyMapRelatedFn = function ( controlKeyPathDataArray,
  * @param  {Function} complete              The function to call upon saving `controlKeyPathDataArray`
  */
 MapCoordinator.prototype.saveRelatedControls = function ( controlKeyPathDataArray, complete ) {
+  debug( 'save-related-controls' )
   var siteDataRef = this.firebaseref.child( 'data' )
 
   var saveTasks = controlKeyPathDataArray.map( toSaveTasks )
@@ -387,6 +400,9 @@ MapCoordinator.prototype.saveRelatedControls = function ( controlKeyPathDataArra
       }
 
       saveControlKeyPath.forEach( setControlRefPath )
+
+      // the control does not exist on the reverse relationship, lets skip it
+      if ( typeof control === 'undefined') return taskComplete( null, controlKeyPathData )
 
       controlRef.set( control, onSet )
 

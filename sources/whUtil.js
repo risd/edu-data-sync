@@ -14,13 +14,13 @@ module.exports = function () {
         forLiberalArtsDepartments: [
             {
                 "colleague": "History of Art & Visual Cultur",
-                "webhook": "History of Art + Visual Culture",
+                "webhook": "Theory + History of Art + Design",
                 "localist": "History of Art + Visual Culture",
                 "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE",
                 "ektronNews": "History of Art + Visual Culture",
                 "courseCatalogueNameAbbreviation": "HAVC",
             }, {
-                "colleague": "English",
+                "colleague": "Literary Arts and Studies",
                 "webhook": "Literary Arts + Studies",
                 "localist": "Literary Arts + Studies",
                 "courseCatalogue": "LITERARY ARTS AND STUDIES",
@@ -172,7 +172,7 @@ module.exports = function () {
             }
         ],
         forFoundationStudies: [{
-            "colleague": "Experimental + Found Studies",
+            "colleague": "Experimental and Found Studies",
             "courseCatalogue": "Foundation Studies",
             "webhook": "Experimental and Foundation Studies",
             "localist": "Division of Foundation Studies",
