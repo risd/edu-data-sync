@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+var moment = require('moment');
+var timezone = require('moment-timezone');
+var whUtil = require('./sources/whUtil.js')();
+
+var event = {
+  "_sort_create_date": 1501731491980,
+  "_sort_last_updated": 1501731491980,
+  "_sort_localist_date_range_first": 1501646400000,
+  "_sort_localist_date_range_last": 1501646400000,
+  "_sort_publish_date": 1501731491980,
+  "create_date": "2017-08-02T23:38:11-04:00",
+  "is_draft": false,
+  "last_updated": "2017-08-02T23:38:11-04:00",
+  "localist_date_range_first": "2017-08-02T00:00:00-04:00",
+  "localist_date_range_last": "2017-08-02T00:00:00-04:00",
+  "localist_description_text": "Summer 2017 Narratives of Student Progress due.",
+  "localist_event_url": "",
+  "localist_featured": false,
+  "localist_filters__department": [
+    {
+      "department": "Registrar"
+    }
+  ],
+  "localist_filters__event_types": [
+    {
+      "name": "Academic Calendar Group"
+    },
+    {
+      "name": "Academic Calendar Event"
+    }
+  ],
+  "localist_instances": [
+    {
+      "all_day": true,
+      "end": "",
+      "id": 2923883,
+      "start": "2017-08-02T00:00:00-04:00"
+    }
+  ],
+  "localist_location_name": "",
+  "localist_photo_url": "https://d3e1o4bcbhmj8g.cloudfront.net/photos/460226/huge/2ac76eaac859c8258a0bd009f1d008ada344c543.jpg",
+  "localist_room_number": "",
+  "localist_ticket_cost": "",
+  "localist_ticket_url": "",
+  "localist_title": "Narratives of Student Progress Due",
+  "localist_uid": 996515,
+  "localist_url": "https://events.risd.edu/event/summer_2017_narratives_of_student_progress_due",
+  "localist_venue_uid": "",
+  "localist_venue_url": "",
+  "name": "2017-08-02 Narratives of Student Progress Due 996515",
+  "preview_url": "9e991817-cf84-4958-cce7-496f20118182",
+  "publish_date": "2017-08-02T23:38:11-04:00",
+  "upcoming": false,
+  "within_date_range": true
+}
+
+console.log( `isWithinDateRange: ${ isWithinDateRange( event.localist_date_range_first, event.localist_date_range_last ) }` )
+console.log( `isUpcoming: ${ isUpcoming( event.localist_date_range_last ) }` )
+
+function addTimeZone (dateString) {
+    return dateString + 'T00:00:00-04:00';
+}
+
+function isWithinDateRange (start, end) {
+    /* The isBetween method of moment.js
+       is not inclusive of the start and
+       end days. Thus, start will have one
+       day subtracted, and end will have
+       one day added, and asking if `now`
+       is in between will return true
+       if `now` is between, including the
+       start and the end day.
+   */
+    var now = timezone().tz('America/New_York');
+    var inclusiveStart = moment(start).subtract(1, 'days');
+    var inclusiveEnd = moment(end).add(1, 'days');
+    return moment(now)
+                .isBetween(
+                    inclusiveStart,
+                    inclusiveEnd);
+}
+
+function isUpcoming (end) {
+    var now = timezone().tz('America/New_York');
+    var beginningOfDay = now
+        .set('hour', 0)
+        .set('minute', 0)
+        .set('second', 0);
+    return moment(beginningOfDay).isBefore(end);
+}
+
+function readable_date (date) {
+    return moment(date).format('YYYY-MM-DD')
+}

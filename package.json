@@ -25,8 +25,7 @@
     "sync-employees": "./bin/sync-employees",
     "sync-courses": "./bin/sync-courses",
     "trigger-build": "./bin/trigger-build",
-    "backup": "./bin/backup",
-    "preinstall": "cd elastic-search && npm install"
+    "backup": "./bin/backup"
   },
   "author": "Ruben Rodriguez <mail@rubenrodriguez.me> (http://rubenrodriguez.me/)",
   "license": "ISC",
