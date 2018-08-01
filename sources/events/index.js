@@ -296,9 +296,7 @@ Events.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
         })(src.filters || {});
     wh.isDraft = false;
 
-    return (eventDateSort(
-                whUtil.whRequiredDates(
-                    wh)));
+    return (eventDateSort(wh));
 
     function eventDateSort (d) {
         var fields = [

@@ -207,7 +207,7 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
   wh.colleague_course_academic_level = src.COURSEACADEMICLEVEL;
   wh.colleague_course_faculty = mapCourseFaculty( src.COURSEFACULTY );
 
-  return (whUtil.whRequiredDates(wh));
+  return wh;
 
   function toTitleCase (str) {
     return str.replace(

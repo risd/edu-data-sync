@@ -313,7 +313,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
             return { name: org };
         });
 
-    return (whUtil.whRequiredDates(wh));
+    return wh;
 };
 
 Employees.prototype.relationshipsToResolve = function () {
