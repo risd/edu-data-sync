@@ -1,6 +1,7 @@
-var debug = require('debug')('firebaseref');
+var debug = require('debug')('firebase-ref');
 var from = require('from2-array');
 var through = require('through2');
+var miss = require('mississippi')
 
 module.exports = FirebaseRef;
 
@@ -19,14 +20,30 @@ module.exports = FirebaseRef;
  * @returns {Stream} firebaseRef
  */
 
-function FirebaseRef ( options ) {
+function FirebaseRef ( options, callback ) {
   if ( !options ) options = {}
 
-  return from.obj([ options, null])
-             .pipe(FirebaseToken())
-             .pipe(FirebaseAuth())
-             .pipe(FirebaseBucketForSite())
-             .pipe(PushRef());
+  var pipeline = [
+    from.obj([ options, null]),
+    FirebaseToken(),
+    FirebaseAuth(),
+    FirebaseBucketForSite(),
+  ]
+
+  if ( typeof callback === 'function' ) pipeline = pipeline.concat( [ CallbackRef ] )
+  else pipeline = pipeline.concat( [ PushRef() ] )
+
+  return miss.pipe.apply( null, pipeline.concat( [ ErrorHandler ] ) )
+
+  function CallbackRef () {
+    return through.obj( function ( firebaseref, enc, next ) {
+      callback( null, firebaseref )
+    } )
+  }
+
+  function ErrorHandler ( error ) {
+    if ( error && callback ) callback( error )
+  }
 
   /**
    * @param {object} options

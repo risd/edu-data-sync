@@ -1,9 +1,19 @@
 #!/usr/bin/env node
 
 var debug = require('debug')('sync-employees:cli');
-var Sync = require( '../sync.js' );
+var Sync = require( 'webhook-cms-pull' );
 var Employees = require('../sources/employees/index.js');
 
-Sync( Employees, function onComplete () {
+var Env = require('../env.js')();
+var envConf = Env.asObject();
+
+
+Sync( {
+  sourcePrototype: Employees,
+  env: envConf,
+  syncNode: 'syncEmployees'
+}, onComplete )
+
+function onComplete () {
   process.exit()
-} )
+}

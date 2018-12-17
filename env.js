@@ -15,9 +15,9 @@ module.exports = Env;
  * AWS_KEY
  * AWS_SECRET
  * AWS_BUCKET
- * ELASTIC_SEARCH_SERVER
- * ELASTIC_SEARCH_USER
- * ELASTIC_SEARCH_PASSWORD
+ * REPORT_BUCKET
+ * REPORT_REGION
+ * REPORT_FIREBASE_PATH
  * 
  * @param {object} options Defaults to process.env
  * @returns {object}   interface
@@ -44,15 +44,9 @@ function Env ( options ) {
   }
 
   var configuration = {
-    elasticSearch: {
-      server  : environment.ELASTIC_SEARCH_SERVER,
-      user    : environment.ELASTIC_SEARCH_USER,
-      password: environment.ELASTIC_SEARCH_PASSWORD,
-      siteName: environment.SITE_NAME,
-    },
     firebase: {
       firebaseName: environment.FIREBASE_NAME,
-      firebaseKey : environment.FIREBASE_KEY,
+      firebaseServiceAccountKey : JSON.parse( environment.FIREBASE_SERVICE_ACCOUNT ),
       siteName    : environment.SITE_NAME,
       siteKey     : environment.SITE_KEY,
     },
@@ -66,13 +60,20 @@ function Env ( options ) {
       key: environment.AWS_KEY,
       secret: environment.AWS_SECRET,
       bucket: environment.AWS_BUCKET,
-    }
+    },
+    report: {
+      awsBucket: environment.REPORT_BUCKET,
+      awsRegion: environment.REPORT_REGION,
+      firebasePath: environment.REPORT_FIREBASE_PATH,
+      awsKey: environment.AWS_KEY,
+      awsSecret: environment.AWS_SECRET,
+    },
   }
 
-  debug( configuration.elasticSearch )
   debug( configuration.firebase )
   debug( configuration.build )
   debug( configuration.aws )
+  debug( configuration.report )
 
   return {
     asObject: extendConfiguration,

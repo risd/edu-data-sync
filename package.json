@@ -1,6 +1,6 @@
 {
   "name": "edu-data-sync",
-  "version": "0.6.17",
+  "version": "1.0.0",
   "description": "Sync risd.edu datastore with external data sources.",
   "main": "index.js",
   "repository": {
@@ -25,8 +25,7 @@
     "sync-employees": "./bin/sync-employees",
     "sync-courses": "./bin/sync-courses",
     "trigger-build": "./bin/trigger-build",
-    "backup": "./bin/backup",
-    "preinstall": "cd elastic-search && npm install"
+    "backup": "./bin/backup"
   },
   "author": "Ruben Rodriguez <mail@rubenrodriguez.me> (http://rubenrodriguez.me/)",
   "license": "ISC",
@@ -35,7 +34,6 @@
     "clone": "^1.0.2",
     "debug": "^2.2.0",
     "dotenv-safe": "^4.0.4",
-    "firebase": "^2.2.3",
     "foreman": "^2.0.0",
     "from2-array": "0.0.3",
     "gapitoken": "^0.1.4",
@@ -53,7 +51,8 @@
     "run-parallel-limit": "^1.0.3",
     "stream-combiner2": "^1.0.2",
     "through2": "^0.6.3",
-    "tumblr.js": "0.0.4",
+    "tumblr.js": "0.0.4",,
+    "webhook-cms-pull": "^2.0.0",
     "xml-stream": "^0.4.5",
     "xtend": "^4.0.1"
   }

@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+process.env.DEBUG='*'
+
+var xmlStream = require( 'xml-stream' )
+var miss = require( 'mississippi' )
+var debug = require( 'debug' )
+
+var parser = new xmlStream( read( xml() ), 'iso-8859-1' )
+
+parser.on( 'error', debug( 'error' ) )
+parser.on( 'endElement: EMPLOYEE', debug( 'data' ) )
+parser.on( 'end', debug( 'end' ) )
+
+function read ( str ) {
+  return miss.from( function ( size, next ) {
+    if ( str.length <= 0 ) return next( null, null )
+    var chunk = str.slice( 0, size )
+    str = str.slice( size )
+    next( null, chunk )
+  } )
+}
+
+function xml () {
+  return `
+  <?xml version='1.0' encoding='iso-8859-1' ?>
+  <!-- File Name: COURSESECTIONS.xml -->
+  <ROOT>
+    <EMPLOYEE>
+      <ID>0498279</ID>
+      <FIRSTNAME>Heinrich</FIRSTNAME>
+      <MIDDLENAME>Gregor</MIDDLENAME>
+      <LASTNAME>Hermann</LASTNAME>
+      <PREFERREDNAME>Heinrich Hermann</PREFERREDNAME>
+      <NICKNAME></NICKNAME>
+      <DEPARTMENT>Interior Architecture</DEPARTMENT>
+      <TITLE>Critic</TITLE>
+      <POSITION>138AR7025</POSITION>
+      <PHONE>401-454-6275</PHONE>
+      <EMAIL>datatel@risd.edu</EMAIL>
+      <INSTITUTIONSATTENDED>MARC, Cornell University; PHD, Harvard University</INSTITUTIONSATTENDED>
+      <CORG></CORG>
+      <SABBATICAL></SABBATICAL>
+    </EMPLOYEE>
+    <EMPLOYEE>
+      <ID>0452366</ID>
+      <FIRSTNAME>Luanne</FIRSTNAME>
+      <MIDDLENAME>M.</MIDDLENAME>
+      <LASTNAME>West</LASTNAME>
+      <PREFERREDNAME>Anne West</PREFERREDNAME>
+      <NICKNAME>Anne</NICKNAME>
+      <DEPARTMENT>Graduate Studies</DEPARTMENT>
+      <TITLE>Senior Lecturer</TITLE>
+      <POSITION>156AG7023</POSITION>
+      <PHONE>401-277-4977</PHONE>
+      <EMAIL>awest@risd.edu</EMAIL>
+      <INSTITUTIONSATTENDED>PHD, University of Toronto; MA, Syracuse University; BFA, Queen's University</INSTITUTIONSATTENDED>
+      <CORG>Sabbatical</CORG>
+      <SABBATICAL start-date="2017-07-01" end-date="2018-06-30"></SABBATICAL>
+    </EMPLOYEE>
+  <ROOT>`.trim()
+}

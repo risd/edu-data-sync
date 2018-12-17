@@ -1,48 +1,17 @@
 #!/usr/bin/env node
 var debug = require( 'debug' )( 'map-exhibitions' )
-var MapCoordinator = require( '../map.js' )
+var MapCoordinator = require( 'webhook-cms-pull/map.js' )
 var MapExhibitions = require( '../maps/exhibitions.js' )
 
-var Firebaseref = require( '../firebaseref.js' )
-var Signal = require( '../signal/index' )
 var envConf = require( '../env.js' )().asObject()
 
-var ElasticSearch = require( '../elastic-search/stream-interface.js' )( envConf.elasticSearch )
-
-// Defines which MapCoordinator prototype to use
-var execute = executeMap( MapExhibitions )
-  
-Firebaseref( envConf.firebase )
-  .on( 'data', execute )
-  .on( 'error', firebaseError )
-
-function executeMap ( mapPrototype ) {
-  var mapFnOptions = { mapPrototype: mapPrototype }
-
-  return function withFirebaseref ( firebaseref ) {
-
-    debug( 'map-coordinator' )
-    MapCoordinator( Object.assign( mapFnOptions, { firebaseref: firebaseref  } ), mapComplete )
-
-    function mapComplete ( error, mappedData ) {
-      if ( error ) {
-        console.log( error )
-        return process.exit()
-      }
-
-      debug( 'signal-reindex' )
-      var signalOptions = Object.assign( { firebase: firebaseref }, envConf.signal )
-      Signal( 'siteSearchReindex' )( signalOptions, signalComplete )
-
-      function signalComplete ( error, payload ) {
-        if ( error ) console.log( error )
-        process.exit()
-      }
-    }
-  }
+var options = {
+  mapPrototype: MapExhibitions,
+  firebase: envConf.firebase,
+  signal: envConf.signal,
 }
 
-function firebaseError ( error ) {
-  console.log( error )
+MapCoordinator( options, function ( error, results ) {
+  if ( error ) console.log( error )
   process.exit()
-}
+} )
