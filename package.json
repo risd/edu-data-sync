@@ -34,7 +34,6 @@
     "clone": "^1.0.2",
     "debug": "^2.2.0",
     "dotenv-safe": "^4.0.4",
-    "firebase": "^2.2.3",
     "foreman": "^2.0.0",
     "from2-array": "0.0.3",
     "gapitoken": "^0.1.4",
