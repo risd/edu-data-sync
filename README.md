@@ -9,16 +9,7 @@ A [report](http://edu-data-sync-report.s3-website-us-east-1.amazonaws.com/index.
 
 ### Environment variables
 
-Requires the following environment variables to be defined. 
-
-```
-SITE_NAME
-FIREBASE_NAME
-FIREBASE_KEY
-ELASTIC_SEARCH_SERVER
-ELASTIC_SEARCH_USER
-ELASTIC_SEARCH_PASSWORD
-```
+Requires the environment variables contained within [`.env.example`]('./.env.exmaple'). 
 
 Uses [dotenv-safe](https://github.com/rolodato/dotenv-safe) via [env.js](env.js) to load configuration.
 
