@@ -63,7 +63,7 @@ Employees.prototype.keyFromSource = function (sourceItem) {
 // };
 
 Employees.prototype.listSource = function () {
-	debug('listSource');
+	debug('listSourceRemote');
     var self = this;
 
     var eventStream = through.obj();
@@ -124,17 +124,27 @@ Employees.prototype.listSource = function () {
     }
 };
 
-Employees.prototype.listSourceLocal = function (path) {
+Employees.prototype.listSourceLocal = function () {
     debug('listSourceLocal');
     var self = this;
 
     var eventStream = through.obj();
 
+    var path = __dirname + '/EMPLOYEE.DATA.WD.021319.XML'
     var file = fs.createReadStream(path);
 
-    var xml = new xmlStream(file, 'iso-8859-1');
+    // Colleague export process uses iso-8859-1
+    // var xml = new xmlStream(file, 'iso-8859-1');
+    // Workday export process uses utf8
+    var xml = new xmlStream(file, 'UTF8');
 
-    xml.on('endElement: EMPLOYEE', function (d) {
+    // Colleague export process uses uppercase for the employee key name
+    // xml.on('endElement: EMPLOYEE', function (d) {
+    // Workday export process uses title case for the employee key name
+    xml.on('endElement: Employee', function (d) {
+        if ( typeof d.SABBATICAL === 'object' && typeof d.SABBATICAL['$'] === 'object' )  {
+            d.SABBATICAL = d.SABBATICAL['$']
+        }
         eventStream.push(d);
     });
 
