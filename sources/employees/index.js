@@ -130,7 +130,7 @@ Employees.prototype.listSourceLocal = function () {
 
     var eventStream = through.obj();
 
-    var path = __dirname + '/EMPLOYEE.DATA.WD.021319.XML'
+    var path = __dirname + '/EMPLOYEE.DATA.WD.20190219.TEST.XML'
     var file = fs.createReadStream(path);
 
     // Colleague export process uses iso-8859-1
@@ -141,7 +141,7 @@ Employees.prototype.listSourceLocal = function () {
     // Colleague export process uses uppercase for the employee key name
     // xml.on('endElement: EMPLOYEE', function (d) {
     // Workday export process uses title case for the employee key name
-    xml.on('endElement: Employee', function (d) {
+    xml.on('endElement: EMPLOYEE', function (d) {
         if ( typeof d.SABBATICAL === 'object' && typeof d.SABBATICAL['$'] === 'object' )  {
             d.SABBATICAL = d.SABBATICAL['$']
         }
