@@ -13,7 +13,7 @@ def scheduled_job():
 
 @sched.scheduled_job('cron', hour=7)
 def scheduled_job():
-    subprocess.call(['sync-employees'])
+    # subprocess.call(['sync-employees'])
     subprocess.call(['sync-courses'])
 
 sched.start()
