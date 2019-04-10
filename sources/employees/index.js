@@ -359,7 +359,7 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     if ('colleague_department' in currentWHData) {
         var departments = [currentWHData.colleague_department]
-            .map(whUtil.webhookDepartmentForColleague)
+            .map(whUtil.webhookDepartmentForWorkday)
             .filter(function (d) {
                 return d !== false;
             })
@@ -369,19 +369,19 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         toResolve[0].itemsToRelate = departments;
 
-        if (currentWHData.colleague_department === whUtil.colleagueFoundationStudies) {
+        if (currentWHData.colleague_department === whUtil.workdayFoundationStudies) {
             // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
-        if (currentWHData.colleague_department === whUtil.colleagueGraduateStudies) {
+        if (currentWHData.colleague_department === whUtil.workdayGraduateStudies) {
             // debug('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }
 
         var liberalArtsDepartments =
             [currentWHData.colleague_department]
-                .map(whUtil.webhookLiberalArtsDepartmentForColleague)
+                .map(whUtil.webhookLiberalArtsDepartmentForWorkday)
                 .filter(function (d) {
                     return d !== false;
                 })

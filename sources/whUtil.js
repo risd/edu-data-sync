@@ -248,6 +248,15 @@ module.exports = function () {
                 'forLiberalArtsDepartments',
                 'colleague'),
 
+        webhookDepartmentForWorkday:
+            forMapUsingKeyFindWebhookValue(
+                'forDepartments',
+                'workday'),
+        webhookLiberalArtsDepartmentForWorkday:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'workday'),
+
         webhookDepartmentForCourseCatalogueNameAbbreviation:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -273,6 +282,15 @@ module.exports = function () {
             valueForMapAndKey(
                 'forGraduateStudies',
                 'colleague'),
+
+        workdayFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'workday'),
+        workdayGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'workday'),
 
         courseCatalogueFoundationStudies:
             valueForMapAndKey(
