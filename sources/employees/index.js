@@ -293,7 +293,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     wh.colleague_email = src.EMAIL;
     wh.colleague_phone_number = src.PHONE;
-    wh.colleague_title = src.TITLE;
+    wh.colleague_title = src.TITLE.split( ' - ' )[ 0 ];
     wh.colleague_department = src.DEPARTMENT;
     wh.colleague_institutions_attended =
     	src.INSTITUTIONSATTENDED.split( ';' )
