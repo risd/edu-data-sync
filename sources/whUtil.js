@@ -13,6 +13,7 @@ module.exports = function () {
         ],
         forLiberalArtsDepartments: [
             {
+                "workday": "Theory + History of Art + Design",
                 "colleague": "History of Art & Visual Cultur",
                 "webhook": "Theory + History of Art + Design",
                 "localist": "History of Art + Visual Culture",
@@ -20,6 +21,7 @@ module.exports = function () {
                 "ektronNews": "History of Art + Visual Culture",
                 "courseCatalogueNameAbbreviation": "HAVC",
             }, {
+                "workday": "Literary Arts + Studies",
                 "colleague": "Literary Arts and Studies",
                 "webhook": "Literary Arts + Studies",
                 "localist": "Literary Arts + Studies",
@@ -27,6 +29,7 @@ module.exports = function () {
                 "ektronNews": "Literary Arts + Studies",
                 "courseCatalogueNameAbbreviation": "LAS",
             }, {
+                "workday": "History Philosophy + the Social Sciences",
                 "colleague": "History Phil Social Sciences",
                 "webhook": "History, Philosophy + the Social Sciences",
                 "localist": "History, Philosophy + the Social Sciences",
@@ -37,6 +40,7 @@ module.exports = function () {
         ],
         forDepartments: [
             {
+                "workday": "Textiles",
                 "colleague": "Textiles",
                 "webhook": "Textiles",
                 "localist": "Textiles",
@@ -44,6 +48,7 @@ module.exports = function () {
                 "ektronNews": "Textiles",
                 "courseCatalogueNameAbbreviation": "TEXT",
             }, {
+                "workday": "Painting",
                 "colleague": "Painting",
                 "webhook": "Painting",
                 "localist": "Painting",
@@ -51,6 +56,7 @@ module.exports = function () {
                 "ektronNews": "Painting",
                 "courseCatalogueNameAbbreviation": "PAINT",
             }, {
+                "workday": "Glass",
                 "colleague": "Glass",
                 "webhook": "Glass",
                 "localist": "Glass",
@@ -58,6 +64,7 @@ module.exports = function () {
                 "ektronNews": "Glass",
                 "courseCatalogueNameAbbreviation": "GLASS",
             }, {
+                "workday": "Sculpture",
                 "colleague": "Sculpture",
                 "webhook": "Sculpture",
                 "localist": "Sculpture",
@@ -65,6 +72,7 @@ module.exports = function () {
                 "ektronNews": "Sculpture",
                 "courseCatalogueNameAbbreviation": "SCULP",
             }, {
+                "workday": "Printmaking",
                 "colleague": "Printmaking",
                 "webhook": "Printmaking",
                 "localist": "Printmaking",
@@ -72,6 +80,7 @@ module.exports = function () {
                 "ektronNews": "Printmaking",
                 "courseCatalogueNameAbbreviation": "PRINT",
             }, {
+                "workday": "Photography",
                 "colleague": "Photography",
                 "webhook": "Photography",
                 "localist": "Photography",
@@ -79,6 +88,7 @@ module.exports = function () {
                 "ektronNews": "Photography",
                 "courseCatalogueNameAbbreviation": "PHOTO",
             }, {
+                "workday": "Digital Media",
                 "colleague": "Digital Media",
                 "webhook": "Digital + Media",
                 "localist": "Digital + Media",
@@ -86,6 +96,7 @@ module.exports = function () {
                 "ektronNews": "Digital + Media",
                 "courseCatalogueNameAbbreviation": "DM",
             }, {
+                "workday": "Teaching + Learning in Art + Design",
                 "colleague": "Teach Learn Art + Design",
                 "webhook": "Teaching + Learning in Art + Design",
                 "localist": "Teaching + Learning in Art + Design",
@@ -93,6 +104,7 @@ module.exports = function () {
                 "ektronNews": "Teaching + Learning in Art + Design",
                 "courseCatalogueNameAbbreviation": "TLAD",
             }, {
+                "workday": "Landscape Architecture",
                 "colleague": "Landscape Architecture",
                 "webhook": "Landscape Architecture",
                 "localist": "Landscape Architecture",
@@ -100,6 +112,7 @@ module.exports = function () {
                 "ektronNews": "Landscape Architecture",
                 "courseCatalogueNameAbbreviation": "LDAR",
             }, {
+                "workday": "Jewelry + Metalsmithing",
                 "colleague": "Jewelry & Metalsmithing",
                 "webhook": "Jewelry + Metalsmithing",
                 "localist": "Jewelry + Metalsmithing",
@@ -107,6 +120,7 @@ module.exports = function () {
                 "ektronNews": "Jewelry + Metalsmithing",
                 "courseCatalogueNameAbbreviation": "J&M",
             }, {
+                "workday": "Interior Architecture",
                 "colleague": "Interior Architecture",
                 "webhook": "Interior Architecture",
                 "localist": "Interior Architecture",
@@ -114,6 +128,7 @@ module.exports = function () {
                 "ektronNews": "Interior Architecture",
                 "courseCatalogueNameAbbreviation": "INTAR",
             }, {
+                "workday": "Industrial Design",
                 "colleague": "Industrial Design",
                 "webhook": "Industrial Design",
                 "localist": "Industrial Design",
@@ -121,6 +136,7 @@ module.exports = function () {
                 "ektronNews": "Industrial Design",
                 "courseCatalogueNameAbbreviation": "ID",
             }, {
+                "workday": "Illustration",
                 "colleague": "Illustration",
                 "webhook": "Illustration",
                 "localist": "Illustration",
@@ -128,6 +144,7 @@ module.exports = function () {
                 "ektronNews": "Illustration",
                 "courseCatalogueNameAbbreviation": "ILLUS",
             }, {
+                "workday": "Furniture Design",
                 "colleague": "Furniture Design",
                 "webhook": "Furniture Design",
                 "localist": "Furniture Design",
@@ -135,6 +152,7 @@ module.exports = function () {
                 "ektronNews": "Furniture Design",
                 "courseCatalogueNameAbbreviation": "FURN",
             }, {
+                "workday": "Film/Animation/Video",
                 "colleague": "Film/Animation/Video",
                 "webhook": "Film / Animation / Video",
                 "localist": "Film/Animation/Video",
@@ -142,6 +160,7 @@ module.exports = function () {
                 "ektronNews": "Film-Animation-Video",
                 "courseCatalogueNameAbbreviation": "FAV",
             }, {
+                "workday": "Ceramics",
                 "colleague": "Ceramics",
                 "webhook": "Ceramics",
                 "localist": "Ceramics",
@@ -149,6 +168,7 @@ module.exports = function () {
                 "ektronNews": "Ceramics",
                 "courseCatalogueNameAbbreviation": "CER",
             }, {
+                "workday": "Department of Architecture",
                 "colleague": "Department of Architecture",
                 "webhook": "Architecture",
                 "localist": "Architecture",
@@ -156,6 +176,7 @@ module.exports = function () {
                 "ektronNews": "Architecture",
                 "courseCatalogueNameAbbreviation": "ARCH",
             }, {
+                "workday": "Graphic Design",
                 "colleague": "Graphic Design",
                 "webhook": "Graphic Design",
                 "localist": "Graphic Design",
@@ -163,6 +184,7 @@ module.exports = function () {
                 "ektronNews": "Graphic Design",
                 "courseCatalogueNameAbbreviation": "GRAPH",
             }, {
+                "workday": "Apparel Design",
                 "colleague": "Apparel Design",
                 "webhook": "Apparel Design",
                 "localist": "Apparel Design",
@@ -172,6 +194,7 @@ module.exports = function () {
             }
         ],
         forFoundationStudies: [{
+            "workday": "Division of Foundation Studies",
             "colleague": "Experimental and Found Studies",
             "courseCatalogue": "Foundation Studies",
             "webhook": "Experimental and Foundation Studies",
@@ -184,6 +207,7 @@ module.exports = function () {
             "courseCatalogueNameAbbreviation": "",
         }],
         forGraduateStudies: [{
+            "workday": "Graduate Commons",
             "colleague": "Graduate Studies",
             "courseCatalogue": "GRADUATE STUDIES",
             "webhook": "Graduate Studies",
@@ -224,6 +248,15 @@ module.exports = function () {
                 'forLiberalArtsDepartments',
                 'colleague'),
 
+        webhookDepartmentForWorkday:
+            forMapUsingKeyFindWebhookValue(
+                'forDepartments',
+                'workday'),
+        webhookLiberalArtsDepartmentForWorkday:
+            forMapUsingKeyFindWebhookValue(
+                'forLiberalArtsDepartments',
+                'workday'),
+
         webhookDepartmentForCourseCatalogueNameAbbreviation:
             forMapUsingKeyFindWebhookValue(
                 'forDepartments',
@@ -249,6 +282,15 @@ module.exports = function () {
             valueForMapAndKey(
                 'forGraduateStudies',
                 'colleague'),
+
+        workdayFoundationStudies:
+            valueForMapAndKey(
+                'forFoundationStudies',
+                'workday'),
+        workdayGraduateStudies:
+            valueForMapAndKey(
+                'forGraduateStudies',
+                'workday'),
 
         courseCatalogueFoundationStudies:
             valueForMapAndKey(
