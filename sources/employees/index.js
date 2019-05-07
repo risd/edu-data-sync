@@ -102,7 +102,7 @@ Employees.prototype.listSource = function () {
 
         function drain (res, enc, next) {
             var stream = this;
-            var xml = new xmlStream(res, 'iso-8859-1');
+            var xml = new xmlStream(res, 'UTF8');
 
             xml.on('error', function (err) {
                 writeStream.emit('error', err);
