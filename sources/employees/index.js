@@ -63,7 +63,7 @@ Employees.prototype.keyFromSource = function (sourceItem) {
 // };
 
 Employees.prototype.listSource = function () {
-	debug('listSource');
+	debug('listSourceRemote');
     var self = this;
 
     var eventStream = through.obj();
@@ -102,7 +102,7 @@ Employees.prototype.listSource = function () {
 
         function drain (res, enc, next) {
             var stream = this;
-            var xml = new xmlStream(res, 'iso-8859-1');
+            var xml = new xmlStream(res, 'UTF8');
 
             xml.on('error', function (err) {
                 writeStream.emit('error', err);
@@ -124,17 +124,27 @@ Employees.prototype.listSource = function () {
     }
 };
 
-Employees.prototype.listSourceLocal = function (path) {
+Employees.prototype.listSourceLocal = function () {
     debug('listSourceLocal');
     var self = this;
 
     var eventStream = through.obj();
 
+    var path = __dirname + '/EMPLOYEE.DATA.WD.20190219.TEST.XML'
     var file = fs.createReadStream(path);
 
-    var xml = new xmlStream(file, 'iso-8859-1');
+    // Colleague export process uses iso-8859-1
+    // var xml = new xmlStream(file, 'iso-8859-1');
+    // Workday export process uses utf8
+    var xml = new xmlStream(file, 'UTF8');
 
+    // Colleague export process uses uppercase for the employee key name
+    // xml.on('endElement: EMPLOYEE', function (d) {
+    // Workday export process uses title case for the employee key name
     xml.on('endElement: EMPLOYEE', function (d) {
+        if ( typeof d.SABBATICAL === 'object' && typeof d.SABBATICAL['$'] === 'object' )  {
+            d.SABBATICAL = d.SABBATICAL['$']
+        }
         eventStream.push(d);
     });
 
@@ -283,7 +293,7 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
 
     wh.colleague_email = src.EMAIL;
     wh.colleague_phone_number = src.PHONE;
-    wh.colleague_title = src.TITLE;
+    wh.colleague_title = src.TITLE.split( ' - ' )[ 0 ];
     wh.colleague_department = src.DEPARTMENT;
     wh.colleague_institutions_attended =
     	src.INSTITUTIONSATTENDED.split( ';' )
@@ -349,7 +359,7 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
     if ('colleague_department' in currentWHData) {
         var departments = [currentWHData.colleague_department]
-            .map(whUtil.webhookDepartmentForColleague)
+            .map(whUtil.webhookDepartmentForWorkday)
             .filter(function (d) {
                 return d !== false;
             })
@@ -359,19 +369,19 @@ Employees.prototype.dataForRelationshipsToResolve = function (currentWHData) {
 
         toResolve[0].itemsToRelate = departments;
 
-        if (currentWHData.colleague_department === whUtil.colleagueFoundationStudies) {
+        if (currentWHData.colleague_department === whUtil.workdayFoundationStudies) {
             // debug('Course is in Foundation Studies.');
             toResolve[1].itemToRelate = true;
         }
 
-        if (currentWHData.colleague_department === whUtil.colleagueGraduateStudies) {
+        if (currentWHData.colleague_department === whUtil.workdayGraduateStudies) {
             // debug('Course is in Graduate Studies.');
             toResolve[2].itemToRelate = true;
         }
 
         var liberalArtsDepartments =
             [currentWHData.colleague_department]
-                .map(whUtil.webhookLiberalArtsDepartmentForColleague)
+                .map(whUtil.webhookLiberalArtsDepartmentForWorkday)
                 .filter(function (d) {
                     return d !== false;
                 })
