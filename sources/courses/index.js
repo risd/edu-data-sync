@@ -245,6 +245,8 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     .map(replaceBrWithP)
     .map(ensureWrapInP)
     .map(ensureValid)
+    .map(replaceBWithStrong)
+    .map(replaceIWithEm)
     [0];
 
     function ensureWrapInP (body) {
@@ -264,6 +266,22 @@ Courses.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
       return body
       .replace(/<br>/g, '</p><p>')
       .replace(/<BR>/g, '</p><p>');
+    }
+
+    function replaceBWithStrong (body) {
+      return body
+        .replace(/<b>/g, '<strong>')
+        .replace(/<B>/g, '<strong>')
+        .replace(/<\/b>/g, '</strong>')
+        .replace(/<\/B>/g, '</strong>')
+    }
+
+    function replaceIWithEm (body) {
+      return body
+        .replace(/<i>/g, '<em>')
+        .replace(/<I>/g, '<em>')
+        .replace(/<\/i>/g, '</em>')
+        .replace(/<\/I>/g, '</em>')
     }
 
     function ensureValid (body) {

@@ -124,13 +124,13 @@ Employees.prototype.listSource = function () {
     }
 };
 
-Employees.prototype.listSourceLocal = function () {
+Employees.prototype.listSourceLocal = function ( path ) {
     debug('listSourceLocal');
     var self = this;
 
     var eventStream = through.obj();
 
-    var path = __dirname + '/EMPLOYEE.DATA.WD.20190219.TEST.XML'
+    // var path = __dirname + '/EMPLOYEE.DATA.WD.20190219.TEST.XML'
     var file = fs.createReadStream(path);
 
     // Colleague export process uses iso-8859-1
