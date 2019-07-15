@@ -67,7 +67,8 @@ module.exports = Courses;
          if (err) {
            stream.emit('error', err);
          } else {
-           stream.push(res);
+           var sourceSpecification = { path: path, xmlDocument: res };
+           stream.push(sourceSpecification);
          }
 
          next();
@@ -81,44 +82,48 @@ module.exports = Courses;
      function local (path, enc, next) {
        var absPath = require('path').join(process.cwd(), path);
        var fileStream = fs.createReadStream(absPath);
-       next(null, fileStream);
+       var sourceSpecification = { path: path, xmlDocument: fileStream };
+       next(null, sourceSpecification);
      }
    }
 
    function drainXMLResIntoStream (writeStream) {
      return through.obj(drain);
 
-     function drain (res, enc, next) {
-       var stream = this;
-       var xml = new xmlStream(res, 'iso-8859-1');
+      function drain (sourceSpecification, enc, next) {
+        var stream = this;
+        var sourceXmlDocument = sourceSpecification.xmlDocument;
+        var sourcePath = sourceSpecification.path;
+        var xml = new xmlStream(sourceXmlDocument, 'iso-8859-1');
 
-            // capture all departments per course
-            xml.collect('COURSE');
-            xml.collect('COURSEFACULTY');
-            xml.on('error', function (err) {
-              writeStream.emit('error', err);
-            });
-            xml.on('endElement: DEPARTMENT', function (row) {
-              row.COURSE.forEach(function (d) {
-                d.departments = [row.NAME.trim()];
-                writeStream.push(d);
-              });
-            });
+        // capture all departments per course
+        xml.collect('COURSE');
+        xml.collect('COURSEFACULTY');
+        xml.on('error', function (err) {
+          writeStream.emit('error', err);
+        });
+        xml.on('endElement: DEPARTMENT', function (row) {
+          row.COURSE.forEach(function (d) {
+            d.departments = [row.NAME.trim()];
+            d.sourcePath = sourcePath;
+            writeStream.push(d);
+          });
+        });
 
-            xml.on('end', function () {
-              sourcesCount -= 1;
-              if (sourcesCount === 0) {
-                debug('Courses.listSource::end');
-                writeStream.push(null);
-                stream.push(null);
-              }
-              else {
-                next();
-              }
-            });
+        xml.on('end', function () {
+          sourcesCount -= 1;
+          if (sourcesCount === 0) {
+            debug('Courses.listSource::end');
+            writeStream.push(null);
+            stream.push(null);
           }
-        }
-      };
+          else {
+            next();
+          }
+        });
+      }
+    }
+  };
 
 /**
  * Course data is formatted by department, instead of by
