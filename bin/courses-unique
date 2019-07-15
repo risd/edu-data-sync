@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+var fs = require('fs');
+var crypto = require('crypto');
+var through = require('through2');
+
+var Env = require('../env.js');
+var envOptions = Env().asObject();
+
+var Courses = require('../sources/courses/index.js')( envOptions );
+
+
+/**
+ * get all courses, and see which courses are unique to which files
+ *
+ * Course : {
+ * 	departments,
+ * 	COURSETITLE,
+ * 	COURSENAME,
+ * 	COURSEDESC,
+ * 	COURSETERM,
+ * 	COURSECREDITS,
+ * 	COURSEACADEMICLEVEL,
+ * 	COURSEFACULTY,
+ * }
+ *
+ * CourseSourcePath : string
+ * 
+ * CourseString : JSON.stringify( Course ) => string
+ * 
+ * HashedCourse : md5( CourseString ) => string
+ *
+ * HashedCoursePath : { hash: HashedCourse, path: CourseSourcePath }
+ * 
+ * HasedCoursesKeyPathValues : [ HashedCoursePath ] => { HashedCourse : [ CourseSourcePath ] }
+ *
+ * ListCoursesWithOneFilePath
+ */
+
+Courses.listSource()
+	.pipe(CourseToHashedCourse())
+	.pipe(HashedCourseToHasedCoursesKeyPathValues())
+
+function CourseToHashedCourse () {
+	return through.obj( convert )
+
+	function convert ( course, enc, next ) {
+		var courseSourcePath = course.sourcePath
+		delete course.sourcePath
+		var hash = crypto.createHash( 'sha256' )
+		var hashedCourse = hash.update( JSON.stringify( course ) ).digest( 'hex' )
+		next( null, {
+			hash: hashedCourse,
+			path: courseSourcePath,
+		} )
+	}
+}
+function HashedCourseToHasedCoursesKeyPathValues () {
+	var hasedCoursesKeyPathValues = {}
+
+	return through.obj( aggregate, log )
+
+	function aggregate ( hashedCoursePath, enc, next ) {
+		var paths = hasedCoursesKeyPathValues[ hashedCoursePath.hash ]
+		if ( typeof paths === 'undefined' ) {
+			paths = []
+		}
+		paths.push( hashedCoursePath.path )
+		hasedCoursesKeyPathValues[ hashedCoursePath.hash ] = paths;
+		next()
+	}
+
+	function log () {
+		Object.keys( hasedCoursesKeyPathValues ).forEach( function ( hash ) {
+			if ( hasedCoursesKeyPathValues[ hash ].length === 1 ) {
+				console.log( `${ hasedCoursesKeyPathValues[ hash ][ 0 ] }:${ hash }` )
+			}
+		} )
+	}
+}
