@@ -7,11 +7,10 @@ var Events = require('../sources/events/index.js');
 var Env = require('../env.js')();
 var envConf = Env.asObject();
 
-
 Sync( {
   sourcePrototype: Events,
   env: envConf,
-  syncNode: 'syncEvents'
+  syncNode: 'syncEvents',
 }, onComplete )
 
 function onComplete () {
