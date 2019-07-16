@@ -21,6 +21,10 @@ module.exports = function () {
                 "ektronNews": "History of Art + Visual Culture",
                 "courseCatalogueNameAbbreviation": "HAVC",
             }, {
+                // once deployed, this can take over the values above
+                "webhook": "Theory + History of Art + Design",
+                "courseCatalogue": "THEORY & HISTORY ART & DESIGN",
+            }, {
                 "workday": "Literary Arts + Studies",
                 "colleague": "Literary Arts and Studies",
                 "webhook": "Literary Arts + Studies",
@@ -96,6 +100,9 @@ module.exports = function () {
                 "ektronNews": "Digital + Media",
                 "courseCatalogueNameAbbreviation": "DM",
             }, {
+                "webhook": "Digital + Media",
+                "courseCatalogue": "Digital+Media",
+            }, {
                 "workday": "Teaching + Learning in Art + Design",
                 "colleague": "Teach Learn Art + Design",
                 "webhook": "Teaching + Learning in Art + Design",
@@ -116,9 +123,12 @@ module.exports = function () {
                 "colleague": "Jewelry & Metalsmithing",
                 "webhook": "Jewelry + Metalsmithing",
                 "localist": "Jewelry + Metalsmithing",
-                "courseCatalogue": "JEWELRY & METAL",
+                "courseCatalogue": "JEWELRY + METAL",
                 "ektronNews": "Jewelry + Metalsmithing",
                 "courseCatalogueNameAbbreviation": "J&M",
+            }, {
+                "webhook": "Jewelry + Metalsmithing",
+                "courseCatalogue": "JEWELRY + METALSMITHING",
             }, {
                 "workday": "Interior Architecture",
                 "colleague": "Interior Architecture",
@@ -127,6 +137,10 @@ module.exports = function () {
                 "courseCatalogue": "INTERIOR ARCH",
                 "ektronNews": "Interior Architecture",
                 "courseCatalogueNameAbbreviation": "INTAR",
+            }, {
+                // once deployed, this can take over the values above
+                "webhook": "Interior Architecture",
+                "courseCatalogue": "INTERIOR ARCHITECTURE",
             }, {
                 "workday": "Industrial Design",
                 "colleague": "Industrial Design",
