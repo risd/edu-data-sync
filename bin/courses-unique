@@ -4,9 +4,15 @@ var crypto = require('crypto');
 var through = require('through2');
 
 var Env = require('../env.js');
-var envOptions = Env().asObject();
+var envConf = Env().asObject();
 
-var Courses = require('../sources/courses/index.js')( envOptions );
+// allow user to define the files used for course syncing
+var args = process.argv.slice( 2 )
+if ( args.length >= 1 ) {
+  envConf.listSourceLocal = args;
+}
+
+var Courses = require('../sources/courses/index.js')( envConf );
 
 
 /**
