@@ -7,6 +7,11 @@ var Courses = require('../sources/courses/index.js');
 var Env = require('../env.js')();
 var envConf = Env.asObject();
 
+// allow user to define the files used for course syncing
+var args = process.argv.slice( 2 )
+if ( args.length >= 1 ) {
+  envConf.listSourceLocal = args;
+}
 
 Sync( {
   sourcePrototype: Courses,

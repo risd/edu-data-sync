@@ -18,6 +18,7 @@ module.exports = Courses;
    if (!(this instanceof Courses)) return new Courses( options );
    var self = this;
    this.aws = knox.createClient( options.aws );
+   this._options = Object.assign( {}, options );
  }
 
  Courses.prototype.webhookContentType = 'courses';
@@ -38,15 +39,20 @@ module.exports = Courses;
    var eventStream = through.obj();
 
    var seed = through.obj();
-   var fileStream = options.local
-     ? localStream
-     : s3Stream;
+
+   var localSources = self._options.listSourceLocal || options.local;
+   if ( localSources ) {
+     var fileStream = localStream;
+     var sources = localSources;
+   }
+   else {
+     var fileStream = s3Stream;
+     var sources = ['ENGL.COURSE.DATA.XML', 'COURSE.DATA.XML'];
+   }
 
    seed.pipe(fileStream())
    .pipe(drainXMLResIntoStream(eventStream));
 
-   var sources = ['ENGL.COURSE.DATA.XML',
-   'COURSE.DATA.XML'];
    var sourcesCount = sources.length;
 
    sources.forEach(function (source) {
@@ -67,7 +73,8 @@ module.exports = Courses;
          if (err) {
            stream.emit('error', err);
          } else {
-           stream.push(res);
+           var sourceSpecification = { path: path, xmlDocument: res };
+           stream.push(sourceSpecification);
          }
 
          next();
@@ -79,46 +86,49 @@ module.exports = Courses;
      return through.obj(local);
 
      function local (path, enc, next) {
-       var absPath = require('path').join(process.cwd(), path);
-       var fileStream = fs.createReadStream(absPath);
-       next(null, fileStream);
+       var fileStream = fs.createReadStream(path);
+       var sourceSpecification = { path: path, xmlDocument: fileStream };
+       next(null, sourceSpecification);
      }
    }
 
    function drainXMLResIntoStream (writeStream) {
      return through.obj(drain);
 
-     function drain (res, enc, next) {
-       var stream = this;
-       var xml = new xmlStream(res, 'iso-8859-1');
+      function drain (sourceSpecification, enc, next) {
+        var stream = this;
+        var sourceXmlDocument = sourceSpecification.xmlDocument;
+        var sourcePath = sourceSpecification.path;
+        var xml = new xmlStream(sourceXmlDocument, 'iso-8859-1');
 
-            // capture all departments per course
-            xml.collect('COURSE');
-            xml.collect('COURSEFACULTY');
-            xml.on('error', function (err) {
-              writeStream.emit('error', err);
-            });
-            xml.on('endElement: DEPARTMENT', function (row) {
-              row.COURSE.forEach(function (d) {
-                d.departments = [row.NAME.trim()];
-                writeStream.push(d);
-              });
-            });
+        // capture all departments per course
+        xml.collect('COURSE');
+        xml.collect('COURSEFACULTY');
+        xml.on('error', function (err) {
+          writeStream.emit('error', err);
+        });
+        xml.on('endElement: DEPARTMENT', function (row) {
+          row.COURSE.forEach(function (d) {
+            d.departments = [row.NAME.trim()];
+            d.sourcePath = sourcePath;
+            writeStream.push(d);
+          });
+        });
 
-            xml.on('end', function () {
-              sourcesCount -= 1;
-              if (sourcesCount === 0) {
-                debug('Courses.listSource::end');
-                writeStream.push(null);
-                stream.push(null);
-              }
-              else {
-                next();
-              }
-            });
+        xml.on('end', function () {
+          sourcesCount -= 1;
+          if (sourcesCount === 0) {
+            debug('Courses.listSource::end');
+            writeStream.push(null);
+            stream.push(null);
           }
-        }
-      };
+          else {
+            next();
+          }
+        });
+      }
+    }
+  };
 
 /**
  * Course data is formatted by department, instead of by

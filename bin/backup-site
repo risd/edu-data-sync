@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+var miss = require( 'mississippi' )
+var Firebase = require('webhook-cms-pull/firebaseref.js')
+
+var Env = require('../env.js');
+var envOptions = Env().asObject();
+
+var valueWriter = valueWriterForArgs( process.argv.slice( 2 ) )
+
+Firebase( envOptions.firebase, firebaseRefHandler )
+
+function firebaseRefHandler ( error, firebaseref ) {
+  if ( error ) {
+    return exit( error )
+  }
+  firebaseref.once( 'value', siteValueHandler, siteValueErrorHandler )
+}
+
+function siteValueHandler ( siteSnapshot ) {
+  var siteValue = siteSnapshot.val()
+  valueWriter( siteValue, exit )
+}
+
+function siteValueErrorHandler ( error ) {
+  exit( error )
+}
+
+function valueWriterForArgs ( args ) {
+  if ( args.length === 1 ) {
+    var writeToPath = args[ 0 ]
+    var writeStream = require( 'fs' ).createWriteStream( writeToPath )
+  }
+  else {
+    var writeStream = process.stdout
+  }
+
+  return function writeToStream ( data, callback ) {
+    if ( typeof data === 'object' ) {
+      var dataString = JSON.stringify( data, null, 2 )
+    }
+    else {
+      var dataString = data.slice( 0 )
+    }
+
+    miss.pipe( stringStream( dataString ), writeStream, callback )
+  }
+}
+
+function exit ( error ) {
+  if ( error ) {
+    console.log( error )
+    process.exit( 1 )
+  }
+  else {
+    process.exit( 0 )
+  }
+}
+
+function stringStream ( string ) {
+  return miss.from( function( size, next ) {
+    // if there's no more content
+    // left in the string, close the stream.
+    if ( string.length <= 0 ) return next( null, null )
+ 
+    // Pull in a new chunk of text,
+    // removing it from the string.
+    var chunk = string.slice( 0, size )
+    string = string.slice( size )
+ 
+    // Emit "chunk" from the stream.
+    next( null, chunk )
+  } )
+}
