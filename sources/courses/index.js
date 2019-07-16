@@ -18,6 +18,7 @@ module.exports = Courses;
    if (!(this instanceof Courses)) return new Courses( options );
    var self = this;
    this.aws = knox.createClient( options.aws );
+   this._options = Object.assign( {}, options );
  }
 
  Courses.prototype.webhookContentType = 'courses';
@@ -38,15 +39,20 @@ module.exports = Courses;
    var eventStream = through.obj();
 
    var seed = through.obj();
-   var fileStream = options.local
-     ? localStream
-     : s3Stream;
+
+   var localSources = self._options.listSourceLocal || options.local;
+   if ( localSources ) {
+     var fileStream = localStream;
+     var sources = localSources;
+   }
+   else {
+     var fileStream = s3Stream;
+     var sources = ['ENGL.COURSE.DATA.XML', 'COURSE.DATA.XML'];
+   }
 
    seed.pipe(fileStream())
    .pipe(drainXMLResIntoStream(eventStream));
 
-   var sources = ['ENGL.COURSE.DATA.XML',
-   'COURSE.DATA.XML'];
    var sourcesCount = sources.length;
 
    sources.forEach(function (source) {
@@ -80,8 +86,7 @@ module.exports = Courses;
      return through.obj(local);
 
      function local (path, enc, next) {
-       var absPath = require('path').join(process.cwd(), path);
-       var fileStream = fs.createReadStream(absPath);
+       var fileStream = fs.createReadStream(path);
        var sourceSpecification = { path: path, xmlDocument: fileStream };
        next(null, sourceSpecification);
      }
