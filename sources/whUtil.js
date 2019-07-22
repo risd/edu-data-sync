@@ -119,6 +119,9 @@ module.exports = function () {
                 "ektronNews": "Landscape Architecture",
                 "courseCatalogueNameAbbreviation": "LDAR",
             }, {
+                "webhook": "Landscape Architecture",
+                "courseCatalogue": "LANDSCAPE ARCHITECTURE",
+            }, {
                 "workday": "Jewelry + Metalsmithing",
                 "colleague": "Jewelry & Metalsmithing",
                 "webhook": "Jewelry + Metalsmithing",
