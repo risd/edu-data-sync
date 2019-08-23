@@ -9,7 +9,7 @@ module.exports = doImport;
 function doImport () {
   var rows = require( __dirname + '/2019-08-22--colleague-degrees.json' )
   rows.forEach( rowToEmployeesDegrees )
-  Firebase( Env.asObject().firebase, handleFirebase )  
+  Firebase( Env.asObject().firebase, handleFirebase )
 }
 
 
