@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+var colleagueImport = require('../sources/employees/colleague-degrees-import/import.js');
+
+colleagueImport()

@@ -295,18 +295,19 @@ Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
     wh.colleague_phone_number = src.PHONE;
     wh.colleague_title = src.TITLE.split( ' - ' )[ 0 ];
     wh.colleague_department = src.DEPARTMENT;
-    wh.colleague_institutions_attended =
-    	src.INSTITUTIONSATTENDED.split( ';' )
-            .map( function ( institution ) {
-                return { institution: institution.trim() }
-            } )
-            .sort( function ( a, b ) {
-                return a.institution < b.institution
-                    ? -1
-                    : a.institution > b.institution
-                        ? 1
-                        : 0;
-            } );
+    // // Workday no longer has instuations attended data that we want to keep
+    // wh.colleague_institutions_attended =
+    // 	src.INSTITUTIONSATTENDED.split( ';' )
+    //         .map( function ( institution ) {
+    //             return { institution: institution.trim() }
+    //         } )
+    //         .sort( function ( a, b ) {
+    //             return a.institution < b.institution
+    //                 ? -1
+    //                 : a.institution > b.institution
+    //                     ? 1
+    //                     : 0;
+    //         } );
 
     wh.sabbatical_start_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL[ 'start-date' ] : '' ;
     wh.sabbatical_end_date = typeof src.SABBATICAL === 'object' ? src.SABBATICAL[ 'end-date' ] : '' ;
