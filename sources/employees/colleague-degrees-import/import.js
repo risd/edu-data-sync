@@ -1,12 +1,17 @@
-var rows = require( __dirname + '/2019-08-22--colleague-degrees.json' )
 var Firebase = require('webhook-cms-pull/firebaseref')
 var Env = require('../../../env.js')()
 
 var employees = {}
 var firebase;
 
-rows.forEach( rowToEmployeesDegrees )
-Firebase( Env.asObject().firebase, handleFirebase )
+module.exports = doImport;
+
+function doImport () {
+  var rows = require( __dirname + '/2019-08-22--colleague-degrees.json' )
+  rows.forEach( rowToEmployeesDegrees )
+  Firebase( Env.asObject().firebase, handleFirebase )  
+}
+
 
 function handleFirebase ( error, firebaseRef ) {
   if ( error ) {

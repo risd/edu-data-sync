@@ -24,6 +24,7 @@
     "sync-events": "./bin/sync-events",
     "sync-employees": "./bin/sync-employees",
     "sync-courses": "./bin/sync-courses",
+    "import-employees-colleague-degrees": "./bin/import-employees-colleague-degrees",
     "trigger-build": "./bin/trigger-build",
     "backup": "./bin/backup"
   },
