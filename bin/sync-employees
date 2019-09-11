@@ -7,6 +7,22 @@ var Employees = require('../sources/employees/index.js');
 var Env = require('../env.js')();
 var envConf = Env.asObject();
 
+var argv = require( 'minimist' )( process.argv.slice( 2 ) )
+var stringPathToArrayPaths = require( './util/string-path-to-abs-array.js' )
+
+if ( argv.fsSource ) {
+  envConf.fsSource = stringPathToArrayPaths( argv.fsSource )
+}
+else if ( argv.awsSourceBucket && argv.awsSourcePath ) {
+  envConf.aws.bucket = argv.awsSourceBucket
+  envConf.aws.path = stringPathToArrayPaths( argv.awsSourcePath )
+}
+else if ( argv.awsSourcePath ) {
+  envConf.aws.path = stringPathToArrayPaths( argv.awsSourcePath )
+}
+else {
+  envConf.aws.path = [ 'EMPLOYEE.DATA.XML' ]
+}
 
 Sync( {
   sourcePrototype: Employees,

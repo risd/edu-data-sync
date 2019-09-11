@@ -3,6 +3,7 @@ var fs = require('fs');
 var through = require('through2');
 var xmlStream = require('xml-stream');
 var knox = require('knox');
+var miss = require('mississippi')
 
 var whUtil = require('../whUtil.js')();
 
@@ -10,11 +11,16 @@ module.exports = Employees;
 
 /**
  * Employees are provided via XML dump from Colleague.
+ *
+ * @param {object} options
+ * @param {object?} options.aws
+ * @param {string?} options.fsSource
  */
 function Employees ( options ) {
     if (!(this instanceof Employees)) return new Employees( options );
     var self = this;
-    this.aws = knox.createClient( options.aws );
+    this.aws = options.aws;
+    this.fsSource = options.fsSource;
 }
 
 Employees.prototype.webhookContentType = 'employees';
@@ -70,25 +76,52 @@ Employees.prototype.listSource = function () {
 
     var seed = through.obj();
 
-    seed.pipe(s3Stream())
-        .pipe(drainXMLResIntoStream(eventStream));
+    if ( self.fsSource ) {
+        var sourceStream = fsStream()
+        process.nextTick( function startStream () {
+            self.fsSource.map( function ( fsSource ) {
+                seed.push( fsSource )
+            } )
+            seed.push( null )
+        } )
+    }
+    else {
+        var sourceStream = s3Stream()
+        process.nextTick( function startStream () {
+            self.aws.path.map( function ( awsPath ) {
+                seed.push( awsPath )
+            } )
+            seed.push( null )
+        } )
+    }
 
-    seed.push('EMPLOYEE.DATA.XML');
-    seed.push(null);
+    var drain = drainXMLResIntoStream(eventStream)
+
+    miss.pipe(
+        seed,
+        sourceStream,
+        drain.stream,
+        function onComplete ( error ) {
+            if ( error ) eventStream.emit( 'error', error )
+            else if ( ! drain.completed() ) eventStream.emit( 'error', new Error( 'Source stream not completed.' ) )
+            eventStream.push( null )
+        })
 
     return eventStream;
 
     function s3Stream() {
+        var aws = knox.createClient( self.aws )
+
         return through.obj(s3ify);
 
         function s3ify (path, enc, next) {
             var stream = this;
 
-            self.aws
-                .getFile(path, function (err, res) {
+            aws.getFile(path, function (err, res) {
                     if (err) {
                         stream.emit('error', err);
                     } else {
+                        console.log( res )
                         stream.push(res);    
                     }
                     
@@ -97,15 +130,35 @@ Employees.prototype.listSource = function () {
         }
     }
 
+    function fsStream () {
+        return through.obj(getFile)
+
+        function getFile ( path, enc, next ) {
+            var stream = this;
+
+            next( null, fs.createReadStream( path ) )
+        }
+    }
+
     function drainXMLResIntoStream (writeStream) {
-        return through.obj(drain);
+        var started = false;
+        var xmlCount = 0
+
+        return {
+            completed: function () { return started && xmlCount === 0 },
+            stream: through.obj(drain),
+        }
 
         function drain (res, enc, next) {
+            started = true
+            xmlCount += 1
+
             var stream = this;
             var xml = new xmlStream(res, 'UTF8');
 
             xml.on('error', function (err) {
-                writeStream.emit('error', err);
+                debug('xml-error', err)
+                stream.emit('error', err);
             });
 
             xml.on('endElement: EMPLOYEE', function (d) {
@@ -115,49 +168,17 @@ Employees.prototype.listSource = function () {
                 writeStream.push(d);
             });
 
+            xml.on( 'endElement: file', function () {
+                debug('listSource::end-of-file');
+                xmlCount -= 1
+            } )
+
             xml.on('end', function () {
                 debug('listSource::end');
-                writeStream.push(null);
-                stream.push(null);
+                next()
             });
         }
     }
-};
-
-Employees.prototype.listSourceLocal = function ( path ) {
-    debug('listSourceLocal');
-    var self = this;
-
-    var eventStream = through.obj();
-
-    // var path = __dirname + '/EMPLOYEE.DATA.WD.20190219.TEST.XML'
-    var file = fs.createReadStream(path);
-
-    // Colleague export process uses iso-8859-1
-    // var xml = new xmlStream(file, 'iso-8859-1');
-    // Workday export process uses utf8
-    var xml = new xmlStream(file, 'UTF8');
-
-    // Colleague export process uses uppercase for the employee key name
-    // xml.on('endElement: EMPLOYEE', function (d) {
-    // Workday export process uses title case for the employee key name
-    xml.on('endElement: EMPLOYEE', function (d) {
-        if ( typeof d.SABBATICAL === 'object' && typeof d.SABBATICAL['$'] === 'object' )  {
-            d.SABBATICAL = d.SABBATICAL['$']
-        }
-        eventStream.push(d);
-    });
-
-    xml.on('error', function (e) {
-        eventStream.emit('error', e);
-    });
-
-    xml.on('end', function () {
-        debug('Employees.listSource::end');
-        eventStream.push(null);
-    });
-
-    return eventStream;
 };
 
 Employees.prototype.updateWebhookValueWithSourceValue = function (wh, src) {
