@@ -8,9 +8,21 @@ var Env = require('../env.js')();
 var envConf = Env.asObject();
 
 // allow user to define the files used for course syncing
-var args = process.argv.slice( 2 )
-if ( args.length >= 1 ) {
-  envConf.listSourceLocal = args;
+var stringPathToArrayPaths = require( './util/string-path-to-abs-array.js' )
+var argv = require( 'minimist' )( process.argv.slice( 2 ) )
+
+if ( argv.fsSource ) {
+  envConf.fsSource = stringPathToArrayPaths( argv.fsSource )
+}
+else if ( argv.awsSourceBucket && argv.awsSourcePath ) {
+  envConf.aws.bucket = argv.awsSourceBucket
+  envConf.aws.path = stringPathToArrayPaths( argv.awsSourcePath )
+}
+else if ( argv.awsSourcePath ) {
+  envConf.aws.path = stringPathToArrayPaths( argv.awsSourcePath )
+}
+else {
+  envConf.aws.path = [ 'ENGL.COURSE.DATA.XML', 'COURSE.DATA.XML' ]
 }
 
 Sync( {
