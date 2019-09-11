@@ -5,6 +5,7 @@ var through = require('through2');
 var xmlStream = require('xml-stream');
 var knox = require('knox');
 var cheerio = require('cheerio');
+var miss = require('mississippi')
 
 var whUtil = require('../whUtil.js')();
 
@@ -13,12 +14,16 @@ module.exports = Courses;
 
 /**
  * Courses are provided via XML dump from Colleague.
+ * 
+ * @param {object} options
+ * @param {object?} options.aws
+ * @param {string?} options.fsSource
  */
  function Courses ( options ) {
    if (!(this instanceof Courses)) return new Courses( options );
    var self = this;
-   this.aws = knox.createClient( options.aws );
-   this._options = Object.assign( {}, options );
+   this.aws = options.aws;
+   this.fsSource = options.fsSource;
  }
 
  Courses.prototype.webhookContentType = 'courses';
@@ -31,8 +36,7 @@ module.exports = Courses;
    row.COURSETERM].join(' ');
  };
 
- Courses.prototype.listSource = function (options) {
-   if (!options) options = {};
+ Courses.prototype.listSource = function () {
    var self = this;
    debug('Courses.listSource::start');
 
@@ -40,36 +44,49 @@ module.exports = Courses;
 
    var seed = through.obj();
 
-   var localSources = self._options.listSourceLocal || options.local;
-   if ( localSources ) {
-     var fileStream = localStream;
-     var sources = localSources;
-   }
-   else {
-     var fileStream = s3Stream;
-     var sources = ['ENGL.COURSE.DATA.XML', 'COURSE.DATA.XML'];
-   }
+   if ( self.fsSource ) {
+        var sourceStream = fsStream()
+        process.nextTick( function startStream () {
+            self.fsSource.map( function ( fsSource ) {
+                seed.push( fsSource )
+            } )
+            seed.push( null )
+        } )
+    }
+    else {
+        var sourceStream = s3Stream()
+        process.nextTick( function startStream () {
+            self.aws.path.map( function ( awsPath ) {
+                seed.push( awsPath )
+            } )
+            seed.push( null )
+        } )
+    }
 
-   seed.pipe(fileStream())
-   .pipe(drainXMLResIntoStream(eventStream));
 
-   var sourcesCount = sources.length;
+    var drain = drainXMLResIntoStream(eventStream)
 
-   sources.forEach(function (source) {
-     seed.push(source);
-   });
-   seed.push(null);
+    miss.pipe(
+      seed,
+      sourceStream,
+      drain.stream,
+      function onComplete ( error ) {
+        if ( error ) eventStream.emit( 'error', error )
+        else if ( ! drain.completed() ) eventStream.emit( 'error', new Error( 'Source stream not completed.' ) )
+        eventStream.push( null )
+      })
 
    return eventStream;
 
    function s3Stream() {
+     var aws = knox.createClient( self.aws )
+
      return through.obj(s3ify);
 
      function s3ify (path, enc, next) {
        var stream = this;
 
-       self.aws
-       .getFile(path, function (err, res) {
+       aws.getFile(path, function (err, res) {
          if (err) {
            stream.emit('error', err);
          } else {
@@ -82,7 +99,7 @@ module.exports = Courses;
      }
    }
 
-   function localStream () {
+   function fsStream () {
      return through.obj(local);
 
      function local (path, enc, next) {
@@ -93,9 +110,18 @@ module.exports = Courses;
    }
 
    function drainXMLResIntoStream (writeStream) {
-     return through.obj(drain);
+     var started = false
+     var xmlCount = 0
+
+     return {
+       completed: function () { return started && xmlCount === 0 },
+       stream: through.obj(drain),
+     };
 
       function drain (sourceSpecification, enc, next) {
+        started = true
+        xmlCount += 1
+
         var stream = this;
         var sourceXmlDocument = sourceSpecification.xmlDocument;
         var sourcePath = sourceSpecification.path;
@@ -105,7 +131,7 @@ module.exports = Courses;
         xml.collect('COURSE');
         xml.collect('COURSEFACULTY');
         xml.on('error', function (err) {
-          writeStream.emit('error', err);
+          stream.emit('error', err);
         });
         xml.on('endElement: DEPARTMENT', function (row) {
           row.COURSE.forEach(function (d) {
@@ -115,16 +141,13 @@ module.exports = Courses;
           });
         });
 
+        xml.on( 'endElement: ROOT', function () {
+            debug('listSource::end-of-file');
+            xmlCount -= 1
+        } )
+
         xml.on('end', function () {
-          sourcesCount -= 1;
-          if (sourcesCount === 0) {
-            debug('Courses.listSource::end');
-            writeStream.push(null);
-            stream.push(null);
-          }
-          else {
-            next();
-          }
+          next();
         });
       }
     }
