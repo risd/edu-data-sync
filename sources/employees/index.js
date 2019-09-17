@@ -121,7 +121,6 @@ Employees.prototype.listSource = function () {
                     if (err) {
                         stream.emit('error', err);
                     } else {
-                        console.log( res )
                         stream.push(res);    
                     }
                     
