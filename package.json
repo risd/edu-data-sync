@@ -35,7 +35,7 @@
     "clone": "^1.0.2",
     "debug": "^2.2.0",
     "dotenv-safe": "^4.0.4",
-    "foreman": "^2.0.0",
+    "foreman": "^3.0.1",
     "from2-array": "0.0.3",
     "gapitoken": "^0.1.4",
     "html-template": "^1.2.2",
