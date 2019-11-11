@@ -20,7 +20,6 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nf --procfile Procfile.dev start",
     "sync-events": "./bin/sync-events",
     "sync-employees": "./bin/sync-employees",
     "sync-courses": "./bin/sync-courses",
@@ -35,7 +34,6 @@
     "clone": "^1.0.2",
     "debug": "^2.2.0",
     "dotenv-safe": "^4.0.4",
-    "foreman": "^2.0.0",
     "from2-array": "0.0.3",
     "gapitoken": "^0.1.4",
     "html-template": "^1.2.2",
