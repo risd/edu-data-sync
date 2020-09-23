@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+var debug = require('debug')('courses-webhook-titles:cli')
+var Firebaseref = require('webhook-cms-pull/firebaseref.js')
+var SyncProtocol = require('webhook-cms-pull/sync-protocol')
+var Courses = require('../sources/courses/index.js');
+var miss = require('mississippi')
+
+var Env = require('../env.js')();
+var envConf = Env.asObject();
+
+// Pass firebase ref into objects
+miss.pipe(
+  Firebaseref( envConf.firebase ),
+  miss.through.obj(function (firebaseref, enc, next) {
+    SyncProtocol('syncNodeName', Courses, firebaseref);
+    var courses = Courses( envConf );
+    courses.listFirebaseWebhook()
+      .on('data', function (row) {
+        console.log(row.webhook.colleague_course_title)
+      })
+      .on('end', function () {
+        next()
+      })
+  }),
+  function onComplete (error) {
+    if (error) console.log(error)
+    process.exit(error ? 1 : 0)
+  }
+)
+
