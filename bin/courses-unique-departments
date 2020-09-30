@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+var fs = require('fs');
+var through = require('through2');
+
+var Env = require('../env.js');
+var envConf = Env().asObject();
+
+// allow user to define the files used for course syncing
+var stringPathToArrayPaths = require( './util/string-path-to-abs-array.js' )
+var argv = require( 'minimist' )( process.argv.slice( 2 ) )
+
+if ( argv.fsSource ) {
+  envConf.fsSource = stringPathToArrayPaths( argv.fsSource )
+}
+else if ( argv.awsSourceBucket && argv.awsSourcePath ) {
+  envConf.aws.bucket = argv.awsSourceBucket
+  envConf.aws.path = stringPathToArrayPaths( argv.awsSourcePath )
+}
+else if ( argv.awsSourcePath ) {
+  envConf.aws.path = stringPathToArrayPaths( argv.awsSourcePath )
+}
+else {
+  envConf.aws.path = [ 'ENGL.COURSE.DATA.XML', 'COURSE.DATA.XML' ]
+}
+
+var Courses = require('../sources/courses/index.js')( envConf );
+
+/**
+ * get all departments that are unique to courses
+ *
+ * Course : {
+ * 	departments,
+ * 	COURSETITLE,
+ * 	COURSENAME,
+ * 	COURSEDESC,
+ * 	COURSETERM,
+ * 	COURSECREDITS,
+ * 	COURSEACADEMICLEVEL,
+ * 	COURSEFACULTY,
+ * }
+ *
+ * CourseSourcePath : string
+ *
+ * 
+ */
+
+Courses.listSource()
+	.pipe(DepartmentsForCourses())
+	.pipe(sink())
+
+function DepartmentsForCourses () {
+	var departments = []
+
+	return through.obj( capture, push )
+
+	function capture ( row, enc, next ) {
+		row.departments.forEach( function ( department ) {
+			if ( departments.indexOf( department ) === -1 ) {
+				departments.push( department )
+			}
+		} )
+		next()
+	}
+
+	function push () {
+		this.push( departments )
+	}
+}
+
+function sink () {
+	return through.obj( function ( row, enc, next ) {
+		console.log( row )
+		next()
+	} )
+}
