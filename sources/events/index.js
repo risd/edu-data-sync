@@ -456,7 +456,7 @@ Events.prototype.updateWebhookValueNotInSource = function () {
             var isWellInThePast = moment(endOfLastDayStr).isBefore(now.subtract(60, 'days')); // removed from the API, being in the past
             var isRemovedAndUpcoming = row.webhook.upcoming; // must have been removed from localist
 
-            if ( noEndDate || isWellInThePast || isRemovedAndUpcoming ) {
+            if ( noEndDate || isWellInThePast ) {
                 // last day of the event occured before 60 days ago
                 remove = true;
             }
