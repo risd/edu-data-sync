@@ -17,13 +17,9 @@ module.exports = function () {
                 "colleague": "History of Art & Visual Cultur",
                 "webhook": "Theory + History of Art + Design",
                 "localist": "History of Art + Visual Culture",
-                "courseCatalogue": "HISTORY OF ART&VISUAL CULTURE",
+                "courseCatalogue": "THEORY & HISTORY ART & DESIGN",
                 "ektronNews": "History of Art + Visual Culture",
                 "courseCatalogueNameAbbreviation": "HAVC",
-            }, {
-                // once deployed, this can take over the values above
-                "webhook": "Theory + History of Art + Design",
-                "courseCatalogue": "THEORY & HISTORY ART & DESIGN",
             }, {
                 "workday": "Literary Arts + Studies",
                 "colleague": "Literary Arts and Studies",
@@ -115,35 +111,25 @@ module.exports = function () {
                 "colleague": "Landscape Architecture",
                 "webhook": "Landscape Architecture",
                 "localist": "Landscape Architecture",
-                "courseCatalogue": "LANDSCAPE ARCH",
+                "courseCatalogue": "LANDSCAPE ARCHITECTURE",
                 "ektronNews": "Landscape Architecture",
                 "courseCatalogueNameAbbreviation": "LDAR",
-            }, {
-                "webhook": "Landscape Architecture",
-                "courseCatalogue": "LANDSCAPE ARCHITECTURE",
             }, {
                 "workday": "Jewelry + Metalsmithing",
                 "colleague": "Jewelry & Metalsmithing",
                 "webhook": "Jewelry + Metalsmithing",
                 "localist": "Jewelry + Metalsmithing",
-                "courseCatalogue": "JEWELRY + METAL",
+                "courseCatalogue": "JEWELRY + METALSMITHING",
                 "ektronNews": "Jewelry + Metalsmithing",
                 "courseCatalogueNameAbbreviation": "J&M",
-            }, {
-                "webhook": "Jewelry + Metalsmithing",
-                "courseCatalogue": "JEWELRY + METALSMITHING",
             }, {
                 "workday": "Interior Architecture",
                 "colleague": "Interior Architecture",
                 "webhook": "Interior Architecture",
                 "localist": "Interior Architecture",
-                "courseCatalogue": "INTERIOR ARCH",
+                "courseCatalogue": "INTERIOR ARCHITECTURE",
                 "ektronNews": "Interior Architecture",
                 "courseCatalogueNameAbbreviation": "INTAR",
-            }, {
-                // once deployed, this can take over the values above
-                "webhook": "Interior Architecture",
-                "courseCatalogue": "INTERIOR ARCHITECTURE",
             }, {
                 "workday": "Industrial Design",
                 "colleague": "Industrial Design",
